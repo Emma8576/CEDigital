@@ -25,29 +25,63 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-10 p-6 bg-white rounded shadow">
-      <h2 className="text-2xl mb-4 font-bold text-center">Iniciar sesión</h2>
-      <input
-        type="email"
-        placeholder="Correo"
-        value={correo}
-        onChange={e => setCorreo(e.target.value)}
-        required
-        className="w-full mb-3 p-2 border rounded"
-      />
-      <input
-        type="password"
-        placeholder="Contraseña"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        required
-        className="w-full mb-3 p-2 border rounded"
-      />
-      <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-        Entrar
-      </button>
-      {error && <div className="text-red-600 mt-2 text-center">{error}</div>}
-    </form>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            CEDigital
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Sistema de Gestión Educativa
+          </p>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="correo" className="sr-only">Correo electrónico</label>
+              <input
+                id="correo"
+                name="correo"
+                type="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Correo electrónico"
+                value={correo}
+                onChange={e => setCorreo(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">Contraseña</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Contraseña"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="text-red-600 text-sm text-center">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Iniciar sesión
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
