@@ -1,0 +1,55 @@
+[{
+  "_id": {
+    "$oid": "681c2da116627620de4155ec"
+  },
+  "carne": 2023301199,
+  "cedula": 305520274,
+  "nombre": "Joaquín Ignacio Ramírez Sequeira",
+  "email": "joaquinrams@estudiance.cr",
+  "telefono": 88997766,
+  "password": "d48a684e51a256ead778a78a83fb2f20"
+},
+{
+  "_id": {
+    "$oid": "681ce329104e7850daaf41ed"
+  },
+  "carne": 2023298134,
+  "cedula": 105550987,
+  "nombre": "Fabián Gutierréz Jiménez",
+  "email": "fabiangj@estudiance.cr",
+  "telefono": 72309811,
+  "password": "9821df13241d9edd70087018f6c40510"
+},
+{
+  "_id": {
+    "$oid": "681ce329104e7850daaf41ee"
+  },
+  "carne": 2023113987,
+  "cedula": 305420987,
+  "nombre": "Asly Mariela Barahona Maroto",
+  "email": "aslybarah@estudiance.cr",
+  "telefono": 89076612,
+  "password": "5c6e2d0f7c846d626e4da1aa0fb9509f"
+},
+{
+  "_id": {
+    "$oid": "681ce329104e7850daaf41ef"
+  },
+  "carne": 2023213444,
+  "cedula": 102230987,
+  "nombre": "Emmanuel Eliecer Calvo Mora",
+  "email": "emmacalvom@estudiance.cr",
+  "telefono": 67425112,
+  "password": "f611a95f1152328fce896c90721b1a96"
+},
+{
+  "_id": {
+    "$oid": "681ce329104e7850daaf41f0"
+  },
+  "carne": 2022096711,
+  "cedula": 308760991,
+  "nombre": "Luis Alexis Alvarado Barrantes",
+  "email": "alexisalva@estudiance.cr",
+  "telefono": 78543001,
+  "password": "574fb44f0eca2e7c7d2e90c3f9cd302d"
+}]
