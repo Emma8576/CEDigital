@@ -6,6 +6,8 @@ import GestionCursos from "./pages/GestionCursos";
 import GestionSemestres from "./pages/GestionSemestres";
 import CargaSemestre from "./pages/CargaSemestre";
 import Login from "./components/Login";
+import StudentDashboard from "./pages/StudentDashboard";
+import StudentCourseView from "./pages/StudentCourseView";
 
 function App() {
   const [user, setUser] = useState<null | { id: string; nombre: string; tipo: string }>(null);
@@ -29,7 +31,7 @@ function App() {
       case "profesor":
         return "/profesor/dashboard";
       case "estudiante":
-        return "/estudiante/dashboard";
+        return "/student/dashboard";
       default:
         return "/unauthorized";
     }
@@ -38,7 +40,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
-        {user && <Navbar />}
+        {user && <Navbar user={user} />}
         <main className={user ? "pt-20 px-4 sm:px-6 lg:px-8 pb-6" : ""}>
           <div className="max-w-7xl mx-auto">
             <Routes>
@@ -80,12 +82,14 @@ function App() {
               } />
 
               {/* Rutas protegidas para estudiante */}
-              <Route path="/estudiante/dashboard" element={
+              <Route path="/student/dashboard" element={
                 <ProtectedRoute allowedTypes={["estudiante"]}>
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold mb-4">Dashboard del Estudiante</h1>
-                    <p>Bienvenido, {user?.nombre}</p>
-                  </div>
+                  <StudentDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/student/course/:courseId" element={
+                <ProtectedRoute allowedTypes={["estudiante"]}>
+                  <StudentCourseView />
                 </ProtectedRoute>
               } />
 

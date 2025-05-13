@@ -15,17 +15,32 @@ interface NavLinkProps {
   icon: JSX.Element;
 }
 
-const Navbar: FC = () => {
+interface NavBarProps {
+  user?: { id: string; nombre: string; tipo: string } | null;
+}
+
+const Navbar: FC<NavBarProps> = ({ user }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [scrolled, setScrolled] = useState<boolean>(false);
   const location = useLocation();
 
-  const links: NavLinkProps[] = [
+  let links: NavLinkProps[] = [
     { path: "/", name: "Inicio", icon: <HomeIcon className="w-5 h-5" /> },
-    { path: "/cursos", name: "Gestión de Cursos", icon: <BookOpenIcon className="w-5 h-5" /> },
-    { path: "/semestres", name: "Gestión de Semestres", icon: <CalendarIcon className="w-5 h-5" /> },
-    { path: "/contenido", name: "Cargar Semestre", icon: <ArrowUpTrayIcon className="w-5 h-5" /> },
   ];
+
+  if (user && user.tipo === "administrador") {
+    links = [
+      { path: "/", name: "Inicio", icon: <HomeIcon className="w-5 h-5" /> },
+      { path: "/cursos", name: "Gestión de Cursos", icon: <BookOpenIcon className="w-5 h-5" /> },
+      { path: "/semestres", name: "Gestión de Semestres", icon: <CalendarIcon className="w-5 h-5" /> },
+      { path: "/contenido", name: "Cargar Semestre", icon: <ArrowUpTrayIcon className="w-5 h-5" /> },
+    ];
+  } else if (user && user.tipo === "profesor") {
+    // Aquí puedes agregar enlaces específicos para profesor si es necesario
+    links = [
+      { path: "/", name: "Inicio", icon: <HomeIcon className="w-5 h-5" /> },
+    ];
+  } // Para estudiante y sin usuario, solo 'Inicio'
 
   // Control scroll effect for sticky navbar
   useEffect(() => {
