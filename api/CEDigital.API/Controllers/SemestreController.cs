@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Data;
 using CEDigital.API.Models;
 
-namespace TuProyecto.Controllers
+namespace CEDigital.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
