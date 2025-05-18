@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\FabianGJ\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj": {}
+    "C:\\Users\\Usuario\\OneDrive\\Escritorio\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\FabianGJ\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj": {
+    "C:\\Users\\Usuario\\OneDrive\\Escritorio\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\FabianGJ\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
+        "projectUniqueName": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
         "projectName": "CEDigital.API",
-        "projectPath": "C:\\Users\\FabianGJ\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
-        "packagesPath": "C:\\Users\\FabianGJ\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\FabianGJ\\CEDigital\\api\\CEDigital.API\\obj\\",
+        "projectPath": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
+        "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\CEDigital\\api\\CEDigital.API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\FabianGJ\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -47,6 +47,16 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
             },
             "MongoDB.Driver": {
               "target": "Package",

@@ -1,6 +1,8 @@
 using CEDigital.API.Configuration;
 using CEDigital.API.Services;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using CEDigital.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,10 @@ builder.Services.AddSwaggerGen();
 var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
 builder.Services.AddSingleton(mongoDbSettings);
 builder.Services.AddSingleton<MongoDbService>();
+
+// Configure SQL Server
+builder.Services.AddDbContext<CEDigitalContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
 
 var app = builder.Build();
 
