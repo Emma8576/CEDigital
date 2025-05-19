@@ -1,5 +1,8 @@
 -- Script de populación (datos minimos iniciales)
 
+USE CEDigital;
+GO
+
 -- Carreras
 INSERT INTO Carrera (NombreCarrera) VALUES ('Ingeniería en Computadores');
 INSERT INTO Carrera (NombreCarrera) VALUES ('Ingeniería Electrónica');

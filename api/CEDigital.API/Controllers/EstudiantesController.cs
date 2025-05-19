@@ -36,6 +36,7 @@ namespace CEDigital.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Estudiante>> Create(Estudiante estudiante)
         {
+            estudiante.Id = null;
             estudiante.Password = PasswordHelper.ToMD5(estudiante.Password ?? "");
             await _estudiantes.InsertOneAsync(estudiante);
             return CreatedAtAction(nameof(Get), new { id = estudiante.Id }, estudiante);
