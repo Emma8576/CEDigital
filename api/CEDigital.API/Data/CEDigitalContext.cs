@@ -18,6 +18,7 @@ namespace CEDigital.API.Data
             modelBuilder.Entity<Noticia>().ToTable("Noticia");
             modelBuilder.Entity<Archivo>().ToTable("Archivo");
             modelBuilder.Entity<Rubro>().ToTable("Rubro");
+            modelBuilder.Entity<Evaluacion>().ToTable("Evaluacion");
 
             modelBuilder.Entity<ProfesorGrupo>()
                 .ToTable("ProfesorGrupo")
@@ -48,8 +49,8 @@ namespace CEDigital.API.Data
         public DbSet<Noticia> Noticias { get; set; }
         public DbSet<Archivo> Archivos { get; set; }
         public DbSet<Rubro> Rubros { get; set; }
-        /*public DbSet<Evaluacion> Evaluaciones { get; set; }
-        public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
+        public DbSet<Evaluacion> Evaluaciones { get; set; }
+        /*public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
         public DbSet<Entrega> Entregas { get; set; }
         public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }*/
     }
