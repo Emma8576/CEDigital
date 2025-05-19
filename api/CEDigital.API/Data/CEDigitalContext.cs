@@ -22,6 +22,15 @@ namespace CEDigital.API.Data
                 .HasOne(pg => pg.Grupo)
                 .WithMany()
                 .HasForeignKey(pg => pg.IdGrupo);
+            
+            modelBuilder.Entity<EstudianteGrupo>()
+                .ToTable("EstudianteGrupo") 
+                .HasKey(eg => new { eg.IdGrupo, eg.CarnetEstudiante });
+
+            modelBuilder.Entity<EstudianteGrupo>()
+                .HasOne(eg => eg.Grupo)
+                .WithMany(g => g.Estudiantes)  
+                .HasForeignKey(eg => eg.IdGrupo);
 
             base.OnModelCreating(modelBuilder); 
         }   
@@ -29,8 +38,8 @@ namespace CEDigital.API.Data
         public DbSet<Curso> Cursos { get; set; }
         public DbSet<Grupo> Grupos { get; set; }
         public DbSet<ProfesorGrupo> ProfesorGrupos { get; set; }
-        /*public DbSet<EstudianteGrupo> EstudianteGrupos { get; set; }
-        public DbSet<Carpeta> Carpetas { get; set; }
+        public DbSet<EstudianteGrupo> EstudianteGrupos { get; set; }
+        /*public DbSet<Carpeta> Carpetas { get; set; }
         public DbSet<Archivo> Archivos { get; set; }
         public DbSet<Noticia> Noticias { get; set; }
         public DbSet<Rubro> Rubros { get; set; }

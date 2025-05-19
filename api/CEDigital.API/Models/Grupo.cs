@@ -21,6 +21,8 @@ namespace CEDigital.API.Models
 
         public Curso Curso { get; set; }
         public Semestre Semestre { get; set; }
+
+        public virtual ICollection<EstudianteGrupo> Estudiantes { get; set; } = new List<EstudianteGrupo>();
     }
 
     public class GrupoCreateDto
@@ -45,4 +47,13 @@ namespace CEDigital.API.Models
         public int NumeroGrupo { get; set; }
     }
 
+    public class GrupoDto
+    {
+        public int IdGrupo { get; set; }
+        public string CodigoCurso { get; set; }
+        public int IdSemestre { get; set; }
+        public int NumeroGrupo { get; set; }
+
+        public List<EstudianteGrupoDto> Estudiantes { get; set; }
+    }
 }
