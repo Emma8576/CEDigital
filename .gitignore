@@ -1,0 +1,62 @@
+# Node.js
+node_modules/
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build output
+/dist
+/build
+
+# Editor directories and files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+Thumbs.db
+
+# C# / .NET
+bin/
+obj/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Test coverage
+coverage/
+
+# Others
+*.local
+*.cache
+*.pdb
+*.mdb
+*.pidb
+*.svd
+*.dbmdl
+*.bak
+*.orig
+
+# React static files
+build/
+
+# Tailwind JIT cache
+.tailwind*
+
+# Misc
+*.tgz
+*.tar.gz
+
+# Ignore environment files
+.env.*
