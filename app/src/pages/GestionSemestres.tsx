@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
+import { obtenerSemestres, crearSemestre, eliminarSemestre } from "../services/semestreService"; // Ajusta ruta si es necesario
 
-// Tipos de datos
 type Semestre = {
   idSemestre: number;
   año: number;
@@ -10,47 +9,36 @@ type Semestre = {
 };
 
 const GestionSemestres = () => {
-  // Estados
   const [semestres, setSemestres] = useState<Semestre[]>([]);
   const [mostrarFormularioSemestre, setMostrarFormularioSemestre] = useState(false);
   const [nuevoSemestre, setNuevoSemestre] = useState({ año: new Date().getFullYear(), periodo: "1" });
 
-  //
   useEffect(() => {
-    axios.get("http://localhost:5261/api/Semestre")
+    obtenerSemestres()
       .then(response => setSemestres(response.data))
       .catch(error => console.error("Error al obtener semestres:", error));
   }, []);
 
-  // Lista de periodos académicos
   const periodos = [
     { valor: "1", nombre: "1 - Primer Semestre" },
     { valor: "2", nombre: "2 - Segundo Semestre" },
     { valor: "V", nombre: "V - Verano" },
   ];
 
-  // Crear semestre
   const handleAgregarSemestre = () => {
-    axios.post("http://localhost:5261/api/Semestre", nuevoSemestre)
+    crearSemestre(nuevoSemestre)
       .then(response => {
         setSemestres([...semestres, response.data]);
         setNuevoSemestre({ año: new Date().getFullYear(), periodo: "1" });
         setMostrarFormularioSemestre(false);
       })
-      .catch(error => {
-        console.error("Error al agregar semestre:", error);
-      });
+      .catch(error => console.error("Error al agregar semestre:", error));
   };
 
-  // Eliminar semestre
   const handleEliminarSemestre = (id: number) => {
-    axios.delete(`http://localhost:5261/api/Semestre/${id}`)
-      .then(() => {
-        setSemestres(semestres.filter(s => s.idSemestre !== id));
-      })
-      .catch(error => {
-        console.error("Error al eliminar semestre:", error);
-      });
+    eliminarSemestre(id)
+      .then(() => setSemestres(semestres.filter(s => s.idSemestre !== id)))
+      .catch(error => console.error("Error al eliminar semestre:", error));
   };
 
   return (
