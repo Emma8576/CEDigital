@@ -5470,19 +5470,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Usuario\\.nuget\\packages\\": {}
+    "C:\\Users\\Emmanuel Calvo\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
+      "projectUniqueName": "C:\\Users\\Emmanuel Calvo\\Documents\\GitHub\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
       "projectName": "CEDigital.API",
-      "projectPath": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
-      "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\CEDigital\\api\\CEDigital.API\\obj\\",
+      "projectPath": "C:\\Users\\Emmanuel Calvo\\Documents\\GitHub\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
+      "packagesPath": "C:\\Users\\Emmanuel Calvo\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Emmanuel Calvo\\Documents\\GitHub\\CEDigital\\api\\CEDigital.API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Emmanuel Calvo\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -5554,7 +5554,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.202/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.204/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -7,10 +7,20 @@ using CEDigital.API.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Configurar CORS para permitir cualquier origen (solo para desarrollo)
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 // Configure MongoDB
 var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
@@ -19,7 +29,7 @@ builder.Services.AddSingleton<MongoDbService>();
 
 // Configure SQL Server
 builder.Services.AddDbContext<CEDigitalContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
 
 var app = builder.Build();
 
@@ -31,7 +41,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ¡Importante! Añadir el middleware de CORS justo aquí, antes de UseAuthorization
+app.UseCors();
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 var summaries = new[]
@@ -41,7 +56,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
