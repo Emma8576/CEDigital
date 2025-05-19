@@ -58,6 +58,7 @@ CREATE TABLE Carpeta (
     IdCarpeta INT IDENTITY PRIMARY KEY, --Auto incremental
     NombreCarpeta VARCHAR(50) NOT NULL, -- Ej: Presentaciones, Quices, etc..
 	IdGrupo INT NOT NULL,
+	UNIQUE (NombreCarpeta, IdGrupo),
     FOREIGN KEY (IdGrupo) REFERENCES Grupo(IdGrupo)
 );
 
@@ -79,6 +80,7 @@ CREATE TABLE Noticia (
     Mensaje VARCHAR(1500) NOT NULL, -- Considerando un mensaje de longitud media
     FechaPublicacion DATETIME NOT NULL,
 	IdGrupo INT NOT NULL,
+	UNIQUE (Titulo, Mensaje, IdGrupo),
     FOREIGN KEY (IdGrupo) REFERENCES Grupo(IdGrupo)
 );
 

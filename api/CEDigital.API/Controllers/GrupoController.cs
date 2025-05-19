@@ -63,7 +63,7 @@ namespace CEDigital.API.Controllers
         }
 
         // POST: api/Grupo
-        [HttpPost]
+        [HttpPost] //crea un nuevo grupo, tambien crea las carpetas de  Presentaciones, Quices, Proyectos y Examenes por defecto
         public async Task<ActionResult<Grupo>> PostGrupo(GrupoCreateDto grupoDto)
         {
             var grupo = new Grupo
@@ -77,11 +77,25 @@ namespace CEDigital.API.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // Guarda para obtener el IdGrupo generado
+
+                // Crear carpetas por defecto
+                var nombresCarpetas = new[] { "Presentaciones", "Quices", "Proyectos", "Exámenes" };
+                foreach (var nombre in nombresCarpetas)
+                {
+                    var carpeta = new Carpeta
+                    {
+                        NombreCarpeta = nombre,
+                        IdGrupo = grupo.IdGrupo
+                    };
+                    _context.Carpetas.Add(carpeta);
+                }
+
+                await _context.SaveChangesAsync(); // Guarda las carpetas
             }
-            catch (DbUpdateException)
-            {
-                return Conflict("Ya existe un grupo con ese código de curso, número de grupo y semestre.");
+            catch (DbUpdateException ex)
+            { 
+                return Conflict(ex.InnerException?.Message);
             }
 
             return CreatedAtAction(nameof(GetGrupo), new { id = grupo.IdGrupo }, grupo);
