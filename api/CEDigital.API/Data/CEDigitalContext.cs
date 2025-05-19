@@ -14,14 +14,22 @@ namespace CEDigital.API.Data
             modelBuilder.Entity<Semestre>().ToTable("Semestre");
             modelBuilder.Entity<Curso>().ToTable("Curso");
             modelBuilder.Entity<Grupo>().ToTable("Grupo");
+            modelBuilder.Entity<ProfesorGrupo>()
+                .ToTable("ProfesorGrupo")
+                .HasKey(pg => new { pg.IdGrupo, pg.CedulaProfesor });
+
+            modelBuilder.Entity<ProfesorGrupo>()
+                .HasOne(pg => pg.Grupo)
+                .WithMany()
+                .HasForeignKey(pg => pg.IdGrupo);
+
             base.OnModelCreating(modelBuilder); 
         }   
-
         public DbSet<Semestre> Semestres { get; set; }
         public DbSet<Curso> Cursos { get; set; }
         public DbSet<Grupo> Grupos { get; set; }
-         /*public DbSet<ProfesorGrupo> ProfesorGrupos { get; set; }
-        public DbSet<EstudianteGrupo> EstudianteGrupos { get; set; }
+        public DbSet<ProfesorGrupo> ProfesorGrupos { get; set; }
+        /*public DbSet<EstudianteGrupo> EstudianteGrupos { get; set; }
         public DbSet<Carpeta> Carpetas { get; set; }
         public DbSet<Archivo> Archivos { get; set; }
         public DbSet<Noticia> Noticias { get; set; }
