@@ -16,75 +16,80 @@ namespace CEDigital.API.Controllers
             _context = context;
         }
 
-        // GET: api/Carrera
-        [HttpGet] //Obtiene todas las carreras
-        public async Task<ActionResult<IEnumerable<Carrera>>> GetCarreras()
-        {
-            return await _context.Carreras.ToListAsync();
-        }
+[HttpGet] // Obtiene todas las carreras
+public async Task<ActionResult<IEnumerable<Carrera>>> GetCarreras()
+{
+    var carreras = await _context.Carreras.ToListAsync();
 
-        // GET: api/Carrera/1
-        [HttpGet("{id}")] //obtiene la carrera que tiene un determinado id
-        public async Task<ActionResult<Carrera>> GetCarrera(int id)
-        {
-            var carrera = await _context.Carreras.FindAsync(id);
-            if (carrera == null)
-                return NotFound();
+    // ✅ Imprime en la consola del backend cuántas carreras se leyeron
+    Console.WriteLine($"Cantidad de carreras encontradas: {carreras.Count}");
+    Console.WriteLine("Conectando a base: " + _context.Database.GetDbConnection().Database);
+    Console.WriteLine("Cantidad de carreras: " + _context.Carreras.Count());
 
-            return carrera;
-        }
+    return carreras;
+}
 
-        [HttpPost] //guarda una nueva tupla (nueva carrera)
-        public async Task<ActionResult<Carrera>> CreateCarrera(CarreraCreateDto dto)
-        {
-            var carrera = new Carrera
-            {
-                NombreCarrera = dto.NombreCarrera
-            };
 
-            _context.Carreras.Add(carrera);
-            await _context.SaveChangesAsync();
+[HttpGet("{id}")]
+public async Task<ActionResult<Carrera>> GetCarrera(int id)
+{
+    var carrera = await _context.Carreras.FindAsync(id);
+    if (carrera == null)
+        return NotFound();
 
-            return CreatedAtAction(nameof(GetCarrera), new { id = carrera.IdCarrera }, carrera);
-        }
+    return carrera;
+}
 
-        // PUT: api/Carrera/1
-        [HttpPut("{id}")] // Actualiza solo el nombre de la carrera
-        public async Task<IActionResult> UpdateCarrera(int id, CarreraUpdateDto dto)
-        {
-            var carrera = await _context.Carreras.FindAsync(id);
-            if (carrera == null)
-                return NotFound();
+[HttpPost]
+public async Task<ActionResult<Carrera>> CreateCarrera(CarreraCreateDto dto)
+{
+    var carrera = new Carrera
+    {
+        NombreCarrera = dto.NombreCarrera
+    };
 
-            carrera.NombreCarrera = dto.NombreCarrera;
+    _context.Carreras.Add(carrera);
+    await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Carreras.Any(e => e.IdCarrera == id))
-                    return NotFound();
-                else
-                    throw;
-            }
+    return CreatedAtAction(nameof(GetCarrera), new { id = carrera.IdCarrera }, carrera);
+}
 
-            return NoContent();
-        }
+[HttpPut("{id}")]
+public async Task<IActionResult> UpdateCarrera(int id, CarreraUpdateDto dto)
+{
+    var carrera = await _context.Carreras.FindAsync(id);
+    if (carrera == null)
+        return NotFound();
 
-        // DELETE: api/Carrera/1
-        [HttpDelete("{id}")] // elimina una carrera por id
-        public async Task<IActionResult> DeleteCarrera(int id)
-        {
-            var carrera = await _context.Carreras.FindAsync(id);
-            if (carrera == null)
-                return NotFound();
+    carrera.NombreCarrera = dto.NombreCarrera;
 
-            _context.Carreras.Remove(carrera);
-            await _context.SaveChangesAsync();
+    try
+    {
+        await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateConcurrencyException)
+    {
+        if (!_context.Carreras.Any(e => e.IdCarrera == id))
+            return NotFound();
+        else
+            throw;
+    }
 
-            return NoContent();
-        }
+    return NoContent();
+}
+
+[HttpDelete("{id}")]
+public async Task<IActionResult> DeleteCarrera(int id)
+{
+    var carrera = await _context.Carreras.FindAsync(id);
+    if (carrera == null)
+        return NotFound();
+
+    _context.Carreras.Remove(carrera);
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
+
     }
 }

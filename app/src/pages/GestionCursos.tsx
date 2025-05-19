@@ -1,49 +1,97 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-
-type Curso = {
-  id: number;
-  codigo: string;
-  nombre: string;
-  creditos: number;
-  carrera: string;
-  activo: boolean;
-};
+import {
+  Curso,
+  obtenerCursos,
+  crearCurso,
+  eliminarCurso,
+} from "../services/cursoService";
+import { Carrera, obtenerCarreras } from "../services/carreraService";
 
 const GestionCursos = () => {
-  const [cursos, setCursos] = useState<Curso[]>([
-    // Ejemplo inicial
-    { id: 1, codigo: "CE101", nombre: "Introducción a la Programación", creditos: 4, carrera: "Ingeniería en Computadores", activo: true },
-  ]);
-
+  const [cursos, setCursos] = useState<Curso[]>([]);
+  const [carreras, setCarreras] = useState<Carrera[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [nuevoCurso, setNuevoCurso] = useState({
-    codigo: "",
-    nombre: "",
+    codigoCurso: "",
+    nombreCurso: "",
     creditos: 0,
-    carrera: "",
+    idCarrera: 0,
   });
 
+  // Cargar cursos
+  useEffect(() => {
+    obtenerCursos()
+      .then((res) => {
+        console.log("Cursos cargados:", res.data);
+        setCursos(res.data);
+      })
+      .catch((err) => {
+        console.error("Error al cargar cursos:", err);
+        if (err.response) {
+          console.error("Respuesta del servidor:", err.response.data);
+        }
+      });
+  }, []);
+
+  // Cargar carreras
+  useEffect(() => {
+    obtenerCarreras()
+      .then((res) => setCarreras(res.data))
+      .catch((err) => console.error("Error al cargar carreras:", err));
+  }, []);
+
   const handleAgregar = () => {
-    const nuevo = {
-      id: Date.now(),
-      ...nuevoCurso,
-      activo: true,
-    };
-    setCursos([...cursos, nuevo]);
-    setNuevoCurso({ codigo: "", nombre: "", creditos: 0, carrera: "" });
-    setMostrarFormulario(false);
+    const { codigoCurso, nombreCurso, idCarrera } = nuevoCurso;
+
+    if (!codigoCurso || !nombreCurso || idCarrera === 0) {
+      alert("Por favor completa todos los campos obligatorios.");
+      return;
+    }
+
+    crearCurso(nuevoCurso)
+      .then((res) => {
+        setCursos([...cursos, res.data]);
+        setNuevoCurso({
+          codigoCurso: "",
+          nombreCurso: "",
+          creditos: 0,
+          idCarrera: 0,
+        });
+        setMostrarFormulario(false);
+      })
+      .catch((err) => {
+        console.error("Error al crear curso:", err);
+        if (err.response) {
+          alert(`Error del servidor: ${err.response.status} - ${JSON.stringify(err.response.data)}`);
+        } else if (err.request) {
+          alert("No se recibió respuesta del servidor. Verifica la conexión.");
+        } else {
+          alert(`Error: ${err.message}`);
+        }
+      });
   };
 
-  const handleDeshabilitar = (id: number) => {
-    const actualizados = cursos.map((curso) =>
-      curso.id === id ? { ...curso, activo: false } : curso
-    );
-    setCursos(actualizados);
+  const handleEliminar = (codigo: string) => {
+    if (window.confirm(`¿Estás seguro de que deseas eliminar el curso ${codigo}?`)) {
+      eliminarCurso(codigo)
+        .then(() => {
+          setCursos(cursos.filter((c) => c.codigoCurso !== codigo));
+        })
+        .catch((err) => {
+          console.error("Error al eliminar curso:", err);
+          if (err.response) {
+            alert(`Error del servidor: ${err.response.status} - ${JSON.stringify(err.response.data)}`);
+          } else {
+            alert(`Error: ${err.message}`);
+          }
+        });
+    }
   };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-blue-900">Gestión de Cursos</h1>
         <button
@@ -54,9 +102,7 @@ const GestionCursos = () => {
           Agregar Curso
         </button>
       </div>
-      <div className="text-gray-700">
-      Aquí podrá visualizar, crear o deshabilitar cursos que usa el sistema.
-    </div>
+
       {/* Tabla de cursos */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-xl">
@@ -65,40 +111,35 @@ const GestionCursos = () => {
               <th className="p-3">Código</th>
               <th className="p-3">Nombre</th>
               <th className="p-3">Créditos</th>
-              <th className="p-3">Carrera</th>
-              <th className="p-3">Estado</th>
+              <th className="p-3">Carrera (ID)</th>
               <th className="p-3">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {cursos.map((curso) => (
-              <tr key={curso.id} className="border-t">
-                <td className="p-3">{curso.codigo}</td>
-                <td className="p-3">{curso.nombre}</td>
+              <tr key={curso.codigoCurso} className="border-t">
+                <td className="p-3">{curso.codigoCurso}</td>
+                <td className="p-3">{curso.nombreCurso}</td>
                 <td className="p-3">{curso.creditos}</td>
-                <td className="p-3">{curso.carrera}</td>
+                <td className="p-3">{curso.idCarrera}</td>
                 <td className="p-3">
-                  <span
-                    className={`px-2 py-1 rounded-full text-sm font-semibold ${
-                      curso.activo ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                    }`}
+                  <button
+                    onClick={() => handleEliminar(curso.codigoCurso)}
+                    className="text-red-600 hover:text-red-800 flex items-center gap-1"
                   >
-                    {curso.activo ? "Activo" : "Deshabilitado"}
-                  </span>
-                </td>
-                <td className="p-3">
-                  {curso.activo && (
-                    <button
-                      onClick={() => handleDeshabilitar(curso.id)}
-                      className="text-red-600 hover:text-red-800 flex items-center gap-1"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                      Deshabilitar
-                    </button>
-                  )}
+                    <TrashIcon className="w-5 h-5" />
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
+            {cursos.length === 0 && (
+              <tr>
+                <td colSpan={5} className="p-3 text-center text-gray-500">
+                  No hay cursos registrados
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -114,8 +155,10 @@ const GestionCursos = () => {
                 type="text"
                 placeholder="Ej: CE101"
                 className="p-2 border rounded"
-                value={nuevoCurso.codigo}
-                onChange={(e) => setNuevoCurso({ ...nuevoCurso, codigo: e.target.value })}
+                value={nuevoCurso.codigoCurso}
+                onChange={(e) =>
+                  setNuevoCurso({ ...nuevoCurso, codigoCurso: e.target.value })
+                }
               />
             </div>
             <div className="flex flex-col">
@@ -124,8 +167,10 @@ const GestionCursos = () => {
                 type="text"
                 placeholder="Ej: Introducción a la Programación"
                 className="p-2 border rounded"
-                value={nuevoCurso.nombre}
-                onChange={(e) => setNuevoCurso({ ...nuevoCurso, nombre: e.target.value })}
+                value={nuevoCurso.nombreCurso}
+                onChange={(e) =>
+                  setNuevoCurso({ ...nuevoCurso, nombreCurso: e.target.value })
+                }
               />
             </div>
             <div className="flex flex-col">
@@ -135,18 +180,33 @@ const GestionCursos = () => {
                 placeholder="Ingrese cantidad (1-10)"
                 className="p-2 border rounded"
                 value={nuevoCurso.creditos}
-                onChange={(e) => setNuevoCurso({ ...nuevoCurso, creditos: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setNuevoCurso({
+                    ...nuevoCurso,
+                    creditos: parseInt(e.target.value) || 0,
+                  })
+                }
               />
             </div>
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Carrera</label>
-              <input
-                type="text"
-                placeholder="Ej: Ingeniería en Computadores"
+              <select
                 className="p-2 border rounded"
-                value={nuevoCurso.carrera}
-                onChange={(e) => setNuevoCurso({ ...nuevoCurso, carrera: e.target.value })}
-              />
+                value={nuevoCurso.idCarrera}
+                onChange={(e) =>
+                  setNuevoCurso({
+                    ...nuevoCurso,
+                    idCarrera: parseInt(e.target.value) || 0,
+                  })
+                }
+              >
+                <option value="">Selecciona una carrera</option>
+                {carreras.map((carrera) => (
+                  <option key={carrera.IdCarrera} value={carrera.IdCarrera}>
+                    {carrera.NombreCarrera}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="flex gap-3">

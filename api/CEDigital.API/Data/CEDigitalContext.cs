@@ -10,7 +10,7 @@ namespace CEDigital.API.Data
         public DbSet<Carrera> Carreras { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Carrera>().ToTable("Carrera"); 
+            modelBuilder.Entity<Carrera>().ToTable("Carrera");
             modelBuilder.Entity<Semestre>().ToTable("Semestre");
             modelBuilder.Entity<Curso>().ToTable("Curso");
             modelBuilder.Entity<Grupo>().ToTable("Grupo");
@@ -25,18 +25,18 @@ namespace CEDigital.API.Data
                 .HasOne(pg => pg.Grupo)
                 .WithMany()
                 .HasForeignKey(pg => pg.IdGrupo);
-            
+
             modelBuilder.Entity<EstudianteGrupo>()
-                .ToTable("EstudianteGrupo") 
+                .ToTable("EstudianteGrupo")
                 .HasKey(eg => new { eg.IdGrupo, eg.CarnetEstudiante });
 
             modelBuilder.Entity<EstudianteGrupo>()
                 .HasOne(eg => eg.Grupo)
-                .WithMany(g => g.Estudiantes)  
+                .WithMany(g => g.Estudiantes)
                 .HasForeignKey(eg => eg.IdGrupo);
 
-            base.OnModelCreating(modelBuilder); 
-        }   
+            base.OnModelCreating(modelBuilder);
+        }
         public DbSet<Semestre> Semestres { get; set; }
         public DbSet<Curso> Cursos { get; set; }
         public DbSet<Grupo> Grupos { get; set; }

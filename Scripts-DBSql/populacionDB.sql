@@ -125,3 +125,13 @@ VALUES
 INSERT INTO NotaEvaluacion (PorcentajeObtenido, Observaciones, RutaArchivoDetalles, Publicada, IdEvaluacion, IdGrupoTrabajo)
 VALUES
 (85.50, 'Buen trabajo en el proyecto', '/notas/proyecto1_detalles.pdf', 1, 3, 1);
+
+SELECT IdCarrera, NombreCarrera FROM Carrera;
+DELETE FROM Carrera WHERE IdCarrera > 6;
+SELECT * FROM Carrera;
+USE CEDigital;
+
+INSERT INTO Carrera (NombreCarrera)
+VALUES ('Ingeniería en Sistemas'),
+       ('Ingeniería Civil'),
+       ('Mante');
