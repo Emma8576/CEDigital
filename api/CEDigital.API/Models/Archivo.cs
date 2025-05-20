@@ -14,9 +14,9 @@ namespace CEDigital.API.Models
 
         public string? Descripcion { get; set; }
 
-        public DateTime FechaSubida { get; set; }
+        public DateTime FechaPublicacion { get; set; }
 
-        public long TamañoArchivo { get; set; }
+        public int TamañoArchivo { get; set; }
 
         [Required]
         [ForeignKey("Carpeta")]

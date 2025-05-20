@@ -99,7 +99,7 @@ namespace CEDigital.API.Controllers
                 {
                     IdArchivo = a.IdArchivo,
                     NombreArchivo = a.NombreArchivo,
-                    FechaPublicacion = a.FechaSubida,
+                    FechaPublicacion = a.FechaPublicacion,
                     TamañoArchivo = a.TamañoArchivo,
                     IdCarpeta = a.IdCarpeta,
                     Ruta = a.Ruta // Or just file name if Ruta is internal

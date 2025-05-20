@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import StudentDocumentExplorer from '../components/StudentDocumentExplorer';
 // Importar componentes para las otras pestañas (los crearemos despus)
-// import StudentEvaluations from '../components/StudentEvaluations';
+import StudentEvaluations from '../components/StudentEvaluations'; // Import StudentEvaluations component
 // import StudentGrades from '../components/StudentGrades';
 import StudentNews from '../components/StudentNews'; // Import the StudentNews component
 import axios from 'axios'; // Added axios for fetching group info
@@ -161,7 +161,7 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
                 <div className="p-4 rounded-lg bg-gray-50" role="tabpanel" aria-labelledby="evaluaciones-tab">
                     {/* Placeholder for Evaluaciones component */}
                     {/* <StudentEvaluations idGrupo={idGrupo} user={user} /> */}
-                    <p>Contenido de Evaluaciones para el grupo {idGrupo}</p>
+                    <StudentEvaluations idGrupo={idGrupo} /> {/* Use StudentEvaluations component */}
                 </div>
             )}
             {activeTab === 'notas' && (

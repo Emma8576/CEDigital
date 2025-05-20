@@ -31,6 +31,14 @@ namespace CEDigital.API.Data
             modelBuilder.Entity<Grupo>().ToTable("Grupo");
             modelBuilder.Entity<Carpeta>().ToTable("Carpeta");
             modelBuilder.Entity<Noticia>().ToTable("Noticia");
+            modelBuilder.Entity<Rubro>().ToTable("Rubro");
+            modelBuilder.Entity<Evaluacion>().ToTable("Evaluacion");
+            modelBuilder.Entity<Archivo>().ToTable("Archivo");
+
+            modelBuilder.Entity<Evaluacion>()
+                .HasOne(e => e.IdRubroNavigation)
+                .WithMany(r => r.Evaluaciones)
+                .HasForeignKey(e => e.IdRubro);
 
             modelBuilder.Entity<ProfesorGrupo>()
                 .ToTable("ProfesorGrupo")

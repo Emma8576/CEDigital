@@ -53,7 +53,7 @@ const StudentNews: React.FC<StudentNewsProps> = ({ idGrupo }) => {
       {news.map((item) => (
         <div key={item.idNoticia} className="bg-white rounded-lg shadow p-4">
           <h3 className="text-lg font-semibold text-gray-800">{item.titulo}</h3>
-          <p className="text-gray-600 text-sm mb-2">Publicado: {new Date(item.fechaPublicacion).toLocaleDateString()}</p>
+          <p className="text-gray-600 text-sm mb-2">Publicado: {new Date(item.fechaPublicacion).toLocaleString()}</p>
           <p className="text-gray-700">{item.mensaje}</p>
         </div>
       ))}
