@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Models;
 using CEDigital.API.Data;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace CEDigital.API.Controllers
 {
@@ -41,6 +43,34 @@ namespace CEDigital.API.Controllers
             };
 
             return grupoDto;
+        }
+
+        // GET: api/EstudianteGrupo/grupo-trabajo-miembros/{carnetEstudiante}/{idEvaluacion}
+        [HttpGet("grupo-trabajo-miembros/{carnetEstudiante}/{idEvaluacion}")]
+        public async Task<ActionResult<IEnumerable<string>>> GetGrupoTrabajoMiembros(
+            string carnetEstudiante, int idEvaluacion)
+        {
+            // Find the IdGrupoTrabajo for the given student and evaluation
+            var grupoTrabajo = await _context.GrupoTrabajo
+                .FirstOrDefaultAsync(gt => gt.CarnetEstudiante == carnetEstudiante && gt.IdEvaluacion == idEvaluacion);
+
+            if (grupoTrabajo == null)
+            {
+                return NotFound("Estudiante no encontrado en un grupo de trabajo para esta evaluación.");
+            }
+
+            // Find all students in the same GrupoTrabajo
+            var miembrosGrupo = await _context.GrupoTrabajo
+                .Where(gt => gt.IdGrupoTrabajo == grupoTrabajo.IdGrupoTrabajo)
+                .Select(gt => gt.CarnetEstudiante)
+                .ToListAsync();
+
+            if (!miembrosGrupo.Any())
+            {
+                return NotFound("No se encontraron miembros para este grupo de trabajo.");
+            }
+
+            return miembrosGrupo;
         }
 
         // POST: api/EstudianteGrupo
@@ -132,5 +162,37 @@ namespace CEDigital.API.Controllers
 
             return cursos;
         }
+    }
+
+    public class GrupoDto
+    {
+        public int IdGrupo { get; set; }
+        public string CodigoCurso { get; set; }
+        public int IdSemestre { get; set; }
+        public int NumeroGrupo { get; set; }
+        public List<EstudianteGrupoDto> Estudiantes { get; set; }
+    }
+
+    public class EstudianteGrupoDto
+    {
+        public int IdGrupo { get; set; }
+        public string CarnetEstudiante { get; set; }
+    }
+
+    public class EstudianteGrupoCreateDto
+    {
+        public int IdGrupo { get; set; }
+        public List<string> CarnetsEstudiantes { get; set; }
+    }
+
+    public class CursoEstudianteDto
+    {
+        public int IdGrupo { get; set; }
+        public string CodigoCurso { get; set; }
+        public string NombreCurso { get; set; }
+        public int NumeroGrupo { get; set; }
+        public int IdSemestre { get; set; }
+        public int AñoSemestre { get; set; }
+        public string PeriodoSemestre { get; set; }
     }
 }

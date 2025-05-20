@@ -18,7 +18,7 @@ namespace CEDigital.API.Data
         public DbSet<Archivo> Archivos { get; set; }
         public DbSet<Rubro> Rubros { get; set; }
         public DbSet<Evaluacion> Evaluaciones { get; set; }
-        public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
+        public DbSet<GrupoTrabajo> GrupoTrabajo { get; set; }
         public DbSet<Entrega> Entregas { get; set; }
         public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }
         public DbSet<EstudianteGrupoTrabajo> EstudianteGrupoTrabajos { get; set; }

@@ -67,6 +67,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
     const [error, setError] = useState<string | null>(null);
     const [uploadingFile, setUploadingFile] = useState<number | null>(null);
     const [expandedEvaluationIds, setExpandedEvaluationIds] = useState<Set<number>>(new Set());
+    const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: string[] }>({});
 
     // Function to toggle the expanded state of an evaluation
     const toggleExpand = (evaluationId: number) => {
@@ -168,6 +169,35 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
 
         fetchData();
     }, [idGrupo, user.carnet]);
+
+    // New useEffect to fetch group members when evaluations are expanded
+    useEffect(() => {
+        const fetchGroupMembers = async () => {
+            if (!user.carnet) return; // Ensure carnet is available
+
+            const evaluationsToFetchMembersFor = evaluations.filter(
+                evaluation => evaluation.esGrupal && expandedEvaluationIds.has(evaluation.idEvaluacion)
+            );
+
+            for (const evaluation of evaluationsToFetchMembersFor) {
+                // Only fetch if members haven't been fetched for this evaluation yet
+                if (!groupMembers[evaluation.idEvaluacion]) {
+                    try {
+                        const membersResponse = await axios.get<string[]>(`http://localhost:5261/api/EstudianteGrupo/grupo-trabajo-miembros/${user.carnet}/${evaluation.idEvaluacion}`);
+                        setGroupMembers(prev => ({
+                            ...prev,
+                            [evaluation.idEvaluacion]: membersResponse.data
+                        }));
+                    } catch (err) {
+                        console.error(`Error fetching group members for evaluation ${evaluation.idEvaluacion}:`, err);
+                        // Optionally, set an error state for this specific evaluation's members
+                    }
+                }
+            }
+        };
+
+        fetchGroupMembers();
+    }, [expandedEvaluationIds, evaluations, user.carnet, groupMembers]); // Depend on expandedEvaluationIds and evaluations
 
     const handleFileUpload = async (evaluationId: number, file: File) => {
         try {
@@ -350,7 +380,13 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                     <p className="font-medium">Miembros del grupo:</p>
                                                                     <ul className="list-disc list-inside ml-4">
                                                                         {/* Map group members here when data is available */}
-                                                                        <li> {/* Placeholder */} Cargando miembros...</li>
+                                                                        {groupMembers[evaluation.idEvaluacion]?.length > 0 ? (
+                                                                            groupMembers[evaluation.idEvaluacion].map(memberCarnet => (
+                                                                                <li key={memberCarnet}>{memberCarnet}</li> // Display the carnet for now
+                                                                            ))
+                                                                        ) : (
+                                                                            <li>Cargando miembros...</li>
+                                                                        )}
                                                                         {/* Example: {groupMembers.map(member => <li key={member.id}>{member.name}</li>)} */}
                                                                     </ul>
                                                                 </div>

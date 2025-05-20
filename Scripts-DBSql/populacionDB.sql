@@ -135,10 +135,10 @@ VALUES
 (3, 'Proyecto 1', DATEADD(DAY, 21, GETDATE()), 40, 1, 1, 2, '/especificaciones/proyecto1.pdf');
 
 -- GrupoTrabajo (solo para Proyecto 1 que es grupal)
-INSERT INTO GrupoTrabajo (CarnetEstudiante, IdEvaluacion)
-VALUES
-('2023298134', 3),
-('2023113987', 3);
+INSERT INTO GrupoTrabajo (CarnetEstudiante, IdGrupoTrabajo, IdEvaluacion)
+VALUES 
+('2023298134', 1, 3),
+('2023113987', 1, 3);
 
 -- Entregas
 INSERT INTO Entrega (IdEvaluacion, IdGrupoTrabajo, CarnetEstudiante, FechaEntrega, RutaEntregable)

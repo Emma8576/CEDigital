@@ -14,7 +14,7 @@ CREATE TABLE Carrera (
 CREATE TABLE Semestre (
     IdSemestre INT IDENTITY PRIMARY KEY, --Auto incremental
 	Periodo CHAR(1) CHECK (Periodo IN ('1', '2', 'V')) NOT NULL,
-    A�o INT NOT NULL
+    Año INT NOT NULL
 );
 
 -- Curso
@@ -67,7 +67,7 @@ CREATE TABLE Archivo (
 	IdArchivo INT IDENTITY PRIMARY KEY, --Auto incremental
 	NombreArchivo VARCHAR(255) NOT NULL,
     FechaPublicacion DATETIME NOT NULL,
-    Tama�oArchivo INT NOT NULL, -- en bytes
+    TamañoArchivo INT NOT NULL, -- en bytes
 	IdCarpeta INT NOT NULL,
     Ruta VARCHAR(500),
 	FOREIGN KEY (IdCarpeta) REFERENCES Carpeta(IdCarpeta)
@@ -109,20 +109,19 @@ CREATE TABLE Evaluacion (
 
 -- GrupoTrabajo (muchos estudiantes por grupo de trabajo)
 CREATE TABLE GrupoTrabajo (
-    IdGrupoTrabajo INT IDENTITY PRIMARY KEY, --Auto incremental
-    CarnetEstudiante VARCHAR(20) NOT NULL,  -- CarnetEstudiante viene desde la base de MongoDB
-	--IdGrupo INT NOT NULL,
-	IdEvaluacion INT NOT NULL, 
-	--FOREIGN KEY (IdGrupo) REFERENCES Grupo(IdGrupo),
-	FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion)
+    CarnetEstudiante VARCHAR(20) NOT NULL, -- CarnetEstudiante viene desde la base de MongoDB
+    IdGrupoTrabajo INT NOT NULL,
+    IdEvaluacion INT NOT NULL,
+    PRIMARY KEY (CarnetEstudiante, IdGrupoTrabajo, IdEvaluacion),
+    FOREIGN KEY (IdEvaluacion) REFERENCES  Evaluacion(IdEvaluacion)
 );
 
--- Entrega (una por estudiante o por grupo seg�n Evaluacion.EsGrupal)
+-- Entrega (una por estudiante o por grupo según Evaluacion.EsGrupal)
 CREATE TABLE Entrega (
     IdEntrega INT IDENTITY PRIMARY KEY, --Auto incremental
     IdEvaluacion INT NOT NULL,
-	IdGrupoTrabajo INT NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = V; podr�a ser null
-    CarnetEstudiante VARCHAR(20) NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = F; podr�a ser null
+	IdGrupoTrabajo INT NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = V; podría ser null
+    CarnetEstudiante VARCHAR(20) NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = F; podría ser null
     FechaEntrega DATETIME NOT NULL,
     RutaEntregable VARCHAR(500),
     FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion),
@@ -142,7 +141,3 @@ CREATE TABLE NotaEvaluacion (
     FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion),
 	FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo)
 );
-
-
-
-
