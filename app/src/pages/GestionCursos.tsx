@@ -19,13 +19,9 @@ const GestionCursos = () => {
     idCarrera: 0,
   });
 
-  // Cargar cursos
   useEffect(() => {
     obtenerCursos()
-      .then((res) => {
-        console.log("Cursos cargados:", res.data);
-        setCursos(res.data);
-      })
+      .then((res) => setCursos(res.data))
       .catch((err) => {
         console.error("Error al cargar cursos:", err);
         if (err.response) {
@@ -34,12 +30,15 @@ const GestionCursos = () => {
       });
   }, []);
 
-  // Cargar carreras
-  useEffect(() => {
-    obtenerCarreras()
-      .then((res) => setCarreras(res.data))
-      .catch((err) => console.error("Error al cargar carreras:", err));
-  }, []);
+useEffect(() => {
+  obtenerCarreras()
+    .then((res) => {
+      console.log("Carreras cargadas:", res.data); 
+      setCarreras(res.data);
+    })
+    .catch((err) => console.error("Error al cargar carreras:", err));
+}, []);
+
 
   const handleAgregar = () => {
     const { codigoCurso, nombreCurso, idCarrera } = nuevoCurso;
@@ -103,47 +102,6 @@ const GestionCursos = () => {
         </button>
       </div>
 
-      {/* Tabla de cursos */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow-md rounded-xl">
-          <thead>
-            <tr className="bg-blue-100 text-left">
-              <th className="p-3">Código</th>
-              <th className="p-3">Nombre</th>
-              <th className="p-3">Créditos</th>
-              <th className="p-3">Carrera (ID)</th>
-              <th className="p-3">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cursos.map((curso) => (
-              <tr key={curso.codigoCurso} className="border-t">
-                <td className="p-3">{curso.codigoCurso}</td>
-                <td className="p-3">{curso.nombreCurso}</td>
-                <td className="p-3">{curso.creditos}</td>
-                <td className="p-3">{curso.idCarrera}</td>
-                <td className="p-3">
-                  <button
-                    onClick={() => handleEliminar(curso.codigoCurso)}
-                    className="text-red-600 hover:text-red-800 flex items-center gap-1"
-                  >
-                    <TrashIcon className="w-5 h-5" />
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {cursos.length === 0 && (
-              <tr>
-                <td colSpan={5} className="p-3 text-center text-gray-500">
-                  No hay cursos registrados
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
       {/* Formulario para agregar curso */}
       {mostrarFormulario && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-md space-y-4">
@@ -190,26 +148,26 @@ const GestionCursos = () => {
             </div>
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Carrera</label>
-              <select
-                className="p-2 border rounded"
-                value={nuevoCurso.idCarrera}
-                onChange={(e) =>
-                  setNuevoCurso({
-                    ...nuevoCurso,
-                    idCarrera: parseInt(e.target.value) || 0,
-                  })
-                }
-              >
-                <option value="">Selecciona una carrera</option>
-                {carreras.map((carrera) => (
-                  <option key={carrera.IdCarrera} value={carrera.IdCarrera}>
-                    {carrera.NombreCarrera}
-                  </option>
-                ))}
-              </select>
+            <select
+              className="p-2 border rounded"
+              value={nuevoCurso.idCarrera}
+              onChange={(e) =>
+                setNuevoCurso({
+                  ...nuevoCurso,
+                  idCarrera: parseInt(e.target.value) || 0,
+                })
+              }
+            >
+              <option value="">Selecciona una carrera</option>
+              {carreras.map((carrera) => (
+                <option key={carrera.idCarrera} value={carrera.idCarrera}>
+                  [{carrera.idCarrera}] {carrera.nombreCarrera}
+                </option>
+              ))}
+            </select>
             </div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 mt-4">
             <button
               onClick={handleAgregar}
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
@@ -225,6 +183,47 @@ const GestionCursos = () => {
           </div>
         </div>
       )}
+
+      {/* Tabla de cursos */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white shadow-md rounded-xl">
+          <thead>
+            <tr className="bg-blue-100 text-left">
+              <th className="p-3">Código</th>
+              <th className="p-3">Nombre</th>
+              <th className="p-3">Créditos</th>
+              <th className="p-3">Carrera (ID)</th>
+              <th className="p-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cursos.map((curso) => (
+              <tr key={curso.codigoCurso} className="border-t">
+                <td className="p-3">{curso.codigoCurso}</td>
+                <td className="p-3">{curso.nombreCurso}</td>
+                <td className="p-3">{curso.creditos}</td>
+                <td className="p-3">{curso.idCarrera}</td>
+                <td className="p-3">
+                  <button
+                    onClick={() => handleEliminar(curso.codigoCurso)}
+                    className="text-red-600 hover:text-red-800 flex items-center gap-1"
+                  >
+                    <TrashIcon className="w-5 h-5" />
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {cursos.length === 0 && (
+              <tr>
+                <td colSpan={5} className="p-3 text-center text-gray-500">
+                  No hay cursos registrados
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
