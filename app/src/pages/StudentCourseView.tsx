@@ -4,7 +4,7 @@ import StudentDocumentExplorer from '../components/StudentDocumentExplorer';
 // Importar componentes para las otras pestañas (los crearemos despus)
 // import StudentEvaluations from '../components/StudentEvaluations';
 // import StudentGrades from '../components/StudentGrades';
-// import StudentNews from '../components/StudentNews';
+import StudentNews from '../components/StudentNews'; // Import the StudentNews component
 import axios from 'axios'; // Added axios for fetching group info
 
 interface User {
@@ -40,7 +40,7 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
   const idGrupo = parseInt(courseId || '0', 10); // Convert string param to number
 
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('documentos'); // Estado para la pestaña activa
+  const [activeTab, setActiveTab] = useState('noticias'); // Set initial tab to 'noticias'
   const [groupDetail, setGroupDetail] = useState<GroupDetail | null>(null); // State for group details
   const [loadingGroup, setLoadingGroup] = useState(true);
   const [errorGroup, setErrorGroup] = useState<string | null>(null); // Error state for group details
@@ -101,6 +101,17 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
         {/* Tab Navigation */}
         <div className="mb-4 border-b border-gray-200">
           <ul className="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+            {/* Noticias Tab */}
+             <li className="me-2" role="presentation">
+              <button
+                className={`inline-block p-4 border-b-2 rounded-t-lg ${activeTab === 'noticias' ? 'border-blue-600 text-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'}`}
+                onClick={() => setActiveTab('noticias')}
+                type="button" role="tab" aria-controls="noticias" aria-selected={activeTab === 'noticias'}
+              >
+                Noticias
+              </button>
+            </li>
+            {/* Documentos Tab */}
             <li className="me-2" role="presentation">
               <button
                 className={`inline-block p-4 border-b-2 rounded-t-lg ${activeTab === 'documentos' ? 'border-blue-600 text-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'}`}
@@ -110,6 +121,7 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
                 Documentos
               </button>
             </li>
+            {/* Evaluaciones Tab */}
             <li className="me-2" role="presentation">
                <button
                 className={`inline-block p-4 border-b-2 rounded-t-lg ${activeTab === 'evaluaciones' ? 'border-blue-600 text-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'}`}
@@ -119,7 +131,8 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
                 Evaluaciones
               </button>
             </li>
-            <li className="me-2" role="presentation">
+            {/* Notas Tab */}
+            <li role="presentation">
               <button
                 className={`inline-block p-4 border-b-2 rounded-t-lg ${activeTab === 'notas' ? 'border-blue-600 text-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'}`}
                 onClick={() => setActiveTab('notas')}
@@ -128,21 +141,17 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
                 Notas
               </button>
             </li>
-            <li role="presentation">
-              <button
-                className={`inline-block p-4 border-b-2 rounded-t-lg ${activeTab === 'noticias' ? 'border-blue-600 text-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'}`}
-                onClick={() => setActiveTab('noticias')}
-                type="button" role="tab" aria-controls="noticias" aria-selected={activeTab === 'noticias'}
-              >
-                Noticias
-              </button>
-            </li>
           </ul>
         </div>
 
         {/* Tab Content */}
         <div id="default-tab-content">
-            {activeTab === 'documentos' && (
+            {activeTab === 'noticias' && (
+                <div className="p-4 rounded-lg bg-gray-50" role="tabpanel" aria-labelledby="noticias-tab">
+                    <StudentNews idGrupo={idGrupo} />
+                </div>
+            )}
+             {activeTab === 'documentos' && (
                 <div className="p-4 rounded-lg bg-gray-50" role="tabpanel" aria-labelledby="documentos-tab">
                     {/* Pasar idGrupo y user a StudentDocumentExplorer */}
                     <StudentDocumentExplorer idGrupo={idGrupo} user={user} />
@@ -160,13 +169,6 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
                     {/* Placeholder for Notas component */}
                      {/* <StudentGrades idGrupo={idGrupo} user={user} /> */}
                     <p>Contenido de Notas para el grupo {idGrupo}</p>
-                </div>
-            )}
-             {activeTab === 'noticias' && (
-                <div className="p-4 rounded-lg bg-gray-50" role="tabpanel" aria-labelledby="noticias-tab">
-                     {/* Placeholder for Noticias component */}
-                     {/* <StudentNews idGrupo={idGrupo} user={user} /> */}
-                    <p>Contenido de Noticias para el grupo {idGrupo}</p>
                 </div>
             )}
         </div>
@@ -195,7 +197,6 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
           </div>
         </div>
         */}
-
       </div>
     </div>
   );
