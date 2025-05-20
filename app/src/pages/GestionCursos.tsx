@@ -87,6 +87,10 @@ useEffect(() => {
         });
     }
   };
+const obtenerNombreCarrera = (id: number) => {
+  const carrera = carreras.find((c) => c.idCarrera === id);
+  return carrera ? carrera.nombreCarrera : "Desconocida";
+};
 
   return (
     <div className="space-y-6">
@@ -202,7 +206,7 @@ useEffect(() => {
                 <td className="p-3">{curso.codigoCurso}</td>
                 <td className="p-3">{curso.nombreCurso}</td>
                 <td className="p-3">{curso.creditos}</td>
-                <td className="p-3">{curso.idCarrera}</td>
+                <td className="p-3">{obtenerNombreCarrera(curso.idCarrera)}</td>
                 <td className="p-3">
                   <button
                     onClick={() => handleEliminar(curso.codigoCurso)}
