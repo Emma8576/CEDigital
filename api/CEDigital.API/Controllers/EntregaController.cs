@@ -32,6 +32,7 @@ namespace CEDigital.API.Controllers
 
             if (entrega == null)
             {
+                // Return 404 if no delivery is found, as expected by the frontend's error handling
                 return NotFound("No se encontr informacin de entrega para esta evaluacin y estudiante.");
             }
 
@@ -45,16 +46,16 @@ namespace CEDigital.API.Controllers
             if (dto.File == null || dto.File.Length == 0)
                 return BadRequest("Debe subir un archivo.");
 
-            // Validar si la evaluacin existe
+            // Validar si la evaluacin existe (esto s se puede hacer si Evaluaciones funciona)
             var evaluacion = await _context.Evaluaciones.FindAsync(dto.IdEvaluacion);
             if (evaluacion == null)
                 return NotFound("Evaluacin no encontrada.");
 
-            // Validar si es entrega grupal y se proporciona un idGrupoTrabajo
+            // Validar si es entrega grupal y se proporciona un idGrupoTrabajo (esto s se puede hacer si GrupoTrabajo funciona)
             if (evaluacion.EsGrupal && dto.IdGrupoTrabajo == null)
                 return BadRequest("Para entregas grupales, debe proporcionar el IdGrupoTrabajo.");
 
-            // Validar si el estudiante pertenece al grupo de trabajo si es grupal
+            // Validar si el estudiante pertenece al grupo de trabajo si es grupal (esto s se puede hacer si GrupoTrabajo funciona)
             if (evaluacion.EsGrupal && dto.IdGrupoTrabajo != null)
             {
                  var perteneceGrupo = await _context.GrupoTrabajo.AnyAsync(gt => gt.IdGrupoTrabajo == dto.IdGrupoTrabajo && gt.CarnetEstudiante == dto.CarnetEstudiante);
@@ -63,15 +64,16 @@ namespace CEDigital.API.Controllers
             }
 
             // Validar si ya existe una entrega para esta evaluacin (individual o grupal)
-            var existingEntrega = await _context.Entregas
-                 .FirstOrDefaultAsync(e => e.IdEvaluacion == dto.IdEvaluacion &&
-                                          (evaluacion.EsGrupal ? e.IdGrupoTrabajo == dto.IdGrupoTrabajo : e.CarnetEstudiante == dto.CarnetEstudiante));
+            // TEMPORARILY COMMENTING OUT DB INTERACTION FOR EXISTING DELIVERY CHECK
+            // var existingEntrega = await _context.Entregas
+            //      .FirstOrDefaultAsync(e => e.IdEvaluacion == dto.IdEvaluacion &&
+            //                               (evaluacion.EsGrupal ? e.IdGrupoTrabajo == dto.IdGrupoTrabajo : e.CarnetEstudiante == dto.CarnetEstudiante));
 
-            if (existingEntrega != null)
-            {
-                // Puedes decidir si permites actualizar o no. Por ahora, no permitiremos.
-                return Conflict("Ya existe una entrega para esta evaluacin.");
-            }
+            // if (existingEntrega != null)
+            // {
+            //     // Puedes decidir si permites actualizar o no. Por ahora, no permitiremos.
+            //     return Conflict("Ya existe una entrega para esta evaluacin.");
+            // }
 
             // Guardar el archivo
             var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/entregables"); // Asegura que esta ruta exista
@@ -83,27 +85,38 @@ namespace CEDigital.API.Controllers
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + dto.File.FileName;
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            try
             {
-                await dto.File.CopyToAsync(fileStream);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.File.CopyToAsync(fileStream);
+                }
+            }
+            catch (Exception ex)
+            {
+                 // Log the exception if logging is set up
+                 // _logger.LogError(ex, "Error saving file {FileName}", uniqueFileName);
+                 return StatusCode(500, "Error al guardar el archivo en el servidor.");
             }
 
             // Crear registro en la base de datos
-            var newEntrega = new Entrega
-            {
-                IdEvaluacion = dto.IdEvaluacion,
-                IdGrupoTrabajo = dto.IdGrupoTrabajo, // Ser null si es individual
-                CarnetEstudiante = evaluacion.EsGrupal ? null : dto.CarnetEstudiante, // Ser null si es grupal
-                FechaEntrega = DateTime.Now,
-                RutaEntregable = Path.Combine("/uploads/entregables", uniqueFileName), // Guardar la ruta relativa o base
-                Evaluacion = evaluacion,
-                GrupoTrabajo = dto.IdGrupoTrabajo != null ? await _context.GrupoTrabajo.FindAsync(dto.IdGrupoTrabajo) : null
-            };
+            // TEMPORARILY COMMENTING OUT DB INTERACTION FOR SAVING DELIVERY INFO
+            // var newEntrega = new Entrega
+            // {
+            //     IdEvaluacion = dto.IdEvaluacion,
+            //     IdGrupoTrabajo = dto.IdGrupoTrabajo, // Ser null si es individual
+            //     CarnetEstudiante = evaluacion.EsGrupal ? null : dto.CarnetEstudiante, // Ser null si es grupal
+            //     FechaEntrega = DateTime.Now,
+            //     RutaEntregable = Path.Combine("/uploads/entregables", uniqueFileName), // Guardar la ruta relativa o base
+            //     Evaluacion = evaluacion,
+            //     GrupoTrabajo = dto.IdGrupoTrabajo != null ? await _context.GrupoTrabajo.FindAsync(dto.IdGrupoTrabajo) : null
+            // };
 
-            _context.Entregas.Add(newEntrega);
-            await _context.SaveChangesAsync();
+            // _context.Entregas.Add(newEntrega);
+            // await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetEstadoEntrega), new { idEvaluacion = newEntrega.IdEvaluacion, carnetEstudiante = dto.CarnetEstudiante }, newEntrega);
+            // Return a success response indicating the file was saved locally
+            return Ok(new { message = "Archivo subido exitosamente (guardado localmente).", filePath = filePath });
         }
 
         // GET: api/Entrega/descargar/5 - Endpoint para descargar un entregable

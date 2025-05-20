@@ -72,6 +72,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [uploadingFile, setUploadingFile] = useState<number | null>(null);
+    const [uploadSuccessMessage, setUploadSuccessMessage] = useState<{ [evaluationId: number]: string | null }>({}); // New state for success messages
     const [expandedEvaluationIds, setExpandedEvaluationIds] = useState<Set<number>>(new Set());
     const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: GrupoTrabajoMiembroDto[] }>({}); // Updated state type
 
@@ -214,24 +215,35 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
             }
 
             setUploadingFile(evaluationId);
+            // Clear previous success message for this evaluation
+            setUploadSuccessMessage(prev => ({ ...prev, [evaluationId]: null }));
+
             const formData = new FormData();
             formData.append('file', file);
             formData.append('idEvaluacion', evaluationId.toString());
-            formData.append('carnetEstudiante', user.carnet);
-
-            const response = await axios.post('http://localhost:5261/api/Entrega', formData, {
+            // Add idGrupoTrabajo if it's a group evaluation and available
+            const evaluation = evaluations.find(e => e.idEvaluacion === evaluationId);
+            if (evaluation?.esGrupal && idGrupo) { // Assuming idGrupo from props is the group ID
+                formData.append('idGrupoTrabajo', idGrupo.toString());
+            } else if (!evaluation?.esGrupal) {
+                 formData.append('carnetEstudiante', user.carnet); // Only for individual uploads
+            }
+            
+            const response = await axios.post<{ message: string, filePath: string }>('http://localhost:5261/api/Entrega', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            // Update the deliveries state with the new delivery
-            setEntregas(prev => ({
-                ...prev,
-                [evaluationId]: response.data
-            }));
-
+            // Temporarily show a success message instead of updating deliveries state
+            setUploadSuccessMessage(prev => ({ ...prev, [evaluationId]: response.data.message }));
+            
             setUploadingFile(null);
+            
+            // You might want to refetch deliveries here after a successful upload
+            // to reflect the new state if the backend were fully functional.
+            // For now, we just show a success message.
+
         } catch (err) {
             console.error("Error uploading file:", err);
             setUploadingFile(null);
@@ -468,6 +480,9 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                             {uploadingFile === evaluation.idEvaluacion && (
                                                                                 <span className="ml-2 text-gray-600 text-sm">Subiendo...</span>
                                                                             )}
+                                                                            {/* Display success message */}                                                                             {uploadSuccessMessage[evaluation.idEvaluacion] && (
+                                                                                <span className="ml-2 text-green-600 text-sm">{uploadSuccessMessage[evaluation.idEvaluacion]}</span>
+                                                                             )}
                                                                             {/* Optional: Entrega mediante Enlace (URL) - Placeholder */}
                                                                             {/* <button className="text-blue-600 hover:underline text-sm mt-1">o Entregar mediante un Enlace (URL)</button> */}
                                                                         </div>

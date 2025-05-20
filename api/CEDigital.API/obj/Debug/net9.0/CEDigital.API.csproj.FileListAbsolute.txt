@@ -346,3 +346,4 @@ C:\Users\FabianGJ\CEDigital\api\CEDigital.API\obj\Debug\net9.0\refint\CEDigital.
 C:\Users\FabianGJ\CEDigital\api\CEDigital.API\obj\Debug\net9.0\CEDigital.API.pdb
 C:\Users\FabianGJ\CEDigital\api\CEDigital.API\obj\Debug\net9.0\CEDigital.API.genruntimeconfig.cache
 C:\Users\FabianGJ\CEDigital\api\CEDigital.API\obj\Debug\net9.0\ref\CEDigital.API.dll
+C:\Users\FabianGJ\CEDigital\api\CEDigital.API\bin\Debug\net9.0\CEDigital.API.staticwebassets.runtime.json

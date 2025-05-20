@@ -107,16 +107,23 @@ CREATE TABLE Evaluacion (
     FOREIGN KEY (IdRubro) REFERENCES Rubro(IdRubro)
 );
 
--- GrupoTrabajo (muchos estudiantes por grupo de trabajo)
+-- GrupoTrabajo (tabla principal de grupos de trabajo) -- Definición corregida
 CREATE TABLE GrupoTrabajo (
-    CarnetEstudiante VARCHAR(20) NOT NULL, -- CarnetEstudiante viene desde la base de MongoDB
-    IdGrupoTrabajo INT NOT NULL,
+    IdGrupoTrabajo INT IDENTITY PRIMARY KEY, -- PK auto-incremental simple
     IdEvaluacion INT NOT NULL,
-    PRIMARY KEY (CarnetEstudiante, IdGrupoTrabajo, IdEvaluacion),
-    FOREIGN KEY (IdEvaluacion) REFERENCES  Evaluacion(IdEvaluacion)
+    -- CarnetEstudiante NO va en esta tabla. La relación estudiante-grupo va en EstudianteGrupoTrabajo.
+    FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion)
 );
 
--- Entrega (una por estudiante o por grupo según Evaluacion.EsGrupal)
+-- EstudianteGrupoTrabajo (tabla de unión para asociar estudiantes a GrupoTrabajo)
+CREATE TABLE EstudianteGrupoTrabajo (
+    IdGrupoTrabajo INT NOT NULL,
+    CarnetEstudiante VARCHAR(20) NOT NULL,
+    PRIMARY KEY (IdGrupoTrabajo, CarnetEstudiante),
+    FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo)
+);
+
+-- Entrega (una por estudiante o por grupo según Evaluacion.EsGrupal) -- Esta referencia ahora funcionará
 CREATE TABLE Entrega (
     IdEntrega INT IDENTITY PRIMARY KEY, --Auto incremental
     IdEvaluacion INT NOT NULL,
@@ -125,7 +132,7 @@ CREATE TABLE Entrega (
     FechaEntrega DATETIME NOT NULL,
     RutaEntregable VARCHAR(500),
     FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion),
-	FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo)
+	FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo) -- Referencia a la nueva PK de GrupoTrabajo
 );
 
 -- Nota de evaluacion
@@ -139,5 +146,5 @@ CREATE TABLE NotaEvaluacion (
 	IdGrupoTrabajo INT NOT NULL,
     
     FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion),
-	FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo)
+	FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo) -- Referencia a la nueva PK de GrupoTrabajo
 );

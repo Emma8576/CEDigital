@@ -1,12 +1,20 @@
 {
   "Version": 1,
-  "Hash": "3pr643yuyyIdlpfqicTpTj8buXoXah6JyGOtEOJajqE=",
+  "Hash": "Y4L6th/rX0x7E+Y21pCo7HfFt8A6bfGLXSAaUf9wYwo=",
   "Source": "CEDigital.API",
   "BasePath": "_content/CEDigital.API",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "CEDigital.API\\wwwroot",
+      "Source": "CEDigital.API",
+      "ContentRoot": "C:\\Users\\FabianGJ\\CEDigital\\api\\CEDigital.API\\wwwroot\\",
+      "BasePath": "_content/CEDigital.API",
+      "Pattern": "**"
+    }
+  ],
   "Assets": [],
   "Endpoints": []
 }
