@@ -3,6 +3,7 @@ import Navbar from "./components/NavBar";
 import Dashboard from "./pages/Dashboard";
 import GestionCursos from "./pages/GestionCursos";
 import GestionSemestres from "./pages/GestionSemestres";
+import CargaGrupos from "./pages/CargaGrupos";
 import CargaSemestre from "./pages/CargaSemestre";
 
 function App() {
@@ -16,7 +17,9 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/cursos" element={<GestionCursos />} />
               <Route path="/semestres" element={<GestionSemestres />} />
+              <Route path="/grupos" element={<CargaGrupos />} />
               <Route path="/contenido" element={<CargaSemestre />} />
+              
             </Routes>
           </div>
         </main>

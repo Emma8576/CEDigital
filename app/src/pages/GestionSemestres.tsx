@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { obtenerSemestres, crearSemestre, eliminarSemestre } from "../services/semestreService"; // Ajusta ruta si es necesario
-
+import FormularioAgregarGrupo from "./AgregarGrupo";
 type Semestre = {
   idSemestre: number;
   año: number;
@@ -12,6 +12,10 @@ const GestionSemestres = () => {
   const [semestres, setSemestres] = useState<Semestre[]>([]);
   const [mostrarFormularioSemestre, setMostrarFormularioSemestre] = useState(false);
   const [nuevoSemestre, setNuevoSemestre] = useState({ año: new Date().getFullYear(), periodo: "1" });
+const [mostrarFormularioGrupo, setMostrarFormularioGrupo] = useState(false);
+const [semestreSeleccionado, setSemestreSeleccionado] = useState<number | null>(null);
+
+
 
   useEffect(() => {
     obtenerSemestres()
@@ -40,7 +44,10 @@ const GestionSemestres = () => {
       .then(() => setSemestres(semestres.filter(s => s.idSemestre !== id)))
       .catch(error => console.error("Error al eliminar semestre:", error));
   };
-
+    const handleAgregarCursos = (idSemestre: number) => {
+      // Por ahora solo imprime en consola. Luego puedes conectar a un modal o navegación.
+      console.log(`Agregar cursos al semestre con ID: ${idSemestre}`);
+    };
   return (
     <div className="space-y-6">
       {/* Encabezado */}
@@ -136,10 +143,20 @@ const GestionSemestres = () => {
             >
               Cancelar
             </button>
+            {mostrarFormularioGrupo && semestreSeleccionado !== null && (
+            <FormularioAgregarGrupo
+            idSemestre={semestreSeleccionado}
+            onClose={() => setMostrarFormularioGrupo(false)}
+            onGrupoCreado={() => {
+              // Lógica para actualizar la lista de semestres o grupos si es necesario
+            }}
+          />
+        )}
           </div>
         </div>
       )}
     </div>
+    
   );
 };
 

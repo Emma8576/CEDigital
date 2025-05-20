@@ -4,6 +4,7 @@ import {
   BookOpenIcon,
   CalendarIcon,
   ArrowUpTrayIcon,
+  UsersIcon,
   Bars3Icon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
@@ -24,17 +25,14 @@ const Navbar: FC = () => {
     { path: "/", name: "Inicio", icon: <HomeIcon className="w-5 h-5" /> },
     { path: "/cursos", name: "Gestión de Cursos", icon: <BookOpenIcon className="w-5 h-5" /> },
     { path: "/semestres", name: "Gestión de Semestres", icon: <CalendarIcon className="w-5 h-5" /> },
+    { path: "/grupos", name: "Gestión de Grupos", icon: <UsersIcon className="w-5 h-5" /> },
     { path: "/contenido", name: "Cargar Semestre", icon: <ArrowUpTrayIcon className="w-5 h-5" /> },
+    
   ];
 
-  // Control scroll effect for sticky navbar
   useEffect(() => {
     const handleScroll = (): void => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 10);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -59,7 +57,7 @@ const Navbar: FC = () => {
               CEDigital
             </Link>
           </div>
-          
+
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
@@ -79,13 +77,12 @@ const Navbar: FC = () => {
               ))}
             </div>
           </div>
-          
+
           {/* Mobile Menu Button */}
           <div className="md:hidden">
             <button
               onClick={toggleMobileMenu}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-white hover:bg-blue-700 focus:outline-none"
-              aria-expanded="false"
             >
               {isMobileMenuOpen ? (
                 <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -96,7 +93,7 @@ const Navbar: FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile Navigation Menu */}
       <div
         className={`md:hidden transition-all duration-300 ease-in-out ${
