@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
 
 namespace CEDigital.API.Models
 {
@@ -11,26 +10,54 @@ namespace CEDigital.API.Models
         public int IdEvaluacion { get; set; }
 
         [Required]
-        [ForeignKey("Rubro")]
         public int IdRubro { get; set; }
-        public required Rubro IdRubroNavigation { get; set; }
 
         [Required]
-        public required string NombreEvaluacion { get; set; }
+        [StringLength(100)]
+        public string NombreEvaluacion { get; set; }
 
+        [Required]
         public DateTime FechaHoraLimite { get; set; }
 
-        public decimal ValorPorcentual { get; set; }
+        [Required]
+        public int ValorPorcentual { get; set; }
 
+        [Required]
         public bool EsGrupal { get; set; }
 
+        [Required]
         public bool TieneEntregable { get; set; }
 
-        public int? CantEstudiantesGrupo { get; set; }
+        [Required]
+        public int CantEstudiantesGrupo { get; set; }
 
-        public string? RutaEspecificacion { get; set; }
+        [StringLength(500)]
+        public string RutaEspecificacion { get; set; }
 
-        public required ICollection<Entrega> Entregas { get; set; } = new List<Entrega>();
-        public required ICollection<NotaEvaluacion> NotaEvaluaciones { get; set; } = new List<NotaEvaluacion>();
+        [ForeignKey("IdRubro")]
+        public Rubro Rubro { get; set; }
     }
-} 
+
+    public class EvaluacionCreateDto
+    {
+        public int IdRubro { get; set; }
+        public string NombreEvaluacion { get; set; }
+        public DateTime FechaHoraLimite { get; set; }
+        public int ValorPorcentual { get; set; }
+        public bool EsGrupal { get; set; }
+        public bool TieneEntregable { get; set; }
+        public int CantEstudiantesGrupo { get; set; }
+        public string RutaEspecificacion { get; set; }
+    }
+
+    public class EvaluacionUpdateDto
+    {
+        public string NombreEvaluacion { get; set; }
+        public DateTime FechaHoraLimite { get; set; }
+        public int ValorPorcentual { get; set; }
+        public bool EsGrupal { get; set; }
+        public bool TieneEntregable { get; set; }
+        public int CantEstudiantesGrupo { get; set; }
+        public string? RutaEspecificacion { get; set; }
+    }
+}

@@ -108,9 +108,9 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                     cantEstudiantesGrupo: item.cantEstudiantesGrupo,
                     rutaEspecificacion: item.rutaEspecificacion,
                     idRubroNavigation: {
-                         idRubro: item.idRubro, // Assuming idRubro is also in the projection
-                         nombreRubro: item.rubro.nombreRubro, // Use the nested Rubro object
-                         porcentaje: item.rubro.porcentaje // Assuming porcentaje is in the projection
+                         idRubro: item.idRubroNavigation?.idRubro, // Access from IdRubroNavigation
+                         nombreRubro: item.IdRubroNavigation?.nombreRubro, // Access from IdRubroNavigation
+                         porcentaje: item.IdRubroNavigation?.porcentaje // Access from IdRubroNavigation
                     }
                 }));
 

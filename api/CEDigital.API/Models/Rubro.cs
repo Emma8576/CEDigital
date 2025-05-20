@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
 
 namespace CEDigital.API.Models
 {
@@ -10,17 +9,38 @@ namespace CEDigital.API.Models
         public int IdRubro { get; set; }
 
         [Required]
-        public required string NombreRubro { get; set; }
+        [MaxLength(100)]
+        public string NombreRubro { get; set; }
 
         [Required]
-        public decimal Porcentaje { get; set; }
+        public int Porcentaje { get; set; }
 
         [Required]
         [ForeignKey("Grupo")]
         public int IdGrupo { get; set; }
 
-        public required Grupo Grupo { get; set; }
-
-        public ICollection<Evaluacion> Evaluaciones { get; set; } = new List<Evaluacion>();
+        public Grupo Grupo { get; set; }
     }
-} 
+
+    public class RubroCreateDto
+    {
+        public string NombreRubro { get; set; }
+        public int Porcentaje { get; set; }
+        public int IdGrupo { get; set; }
+    }
+
+    public class RubroDto
+    {
+        public int IdRubro { get; set; }
+        public string NombreRubro { get; set; }
+        public int Porcentaje { get; set; }
+        public int IdGrupo { get; set; }
+    }
+
+    public class RubroUpdateDto
+    {
+        public string NombreRubro { get; set; }
+        public int Porcentaje { get; set; }
+    }
+
+}

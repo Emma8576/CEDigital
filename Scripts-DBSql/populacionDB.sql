@@ -112,7 +112,7 @@ INSERT INTO Archivo (NombreArchivo, FechaPublicacion, TamañoArchivo, IdCarpeta,
 VALUES
 ('IntroProgramacion1.pdf', GETDATE(), 204800, 1, '/uploads/intro/IntroProgramacion1.pdf'),
 ('Quiz1.docx', GETDATE(), 102400, 2, '/uploads/quices/Quiz1.docx'),
-('ExamenLabFísica1.xlsx', GETDATE(), 51200, 3, '/uploads/labs/ExamenLabF�sica1.xlsx');
+('ExamenLabFísica1.xlsx', GETDATE(), 51200, 3, '/uploads/labs/ExamenLabFísica1.xlsx');
 
 -- Noticias
 INSERT INTO Noticia (Titulo, Mensaje, FechaPublicacion, IdGrupo)
@@ -141,15 +141,20 @@ VALUES
 ('2023113987', 1, 3);
 
 -- Entregas
-INSERT INTO Entrega (IdEvaluacion, IdGrupoTrabajo, CarnetEstudiante, FechaEntrega, RutaEntregable)
-VALUES
 -- Para entregas individuales
-(1, NULL, '2023298134', GETDATE(), '/entregas/quiz1_est1.pdf'),
-(2, NULL, '2023298134', GETDATE(), '/entregas/examen1_est1.pdf'),
+INSERT INTO Entrega (IdEvaluacion, CarnetEstudiante, FechaEntrega, RutaEntregable)
+VALUES
+(1, '2023298134', GETDATE(), '/entregas/quiz1_est1.pdf'),
+(2, '2023298134', GETDATE(), '/entregas/examen1_est1.pdf');
 -- Para entrega grupal
-(3, 1, NULL, GETDATE(), '/entregas/proyecto1_grupo1.zip');
+INSERT INTO Entrega (IdEvaluacion, IdGrupoTrabajo, FechaEntrega, RutaEntregable)
+VALUES
+(3, 1, GETDATE(), '/entregas/proyecto1_grupo1.zip');
 
 -- NotaEvaluacion
+-- Grupal
 INSERT INTO NotaEvaluacion (PorcentajeObtenido, Observaciones, RutaArchivoDetalles, Publicada, IdEvaluacion, IdGrupoTrabajo)
-VALUES
-(85.50, 'Buen trabajo en el proyecto', '/notas/proyecto1_detalles.pdf', 1, 3, 1);
+VALUES (35.95, 'Buen trabajo en el proyecto', '/notas/proyecto1_detalles.pdf', 0, 3, 1);
+--individual
+INSERT INTO NotaEvaluacion (PorcentajeObtenido, Observaciones, RutaArchivoDetalles, Publicada, IdEvaluacion, CarnetEstudiante)
+VALUES (14.00, 'Excelente desempeño en el quiz', '/notas/quiz1_detalles.pdf', 0, 1, '2023298134');

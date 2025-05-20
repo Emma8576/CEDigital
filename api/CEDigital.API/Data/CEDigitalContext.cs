@@ -18,10 +18,9 @@ namespace CEDigital.API.Data
         public DbSet<Archivo> Archivos { get; set; }
         public DbSet<Rubro> Rubros { get; set; }
         public DbSet<Evaluacion> Evaluaciones { get; set; }
-        public DbSet<GrupoTrabajo> GrupoTrabajo { get; set; }
+        public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
         public DbSet<Entrega> Entregas { get; set; }
         public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }
-        public DbSet<EstudianteGrupoTrabajo> EstudianteGrupoTrabajos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,23 +30,12 @@ namespace CEDigital.API.Data
             modelBuilder.Entity<Grupo>().ToTable("Grupo");
             modelBuilder.Entity<Carpeta>().ToTable("Carpeta");
             modelBuilder.Entity<Noticia>().ToTable("Noticia");
+            modelBuilder.Entity<Archivo>().ToTable("Archivo");
             modelBuilder.Entity<Rubro>().ToTable("Rubro");
             modelBuilder.Entity<Evaluacion>().ToTable("Evaluacion");
-            modelBuilder.Entity<Archivo>().ToTable("Archivo");
-
-            // Configurar conversin para mapear INT de la base de datos a decimal en los modelos
-            modelBuilder.Entity<Rubro>()
-                .Property(r => r.Porcentaje)
-                .HasConversion<int>();
-
-            modelBuilder.Entity<Evaluacion>()
-                .Property(e => e.ValorPorcentual)
-                .HasConversion<int>();
-
-            modelBuilder.Entity<Evaluacion>()
-                .HasOne(e => e.IdRubroNavigation)
-                .WithMany(r => r.Evaluaciones)
-                .HasForeignKey(e => e.IdRubro);
+            modelBuilder.Entity<GrupoTrabajo>().ToTable("GrupoTrabajo");
+            modelBuilder.Entity<Entrega>().ToTable("Entrega");
+            modelBuilder.Entity<NotaEvaluacion>().ToTable("NotaEvaluacion");
 
             modelBuilder.Entity<ProfesorGrupo>()
                 .ToTable("ProfesorGrupo")
@@ -66,29 +54,24 @@ namespace CEDigital.API.Data
                 .HasOne(eg => eg.Grupo)
                 .WithMany(g => g.Estudiantes)  
                 .HasForeignKey(eg => eg.IdGrupo);
-                
-            modelBuilder.Entity<Grupo>()
-                .HasOne(g => g.Curso)
-                .WithMany()
-                .HasForeignKey(g => g.CodigoCurso)
-                .HasPrincipalKey(c => c.CodigoCurso);
-                
-            modelBuilder.Entity<Grupo>()
-                .HasOne(g => g.Semestre)
-                .WithMany()
-                .HasForeignKey(g => g.IdSemestre);
 
             modelBuilder.Entity<GrupoTrabajo>()
-                .ToTable("GrupoTrabajo");
+                .HasKey(gt => new { gt.CarnetEstudiante, gt.IdGrupoTrabajo, gt.IdEvaluacion });
 
-            modelBuilder.Entity<EstudianteGrupoTrabajo>()
-                .ToTable("EstudianteGrupoTrabajo")
-                .HasKey(egt => new { egt.IdGrupoTrabajo, egt.CarnetEstudiante });
+            modelBuilder.Entity<GrupoTrabajo>()
+                .HasKey(gt => gt.IdGrupoTrabajo);
 
-            modelBuilder.Entity<EstudianteGrupoTrabajo>()
-                .HasOne(egt => egt.GrupoTrabajo)
-                .WithMany(gt => gt.EstudianteGrupoTrabajo)
-                .HasForeignKey(egt => egt.IdGrupoTrabajo);
+            modelBuilder.Entity<Entrega>()
+                .HasOne<GrupoTrabajo>()
+                .WithMany(gt => gt.Entregas)
+                .HasForeignKey(e => e.IdGrupoTrabajo);
+
+        
+            modelBuilder.Entity<NotaEvaluacion>()
+                .HasOne(ne => ne.Evaluacion)
+                .WithMany() // <--- SIN propiedad inversa
+                .HasForeignKey(ne => ne.IdEvaluacion);
+
 
             base.OnModelCreating(modelBuilder); 
         }   

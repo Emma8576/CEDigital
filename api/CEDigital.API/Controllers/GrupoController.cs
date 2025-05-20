@@ -112,7 +112,17 @@ namespace CEDigital.API.Controllers
                     _context.Carpetas.Add(carpeta);
                 }
 
-                await _context.SaveChangesAsync(); // Guarda las carpetas
+                // Crear rubros por defecto 
+                var rubrosPorDefecto = new List<Rubro>
+                {
+                    new Rubro { NombreRubro = "Quices", Porcentaje = 30, IdGrupo = grupo.IdGrupo },
+                    new Rubro { NombreRubro = "Exámenes", Porcentaje = 30, IdGrupo = grupo.IdGrupo },
+                    new Rubro { NombreRubro = "Proyectos", Porcentaje = 40, IdGrupo = grupo.IdGrupo }
+                };
+
+                _context.Rubros.AddRange(rubrosPorDefecto);
+
+                await _context.SaveChangesAsync(); // Guarda las carpetas y rubros
             }
             catch (DbUpdateException ex)
             { 

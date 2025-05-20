@@ -107,23 +107,16 @@ CREATE TABLE Evaluacion (
     FOREIGN KEY (IdRubro) REFERENCES Rubro(IdRubro)
 );
 
--- GrupoTrabajo (tabla principal de grupos de trabajo) -- Definición corregida
+-- GrupoTrabajo (muchos estudiantes por grupo de trabajo)
 CREATE TABLE GrupoTrabajo (
-    IdGrupoTrabajo INT IDENTITY PRIMARY KEY, -- PK auto-incremental simple
-    IdEvaluacion INT NOT NULL,
-    -- CarnetEstudiante NO va en esta tabla. La relación estudiante-grupo va en EstudianteGrupoTrabajo.
-    FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion)
-);
-
--- EstudianteGrupoTrabajo (tabla de unión para asociar estudiantes a GrupoTrabajo)
-CREATE TABLE EstudianteGrupoTrabajo (
+    CarnetEstudiante VARCHAR(20) NOT NULL, -- CarnetEstudiante viene desde la base de MongoDB
     IdGrupoTrabajo INT NOT NULL,
-    CarnetEstudiante VARCHAR(20) NOT NULL,
-    PRIMARY KEY (IdGrupoTrabajo, CarnetEstudiante),
-    FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo)
+    IdEvaluacion INT NOT NULL,
+    PRIMARY KEY (CarnetEstudiante, IdGrupoTrabajo, IdEvaluacion),
+    FOREIGN KEY (IdEvaluacion) REFERENCES  Evaluacion(IdEvaluacion)
 );
 
--- Entrega (una por estudiante o por grupo según Evaluacion.EsGrupal) -- Esta referencia ahora funcionará
+-- Entrega (una por estudiante o por grupo según Evaluacion.EsGrupal)
 CREATE TABLE Entrega (
     IdEntrega INT IDENTITY PRIMARY KEY, --Auto incremental
     IdEvaluacion INT NOT NULL,
@@ -131,8 +124,7 @@ CREATE TABLE Entrega (
     CarnetEstudiante VARCHAR(20) NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = F; podría ser null
     FechaEntrega DATETIME NOT NULL,
     RutaEntregable VARCHAR(500),
-    FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion),
-	FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo) -- Referencia a la nueva PK de GrupoTrabajo
+    FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion)
 );
 
 -- Nota de evaluacion
@@ -143,8 +135,7 @@ CREATE TABLE NotaEvaluacion (
 	RutaArchivoDetalles VARCHAR(500),
 	Publicada BIT NOT NULL,
 	IdEvaluacion INT,
-	IdGrupoTrabajo INT NOT NULL,
-    
+	CarnetEstudiante VARCHAR(20) NULL, -- Puede ser NULL si la evaluación es grupal
+    IdGrupoTrabajo INT NULL,           -- Puede ser NULL si la evaluación es individual
     FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion),
-	FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo) -- Referencia a la nueva PK de GrupoTrabajo
 );

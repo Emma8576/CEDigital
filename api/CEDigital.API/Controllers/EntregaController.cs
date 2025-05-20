@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Data;
 using CEDigital.API.Models;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace CEDigital.API.Controllers
 {
@@ -12,145 +10,118 @@ namespace CEDigital.API.Controllers
     public class EntregaController : ControllerBase
     {
         private readonly CEDigitalContext _context;
-        private readonly IWebHostEnvironment _env; // Para acceder a la ruta de uploads
 
-        public EntregaController(CEDigitalContext context, IWebHostEnvironment env)
+        public EntregaController(CEDigitalContext context)
         {
             _context = context;
-            _env = env;
         }
 
-        // GET: api/Entrega/estado/5/2023298134
-        [HttpGet("estado/{idEvaluacion}/{carnetEstudiante}")]
-        public async Task<ActionResult<Entrega>> GetEstadoEntrega(int idEvaluacion, string carnetEstudiante)
-        {
-            // Lgica para verificar si el estudiante (o su grupo) ha entregado la evaluacin
-            var entrega = await _context.Entregas
-                .FirstOrDefaultAsync(e => e.IdEvaluacion == idEvaluacion &&
-                                         (e.CarnetEstudiante == carnetEstudiante || 
-                                          (_context.GrupoTrabajo.Any(gt => gt.IdGrupoTrabajo == e.IdGrupoTrabajo && gt.CarnetEstudiante == carnetEstudiante) && e.IdGrupoTrabajo != null)));
-
-            if (entrega == null)
-            {
-                // Return 404 if no delivery is found, as expected by the frontend's error handling
-                return NotFound("No se encontr informacin de entrega para esta evaluacin y estudiante.");
-            }
-
-            return entrega;
-        }
-
-        // POST: api/Entrega - Endpoint para subir un entregable
         [HttpPost]
-        public async Task<IActionResult> UploadEntregable([FromForm] UploadEntregableDto dto)
+        public async Task<ActionResult<Entrega>> PostEntrega(EntregaCreateDto dto)
         {
-            if (dto.File == null || dto.File.Length == 0)
-                return BadRequest("Debe subir un archivo.");
+            var evaluacion = await _context.Evaluaciones
+                .Include(e => e.Rubro) 
+                .FirstOrDefaultAsync(e => e.IdEvaluacion == dto.IdEvaluacion);
 
-            // Validar si la evaluacin existe (esto s se puede hacer si Evaluaciones funciona)
-            var evaluacion = await _context.Evaluaciones.FindAsync(dto.IdEvaluacion);
             if (evaluacion == null)
-                return NotFound("Evaluacin no encontrada.");
+                return NotFound("La evaluación no existe.");
 
-            // Validar si es entrega grupal y se proporciona un idGrupoTrabajo (esto s se puede hacer si GrupoTrabajo funciona)
-            if (evaluacion.EsGrupal && dto.IdGrupoTrabajo == null)
-                return BadRequest("Para entregas grupales, debe proporcionar el IdGrupoTrabajo.");
-
-            // Validar si el estudiante pertenece al grupo de trabajo si es grupal (esto s se puede hacer si GrupoTrabajo funciona)
-            if (evaluacion.EsGrupal && dto.IdGrupoTrabajo != null)
+            if (!evaluacion.EsGrupal) //verificacion de que si es una evaluacion grupal el IdGrupoTrabajo exista
             {
-                 var perteneceGrupo = await _context.GrupoTrabajo.AnyAsync(gt => gt.IdGrupoTrabajo == dto.IdGrupoTrabajo && gt.CarnetEstudiante == dto.CarnetEstudiante);
-                 if (!perteneceGrupo)
-                      return Unauthorized("El estudiante no pertenece a este grupo de trabajo.");
+                if (string.IsNullOrEmpty(dto.CarnetEstudiante))
+                    return BadRequest("Debe proporcionar el carnet del estudiante para una evaluación individual.");
+
+                var idGrupo = evaluacion.Rubro.IdGrupo;
+
+                bool estudianteValido = await _context.EstudianteGrupos
+                    .AnyAsync(eg => eg.IdGrupo == idGrupo && eg.CarnetEstudiante == dto.CarnetEstudiante);
+
+                if (!estudianteValido)
+                    return BadRequest("El estudiante no pertenece al grupo correspondiente al rubro de esta evaluación.");
+
+                // Ignorar IdGrupoTrabajo
+                dto.IdGrupoTrabajo = null;
+            }
+            else //veridicacion de que si es una evaluacion individual se asigne solo a un carnet que pertene al grupo en el que fue creada la evaluacion
+            {
+                if (dto.IdGrupoTrabajo == null)
+                    return BadRequest("Debe proporcionar el IdGrupoTrabajo para una evaluación grupal.");
+
+                bool grupoValido = await _context.GrupoTrabajos
+                    .AnyAsync(gt => gt.IdEvaluacion == dto.IdEvaluacion && gt.IdGrupoTrabajo == dto.IdGrupoTrabajo);
+
+                if (!grupoValido)
+                    return BadRequest("El grupo de trabajo no existe para esta evaluación.");
+
+                // Ignorar CarnetEstudiante
+                dto.CarnetEstudiante = null;
             }
 
-            // Validar si ya existe una entrega para esta evaluacin (individual o grupal)
-            // TEMPORARILY COMMENTING OUT DB INTERACTION FOR EXISTING DELIVERY CHECK
-            // var existingEntrega = await _context.Entregas
-            //      .FirstOrDefaultAsync(e => e.IdEvaluacion == dto.IdEvaluacion &&
-            //                               (evaluacion.EsGrupal ? e.IdGrupoTrabajo == dto.IdGrupoTrabajo : e.CarnetEstudiante == dto.CarnetEstudiante));
-
-            // if (existingEntrega != null)
-            // {
-            //     // Puedes decidir si permites actualizar o no. Por ahora, no permitiremos.
-            //     return Conflict("Ya existe una entrega para esta evaluacin.");
-            // }
-
-            // Guardar el archivo
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/entregables"); // Asegura que esta ruta exista
-            if (!Directory.Exists(uploadsFolder))
+            var entrega = new Entrega
             {
-                Directory.CreateDirectory(uploadsFolder);
-            }
+                IdEvaluacion = dto.IdEvaluacion,
+                IdGrupoTrabajo = dto.IdGrupoTrabajo,
+                CarnetEstudiante = dto.CarnetEstudiante,
+                FechaEntrega = dto.FechaEntrega,
+                RutaEntregable = dto.RutaEntregable
+            };
 
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + dto.File.FileName;
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            _context.Entregas.Add(entrega);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await dto.File.CopyToAsync(fileStream);
-                }
-            }
-            catch (Exception ex)
-            {
-                 // Log the exception if logging is set up
-                 // _logger.LogError(ex, "Error saving file {FileName}", uniqueFileName);
-                 return StatusCode(500, "Error al guardar el archivo en el servidor.");
-            }
-
-            // Crear registro en la base de datos
-            // TEMPORARILY COMMENTING OUT DB INTERACTION FOR SAVING DELIVERY INFO
-            // var newEntrega = new Entrega
-            // {
-            //     IdEvaluacion = dto.IdEvaluacion,
-            //     IdGrupoTrabajo = dto.IdGrupoTrabajo, // Ser null si es individual
-            //     CarnetEstudiante = evaluacion.EsGrupal ? null : dto.CarnetEstudiante, // Ser null si es grupal
-            //     FechaEntrega = DateTime.Now,
-            //     RutaEntregable = Path.Combine("/uploads/entregables", uniqueFileName), // Guardar la ruta relativa o base
-            //     Evaluacion = evaluacion,
-            //     GrupoTrabajo = dto.IdGrupoTrabajo != null ? await _context.GrupoTrabajo.FindAsync(dto.IdGrupoTrabajo) : null
-            // };
-
-            // _context.Entregas.Add(newEntrega);
-            // await _context.SaveChangesAsync();
-
-            // Return a success response indicating the file was saved locally
-            return Ok(new { message = "Archivo subido exitosamente (guardado localmente).", filePath = filePath });
+            return CreatedAtAction(nameof(GetEntrega), new { id = entrega.IdEntrega }, entrega);
         }
 
-        // GET: api/Entrega/descargar/5 - Endpoint para descargar un entregable
-        [HttpGet("descargar/{idEntrega}")]
-        public async Task<IActionResult> DownloadEntregable(int idEntrega)
+
+        // GET: api/Entrega/5
+        [HttpGet("{id}")] //busca una entrega especifica con su id
+        public async Task<ActionResult<EntregaDto>> GetEntrega(int id)
         {
-            var entrega = await _context.Entregas.FindAsync(idEntrega);
+            var entrega = await _context.Entregas.FindAsync(id);
             if (entrega == null)
+                return NotFound();
+
+            return new EntregaDto
             {
-                return NotFound("Entrega no encontrada.");
-            }
-
-            var filePath = Path.Combine(_env.WebRootPath, entrega.RutaEntregable.TrimStart('/')); // Usa TrimStart para quitar la barra inicial si existe
-
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound("Archivo de entregable no encontrado en el servidor.");
-            }
-
-            var memoryStream = new MemoryStream();
-            using (var stream = new FileStream(filePath, FileMode.Open))
-            {
-                await stream.CopyToAsync(memoryStream);
-            }
-            memoryStream.Position = 0;
-
-            // Obtener el nombre del archivo original si es posible, o usar el nombre de la ruta
-            var fileName = Path.GetFileName(filePath);
-            // Si guardaste el nombre original en la base de datos, saca de all
-            // var fileName = entrega.NombreOriginalArchivo; // Si tuvieras este campo
-
-            return File(memoryStream, "application/octet-stream", fileName); // application/octet-stream es un tipo genrico para descargar archivos
+                IdEntrega = entrega.IdEntrega,
+                IdEvaluacion = entrega.IdEvaluacion,
+                IdGrupoTrabajo = entrega.IdGrupoTrabajo,
+                CarnetEstudiante = entrega.CarnetEstudiante,
+                FechaEntrega = entrega.FechaEntrega,
+                RutaEntregable = entrega.RutaEntregable
+            };
         }
 
-        // TODO: Add other entrega endpoints if needed
+        // DELETE: api/Entrega/5
+        [HttpDelete("{id}")] //borra una entrega especifica 
+        public async Task<IActionResult> DeleteEntrega(int id)
+        {
+            var entrega = await _context.Entregas.FindAsync(id);
+            if (entrega == null)
+                return NotFound();
+
+            _context.Entregas.Remove(entrega);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // GET: api/Entrega/evaluacion/5
+        [HttpGet("evaluacion/{idEvaluacion}")] //devuelve todas las entregas relacionadas a un (IdEvaluacion)
+        public async Task<ActionResult<IEnumerable<EntregaDto>>> GetEntregasPorEvaluacion(int idEvaluacion)
+        {
+            return await _context.Entregas
+                .Where(e => e.IdEvaluacion == idEvaluacion)
+                .Select(e => new EntregaDto
+                {
+                    IdEntrega = e.IdEntrega,
+                    IdEvaluacion = e.IdEvaluacion,
+                    IdGrupoTrabajo = e.IdGrupoTrabajo,
+                    CarnetEstudiante = e.CarnetEstudiante,
+                    FechaEntrega = e.FechaEntrega,
+                    RutaEntregable = e.RutaEntregable
+                })
+                .ToListAsync();
+        }
     }
-} 
+}

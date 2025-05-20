@@ -10,20 +10,22 @@ namespace CEDigital.API.Models
         public int IdArchivo { get; set; }
 
         [Required]
-        public required string NombreArchivo { get; set; }
+        [MaxLength(255)]
+        public string NombreArchivo { get; set; }
 
-        public string? Descripcion { get; set; }
-
+        [Required]
         public DateTime FechaPublicacion { get; set; }
 
+        [Required]
         public int TamañoArchivo { get; set; }
 
         [Required]
         [ForeignKey("Carpeta")]
         public int IdCarpeta { get; set; }
-        public required Carpeta Carpeta { get; set; }
 
-        [Required]
-        public required string Ruta { get; set; }
+        [MaxLength(500)]
+        public string Ruta { get; set; }
+
+        public Carpeta Carpeta { get; set; }
     }
-} 
+}
