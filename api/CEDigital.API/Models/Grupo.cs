@@ -9,20 +9,22 @@ namespace CEDigital.API.Models
         public int IdGrupo { get; set; }
 
         [Required]
+        public required string CodigoCurso { get; set; }
+
+        [Required]
         [ForeignKey("Curso")]
-        public string CodigoCurso { get; set; }
+        public required string CodigoCursoNavigation { get; set; }
+        public required Curso Curso { get; set; }
 
         [Required]
         [ForeignKey("Semestre")]
         public int IdSemestre { get; set; }
+        public required Semestre Semestre { get; set; }
 
         [Required]
         public int NumeroGrupo { get; set; }
 
-        public Curso Curso { get; set; }
-        public Semestre Semestre { get; set; }
-
-        public virtual ICollection<EstudianteGrupo> Estudiantes { get; set; } = new List<EstudianteGrupo>();
+        public required ICollection<EstudianteGrupo> Estudiantes { get; set; } = new List<EstudianteGrupo>();
     }
 
     public class GrupoCreateDto

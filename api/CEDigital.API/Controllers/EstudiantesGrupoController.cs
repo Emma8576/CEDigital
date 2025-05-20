@@ -47,14 +47,16 @@ namespace CEDigital.API.Controllers
         [HttpPost]
         public async Task<IActionResult> PostEstudiantesGrupo(EstudianteGrupoCreateDto dto)
         {
-            var grupoExiste = await _context.Grupos.AnyAsync(g => g.IdGrupo == dto.IdGrupo);
-            if (!grupoExiste)
+            var grupo = await _context.Grupos.FindAsync(dto.IdGrupo);
+            if (grupo == null)
                 return NotFound($"Grupo con ID {dto.IdGrupo} no existe.");
 
             var asignaciones = dto.CarnetsEstudiantes.Select(carnet => new EstudianteGrupo
             {
                 IdGrupo = dto.IdGrupo,
-                CarnetEstudiante = carnet
+                CarnetEstudiante = carnet,
+                Grupo = grupo,
+                CarnetsEstudiantes = new List<string> { carnet }
             });
 
             await _context.EstudianteGrupos.AddRangeAsync(asignaciones);

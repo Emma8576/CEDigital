@@ -9,14 +9,12 @@ namespace CEDigital.API.Models
         public int IdCarpeta { get; set; }
 
         [Required]
-        [StringLength(50)]
-        public string NombreCarpeta { get; set; }
+        public required string NombreCarpeta { get; set; }
 
         [Required]
         [ForeignKey("Grupo")]
         public int IdGrupo { get; set; }
-
-        public Grupo Grupo { get; set; }
+        public required Grupo Grupo { get; set; }
     }
 
         public class CarpetaCreateDto

@@ -42,12 +42,17 @@ namespace CEDigital.API.Controllers
         [HttpPost] //crea un nuevo curso
         public async Task<ActionResult<Curso>> CreateCurso(CursoCreateDto cursoDto)
         {
+            var carrera = await _context.Carreras.FindAsync(cursoDto.IdCarrera);
+            if (carrera == null)
+                return NotFound("Carrera no encontrada");
+
             var curso = new Curso
             {
                 CodigoCurso = cursoDto.CodigoCurso,
                 NombreCurso = cursoDto.NombreCurso,
                 Creditos = cursoDto.Creditos,
-                IdCarrera = cursoDto.IdCarrera
+                IdCarrera = cursoDto.IdCarrera,
+                Carrera = carrera
             };
 
             _context.Cursos.Add(curso);

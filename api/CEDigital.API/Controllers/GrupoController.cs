@@ -70,7 +70,11 @@ namespace CEDigital.API.Controllers
             {
                 CodigoCurso = grupoDto.CodigoCurso,
                 IdSemestre = grupoDto.IdSemestre,
-                NumeroGrupo = grupoDto.NumeroGrupo
+                NumeroGrupo = grupoDto.NumeroGrupo,
+                CodigoCursoNavigation = grupoDto.CodigoCurso,
+                Curso = await _context.Cursos.FindAsync(grupoDto.CodigoCurso),
+                Semestre = await _context.Semestres.FindAsync(grupoDto.IdSemestre),
+                Estudiantes = new List<EstudianteGrupo>()
             };
 
             _context.Grupos.Add(grupo);
@@ -86,7 +90,8 @@ namespace CEDigital.API.Controllers
                     var carpeta = new Carpeta
                     {
                         NombreCarpeta = nombre,
-                        IdGrupo = grupo.IdGrupo
+                        IdGrupo = grupo.IdGrupo,
+                        Grupo = grupo
                     };
                     _context.Carpetas.Add(carpeta);
                 }

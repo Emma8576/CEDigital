@@ -1,24 +1,30 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CEDigital.API.Models
 {
     public class Semestre
     {
         [Key]
-        public int IdSemestre { get; set; } 
-        public string Periodo { get; set; } // "1", "2", "V"
-        public int Año { get; set; }
-    }
+        public int IdSemestre { get; set; }
 
-    public class SemestreUpdateDto
-    {
-        public string Periodo { get; set; }
-        public int Año { get; set; }
-    }
+        [Required]
+        public required string Periodo { get; set; }
 
-    public class SemestreCreateDto
-    {
-        public string Periodo { get; set; }
-        public int Año { get; set; }
+        [Required]
+        public required string Año { get; set; }
+
+        [Required]
+        public required string CodigoCurso { get; set; }
+
+        [ForeignKey("Curso")]
+        public required string CodigoCursoNavigation { get; set; }
+        public required Curso Curso { get; set; }
+
+        [ForeignKey("Semestre")]
+        public int? IdSemestreNavigation { get; set; }
+        public Semestre? SemestreNavigation { get; set; }
+
+        public ICollection<Semestre>? Semestres { get; set; }
     }
 }

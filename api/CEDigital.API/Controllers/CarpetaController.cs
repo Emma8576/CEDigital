@@ -2,6 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Models;
 using CEDigital.API.Data;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.IO; // Necesario para operaciones de archivo
+using Microsoft.AspNetCore.Hosting; // Necesario para IWebHostEnvironment
 
 namespace CEDigital.API.Controllers
 {
@@ -10,10 +15,12 @@ namespace CEDigital.API.Controllers
     public class CarpetaController : ControllerBase
     {
         private readonly CEDigitalContext _context;
+        private readonly IWebHostEnvironment _env; // Para acceder a la ruta de uploads
 
-        public CarpetaController(CEDigitalContext context)
+        public CarpetaController(CEDigitalContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: api/Carpeta/grupo/5
@@ -40,7 +47,8 @@ namespace CEDigital.API.Controllers
             var carpeta = new Carpeta
             {
                 NombreCarpeta = dto.NombreCarpeta,
-                IdGrupo = dto.IdGrupo
+                IdGrupo = dto.IdGrupo,
+                Grupo = await _context.Grupos.FindAsync(dto.IdGrupo)
             };
 
             _context.Carpetas.Add(carpeta);
@@ -82,5 +90,54 @@ namespace CEDigital.API.Controllers
             return NoContent();
         }
 
+        [HttpGet("{idCarpeta}/archivos")] // Lista los archivos dentro de una carpeta
+        public async Task<ActionResult<List<ArchivoDto>>> GetArchivosPorCarpeta(int idCarpeta)
+        {
+            var archivos = await _context.Archivos
+                .Where(a => a.IdCarpeta == idCarpeta)
+                .Select(a => new ArchivoDto
+                {
+                    IdArchivo = a.IdArchivo,
+                    NombreArchivo = a.NombreArchivo,
+                    FechaPublicacion = a.FechaSubida,
+                    TamañoArchivo = a.TamañoArchivo,
+                    IdCarpeta = a.IdCarpeta,
+                    Ruta = a.Ruta // Or just file name if Ruta is internal
+                })
+                .ToListAsync();
+
+            // Return empty list if no files are found, or the list of files
+            return Ok(archivos); // Devolver la lista de archivos, que puede estar vaca
+        }
+
+        // GET: api/Carpeta/descargar/5 - Endpoint para descargar un archivo
+        [HttpGet("descargar/{idArchivo}")]
+        public async Task<IActionResult> DownloadArchivo(int idArchivo)
+        {
+            var archivo = await _context.Archivos.FindAsync(idArchivo);
+            if (archivo == null)
+            {
+                return NotFound("Archivo no encontrado.");
+            }
+
+            var filePath = Path.Combine(_env.WebRootPath, archivo.Ruta.TrimStart('/'));
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Archivo no encontrado en el servidor.");
+            }
+
+            var memoryStream = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memoryStream);
+            }
+            memoryStream.Position = 0;
+
+            // Try to get the original file name from the path or store it in the DB
+            var fileName = Path.GetFileName(filePath); // Or archivo.NombreOriginal if you add it to the model
+
+            return File(memoryStream, "application/octet-stream", fileName); // application/octet-stream for generic download
+        }
     }
 }

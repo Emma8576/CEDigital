@@ -1,84 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+interface User {
+  id: string;
+  nombre: string;
+  tipo: string;
+  carnet?: string;
+}
 
 interface Document {
   id: string;
   name: string;
   type: 'file' | 'folder';
-  path: string;
   children?: Document[];
 }
 
 interface StudentDocumentExplorerProps {
-  courseId: string;
+  idGrupo: number;
+  user: User | null;
 }
 
-const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ courseId }) => {
+const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ idGrupo, user }) => {
   const [currentPath, setCurrentPath] = useState<string[]>([]);
   const [selectedItem, setSelectedItem] = useState<Document | null>(null);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data for documents structure
-  const mockDocuments: Document[] = [
-    {
-      id: '1',
-      name: 'Material de Clase',
-      type: 'folder',
-      path: '/material',
-      children: [
-        {
-          id: '1-1',
-          name: 'Presentaciones',
-          type: 'folder',
-          path: '/material/presentaciones',
-          children: [
-            {
-              id: '1-1-1',
-              name: 'Introducción.pdf',
-              type: 'file',
-              path: '/material/presentaciones/introduccion.pdf'
-            }
-          ]
-        },
-        {
-          id: '1-2',
-          name: 'Guías de Laboratorio',
-          type: 'folder',
-          path: '/material/guias',
-          children: [
-            {
-              id: '1-2-1',
-              name: 'Lab1.pdf',
-              type: 'file',
-              path: '/material/guias/lab1.pdf'
-            }
-          ]
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        let currentMockFolder: Document[] = mockDocuments;
+        for (const pathId of currentPath) {
+          const foundFolder = currentMockFolder.find(item => item.id === pathId && item.type === 'folder');
+          if (foundFolder && foundFolder.children) {
+            currentMockFolder = foundFolder.children;
+          } else {
+            currentMockFolder = [];
+            break;
+          }
         }
-      ]
-    },
-    {
-      id: '2',
-      name: 'Tareas',
-      type: 'folder',
-      path: '/tareas',
-      children: [
-        {
-          id: '2-1',
-          name: 'Tarea1.pdf',
-          type: 'file',
-          path: '/tareas/tarea1.pdf'
-        }
-      ]
-    }
-  ];
+        setDocuments(currentMockFolder);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching documents:", err);
+        setError("Error al cargar los documentos.");
+        setLoading(false);
+      }
+    };
+
+    fetchDocuments();
+  }, [idGrupo, currentPath]);
 
   const getCurrentFolder = (): Document[] => {
-    let current = mockDocuments;
-    for (const path of currentPath) {
-      const folder = current.find(item => item.id === path);
-      if (folder && folder.children) {
-        current = folder.children;
-      }
-    }
-    return current;
+    return documents;
   };
 
   const handleItemClick = (item: Document) => {
@@ -97,7 +76,35 @@ const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ cours
     }
   };
 
+  const findItemInMock = (id: string, items: Document[]): Document | undefined => {
+    for (const item of items) {
+      if (item.id === id) return item;
+      if (item.children) {
+        const foundInChildren = findItemInMock(id, item.children);
+        if (foundInChildren) return foundInChildren;
+      }
+    }
+    return undefined;
+  };
+
   const renderBreadcrumb = () => {
+    let currentBreadcrumbPath: Document[] = [];
+    let currentItems = mockDocuments;
+
+    for (const pathId of currentPath) {
+      const foundItem = findItemInMock(pathId, currentItems);
+      if (foundItem) {
+        currentBreadcrumbPath.push(foundItem);
+        if (foundItem.children) {
+          currentItems = foundItem.children;
+        } else {
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+
     return (
       <div className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
         <button
@@ -106,23 +113,28 @@ const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ cours
         >
           Inicio
         </button>
-        {currentPath.map((pathId, index) => {
-          const item = getCurrentFolder().find(item => item.id === pathId);
-          return (
-            <React.Fragment key={pathId}>
-              <span>/</span>
-              <button
-                onClick={() => setCurrentPath(currentPath.slice(0, index + 1))}
-                className="hover:text-blue-500"
-              >
-                {item?.name}
-              </button>
-            </React.Fragment>
-          );
-        })}
+        {currentBreadcrumbPath.map((item, index) => (
+          <React.Fragment key={item.id}>
+            <span>/</span>
+            <button
+              onClick={() => setCurrentPath(currentBreadcrumbPath.slice(0, index + 1).map(item => item.id))}
+              className="hover:text-blue-500"
+            >
+              {item.name}
+            </button>
+          </React.Fragment>
+        ))}
       </div>
     );
   };
+
+  if (loading) {
+    return <div className="text-center mt-8 text-gray-600">Cargando documentos...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center mt-8 text-red-600">Error: {error}</div>;
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -144,7 +156,10 @@ const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ cours
       {renderBreadcrumb()}
 
       <div className="space-y-2">
-        {getCurrentFolder().map((item) => (
+        {documents.length === 0 && (
+          <div className="text-gray-500">No hay documentos en esta carpeta.</div>
+        )}
+        {documents.map((item) => (
           <div
             key={item.id}
             className={`flex items-center p-3 rounded-lg cursor-pointer ${
@@ -188,8 +203,7 @@ const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ cours
           <button
             className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
             onClick={() => {
-              // Aquí se implementará la descarga del archivo
-              console.log('Descargar archivo:', selectedItem.path);
+              console.log('Attempting to download file:', selectedItem.id);
             }}
           >
             Descargar
@@ -199,5 +213,51 @@ const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ cours
     </div>
   );
 };
+
+const mockDocuments: Document[] = [
+  {
+    id: '1',
+    name: 'Material de Clase',
+    type: 'folder',
+    children: [
+      {
+        id: '1-1',
+        name: 'Presentaciones',
+        type: 'folder',
+        children: [
+          {
+            id: '1-1-1',
+            name: 'Introducción.pdf',
+            type: 'file',
+          }
+        ]
+      },
+      {
+        id: '1-2',
+        name: 'Guías de Laboratorio',
+        type: 'folder',
+        children: [
+          {
+            id: '1-2-1',
+            name: 'Lab1.pdf',
+            type: 'file',
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: '2',
+    name: 'Tareas',
+    type: 'folder',
+    children: [
+      {
+        id: '2-1',
+        name: 'Tarea1.pdf',
+        type: 'file',
+      }
+    ]
+  }
+];
 
 export default StudentDocumentExplorer; 

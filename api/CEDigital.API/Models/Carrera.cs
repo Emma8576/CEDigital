@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CEDigital.API.Models
 {
@@ -6,7 +7,9 @@ namespace CEDigital.API.Models
     {   
         [Key]
         public int IdCarrera { get; set; }
-        public string NombreCarrera { get; set; } = null!;
+
+        [Required]
+        public required string NombreCarrera { get; set; }
     }
 
     public class CarreraCreateDto

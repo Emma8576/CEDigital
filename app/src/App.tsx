@@ -84,12 +84,12 @@ function App() {
               {/* Rutas protegidas para estudiante */}
               <Route path="/student/dashboard" element={
                 <ProtectedRoute allowedTypes={["estudiante"]}>
-                  <StudentDashboard />
+                  <StudentDashboard user={user} />
                 </ProtectedRoute>
               } />
               <Route path="/student/course/:courseId" element={
                 <ProtectedRoute allowedTypes={["estudiante"]}>
-                  <StudentCourseView />
+                  <StudentCourseView user={user} />
                 </ProtectedRoute>
               } />
 

@@ -35,6 +35,18 @@ namespace CEDigital.API.Data
                 .WithMany(g => g.Estudiantes)  
                 .HasForeignKey(eg => eg.IdGrupo);
 
+            modelBuilder.Entity<GrupoTrabajo>()
+                .ToTable("GrupoTrabajo");
+
+            modelBuilder.Entity<EstudianteGrupoTrabajo>()
+                .ToTable("EstudianteGrupoTrabajo")
+                .HasKey(egt => new { egt.IdGrupoTrabajo, egt.CarnetEstudiante });
+
+            modelBuilder.Entity<EstudianteGrupoTrabajo>()
+                .HasOne(egt => egt.GrupoTrabajo)
+                .WithMany(gt => gt.EstudianteGrupoTrabajo)
+                .HasForeignKey(egt => egt.IdGrupoTrabajo);
+
             base.OnModelCreating(modelBuilder); 
         }   
         public DbSet<Semestre> Semestres { get; set; }
@@ -44,11 +56,12 @@ namespace CEDigital.API.Data
         public DbSet<EstudianteGrupo> EstudianteGrupos { get; set; }
         public DbSet<Carpeta> Carpetas { get; set; }
         public DbSet<Noticia> Noticias { get; set; }
-        /*public DbSet<Archivo> Archivos { get; set; }
+        public DbSet<Archivo> Archivos { get; set; }
         public DbSet<Rubro> Rubros { get; set; }
         public DbSet<Evaluacion> Evaluaciones { get; set; }
         public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
         public DbSet<Entrega> Entregas { get; set; }
-        public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }*/
+        public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }
+        public DbSet<EstudianteGrupoTrabajo> EstudianteGrupoTrabajos { get; set; }
     }
 }

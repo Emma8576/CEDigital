@@ -6,19 +6,18 @@ namespace CEDigital.API.Models
     public class Curso
     {
         [Key]
-        public string CodigoCurso { get; set; }
+        public required string CodigoCurso { get; set; }
 
         [Required]
-        public string NombreCurso { get; set; }
+        public required string NombreCurso { get; set; }
 
         [Required]
         public int Creditos { get; set; }
 
         [Required]
+        [ForeignKey("Carrera")]
         public int IdCarrera { get; set; }
-
-        [ForeignKey("IdCarrera")]
-        public Carrera Carrera { get; set; }
+        public required Carrera Carrera { get; set; }
     }
 
     public class CursoCreateDto
@@ -38,6 +37,7 @@ namespace CEDigital.API.Models
 
     public class CursoEstudianteDto
     {
+        public int IdGrupo { get; set; }
         public string CodigoCurso { get; set; }
         public string NombreCurso { get; set; }
         public int NumeroGrupo { get; set; }

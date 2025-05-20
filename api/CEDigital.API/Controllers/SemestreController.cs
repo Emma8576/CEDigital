@@ -24,7 +24,7 @@ namespace CEDigital.API.Controllers
         }
 
         // GET: api/Semestre/5
-        [HttpGet("{id}")] //busca todos los semestres existentes
+        [HttpGet("{id}")]
         public async Task<ActionResult<Semestre>> GetSemestre(int id)
         {
             var semestre = await _context.Semestres.FindAsync(id);
@@ -36,13 +36,21 @@ namespace CEDigital.API.Controllers
         }
 
         // POST: api/Semestre
-        [HttpPost] //enviar una nueva tupla ( un nuevo semestre a la DB)
+        [HttpPost]
         public async Task<ActionResult<Semestre>> CreateSemestre(SemestreCreateDto dto)
         {
+            var curso = await _context.Cursos.FindAsync(dto.CodigoCurso);
+            if (curso == null)
+                return BadRequest("El curso especificado no existe.");
+
             var semestre = new Semestre
             {
                 Periodo = dto.Periodo,
-                Año = dto.Año
+                Año = dto.Año,
+                CodigoCurso = dto.CodigoCurso,
+                CodigoCursoNavigation = dto.CodigoCurso,
+                Curso = curso,
+                IdSemestreNavigation = dto.IdSemestreNavigation
             };
 
             _context.Semestres.Add(semestre);
@@ -52,15 +60,22 @@ namespace CEDigital.API.Controllers
         }
 
         // PUT: api/Semestre/5
-        [HttpPut("{id}")] //actializa los datos de un semestre segun un id
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSemestre(int id, SemestreUpdateDto dto)
         {
             var semestre = await _context.Semestres.FindAsync(id);
             if (semestre == null)
                 return NotFound();
 
+            var curso = await _context.Cursos.FindAsync(dto.CodigoCurso);
+            if (curso == null)
+                return BadRequest("El curso especificado no existe.");
+
             semestre.Periodo = dto.Periodo;
-            semestre.Año = dto.Año;
+            semestre.CodigoCurso = dto.CodigoCurso;
+            semestre.CodigoCursoNavigation = dto.CodigoCurso;
+            semestre.Curso = curso;
+            semestre.IdSemestreNavigation = dto.IdSemestreNavigation;
 
             _context.Entry(semestre).State = EntityState.Modified;
 
@@ -80,7 +95,7 @@ namespace CEDigital.API.Controllers
         }
 
         // DELETE: api/Semestre/5
-        [HttpDelete("{id}")] // busca un semestre por id
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSemestre(int id)
         {
             var semestre = await _context.Semestres.FindAsync(id);

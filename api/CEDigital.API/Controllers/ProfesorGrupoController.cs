@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Models;
 using CEDigital.API.Data;
+using System.Collections.Generic;
 
 namespace CEDigital.API.Controllers
 {
@@ -50,8 +51,8 @@ namespace CEDigital.API.Controllers
         [HttpPost] //Agrega un profesor a un grupo, verifica que no hayan mas de 2
         public async Task<IActionResult> PostProfesoresGrupo(ProfesorGrupoCreateDto dto)
         {
-            var grupoExiste = await _context.Grupos.AnyAsync(g => g.IdGrupo == dto.IdGrupo);
-            if (!grupoExiste)
+            var grupo = await _context.Grupos.FindAsync(dto.IdGrupo);
+            if (grupo == null)
                 return NotFound($"Grupo con ID {dto.IdGrupo} no existe.");
 
             // Contar profesores actuales asignados al grupo
@@ -70,7 +71,9 @@ namespace CEDigital.API.Controllers
             var asignaciones = dto.CedulasProfesores.Select(cedula => new ProfesorGrupo
             {
                 IdGrupo = dto.IdGrupo,
-                CedulaProfesor = cedula
+                CedulaProfesor = cedula,
+                Grupo = grupo,
+                CedulasProfesores = new List<string> { cedula }
             });
 
             await _context.ProfesorGrupos.AddRangeAsync(asignaciones);
@@ -92,8 +95,8 @@ namespace CEDigital.API.Controllers
         [HttpPut("{idGrupo}")] //Modifica los profes asignados a un grupo
         public async Task<IActionResult> PutProfesoresGrupo(int idGrupo, ProfesorGrupoUpdateDto dto)
         {
-            var grupoExiste = await _context.Grupos.AnyAsync(g => g.IdGrupo == idGrupo);
-            if (!grupoExiste)
+            var grupo = await _context.Grupos.FindAsync(idGrupo);
+            if (grupo == null)
                 return NotFound($"Grupo con ID {idGrupo} no existe.");
 
             var existentes = await _context.ProfesorGrupos
@@ -105,7 +108,9 @@ namespace CEDigital.API.Controllers
             var nuevos = dto.CedulasProfesores.Select(cedula => new ProfesorGrupo
             {
                 IdGrupo = idGrupo,
-                CedulaProfesor = cedula
+                CedulaProfesor = cedula,
+                Grupo = grupo,
+                CedulasProfesores = new List<string> { cedula }
             });
 
             await _context.ProfesorGrupos.AddRangeAsync(nuevos);

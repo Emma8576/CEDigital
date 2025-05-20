@@ -20,12 +20,17 @@ namespace CEDigital.API.Controllers
         [HttpPost] //guarda una nueva noticia
         public async Task<ActionResult<Noticia>> PostNoticia(NoticiaCreateDto dto)
         {
+            var grupo = await _context.Grupos.FindAsync(dto.IdGrupo);
+            if (grupo == null)
+                return NotFound($"Grupo con ID {dto.IdGrupo} no existe.");
+
             var noticia = new Noticia
             {
                 Titulo = dto.Titulo,
                 Mensaje = dto.Mensaje,
                 FechaPublicacion = DateTime.Now,
-                IdGrupo = dto.IdGrupo
+                IdGrupo = dto.IdGrupo,
+                Grupo = grupo
             };
 
             _context.Noticias.Add(noticia);

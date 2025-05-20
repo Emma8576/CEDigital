@@ -31,6 +31,7 @@ namespace CEDigital.API.Controllers
             public string Id { get; set; }
             public string Nombre { get; set; }
             public string Tipo { get; set; } // estudiante, profesor, administrador
+            public string? Carnet { get; set; }
         }
 
         [HttpPost("Login")]
@@ -44,7 +45,7 @@ namespace CEDigital.API.Controllers
                 var estudiante = await _estudiantes.Find(e => e.Correo == correo && e.Password == passwordHash).FirstOrDefaultAsync();
                 if (estudiante != null)
                 {
-                    return new LoginResponse { Id = estudiante.Id!, Nombre = estudiante.Nombre!, Tipo = "estudiante" };
+                    return new LoginResponse { Id = estudiante.Id!, Nombre = estudiante.Nombre!, Tipo = "estudiante", Carnet = estudiante.Carnet };
                 }
             }
             else if (correo.EndsWith("@cecr.ac.cr"))
