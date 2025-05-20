@@ -55,8 +55,7 @@ namespace CEDigital.API.Controllers
             {
                 IdGrupo = dto.IdGrupo,
                 CarnetEstudiante = carnet,
-                Grupo = grupo,
-                CarnetsEstudiantes = new List<string> { carnet }
+                Grupo = grupo
             });
 
             await _context.EstudianteGrupos.AddRangeAsync(asignaciones);
@@ -122,17 +121,16 @@ namespace CEDigital.API.Controllers
 
             var cursos = grupos.Select(eg => new CursoEstudianteDto
             {
+                IdGrupo = eg.Grupo.IdGrupo,
                 CodigoCurso = eg.Grupo.CodigoCurso,
                 NombreCurso = eg.Grupo.Curso.NombreCurso, 
                 NumeroGrupo = eg.Grupo.NumeroGrupo,
-                Semestre = eg.Grupo.Semestre.Año.ToString(),
-                Periodo= eg.Grupo.Semestre.Periodo,
+                IdSemestre = eg.Grupo.Semestre.IdSemestre,
+                AñoSemestre = eg.Grupo.Semestre.Año,
+                PeriodoSemestre = eg.Grupo.Semestre.Periodo,
             }).ToList();
 
             return cursos;
         }
-
-
-
     }
 }

@@ -5,9 +5,6 @@ namespace CEDigital.API.Models
 {
     public class EstudianteGrupo
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public required string CarnetEstudiante { get; set; }
 
@@ -15,8 +12,6 @@ namespace CEDigital.API.Models
         [ForeignKey("Grupo")]
         public int IdGrupo { get; set; }
         public required Grupo Grupo { get; set; }
-
-        public required ICollection<string> CarnetsEstudiantes { get; set; } = new List<string>();
     }
 
     public class EstudianteGrupoDto
@@ -24,7 +19,6 @@ namespace CEDigital.API.Models
         public int IdGrupo { get; set; }
         public string CarnetEstudiante { get; set; }
     }
-
 
     public class EstudianteGrupoCreateDto
     {

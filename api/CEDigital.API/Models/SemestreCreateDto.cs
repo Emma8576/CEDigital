@@ -8,7 +8,7 @@ namespace CEDigital.API.Models
         public required string Periodo { get; set; }
 
         [Required]
-        public required string Año { get; set; }
+        public required int Año { get; set; }
 
         [Required]
         public required string CodigoCurso { get; set; }

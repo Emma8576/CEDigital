@@ -71,7 +71,6 @@ namespace CEDigital.API.Controllers
                 CodigoCurso = grupoDto.CodigoCurso,
                 IdSemestre = grupoDto.IdSemestre,
                 NumeroGrupo = grupoDto.NumeroGrupo,
-                CodigoCursoNavigation = grupoDto.CodigoCurso,
                 Curso = await _context.Cursos.FindAsync(grupoDto.CodigoCurso),
                 Semestre = await _context.Semestres.FindAsync(grupoDto.IdSemestre),
                 Estudiantes = new List<EstudianteGrupo>()

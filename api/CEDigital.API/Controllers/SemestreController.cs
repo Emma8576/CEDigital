@@ -39,18 +39,10 @@ namespace CEDigital.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Semestre>> CreateSemestre(SemestreCreateDto dto)
         {
-            var curso = await _context.Cursos.FindAsync(dto.CodigoCurso);
-            if (curso == null)
-                return BadRequest("El curso especificado no existe.");
-
             var semestre = new Semestre
             {
                 Periodo = dto.Periodo,
                 Año = dto.Año,
-                CodigoCurso = dto.CodigoCurso,
-                CodigoCursoNavigation = dto.CodigoCurso,
-                Curso = curso,
-                IdSemestreNavigation = dto.IdSemestreNavigation
             };
 
             _context.Semestres.Add(semestre);
@@ -67,15 +59,8 @@ namespace CEDigital.API.Controllers
             if (semestre == null)
                 return NotFound();
 
-            var curso = await _context.Cursos.FindAsync(dto.CodigoCurso);
-            if (curso == null)
-                return BadRequest("El curso especificado no existe.");
-
             semestre.Periodo = dto.Periodo;
-            semestre.CodigoCurso = dto.CodigoCurso;
-            semestre.CodigoCursoNavigation = dto.CodigoCurso;
-            semestre.Curso = curso;
-            semestre.IdSemestreNavigation = dto.IdSemestreNavigation;
+            semestre.Año = dto.Año;
 
             _context.Entry(semestre).State = EntityState.Modified;
 

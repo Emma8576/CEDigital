@@ -8,6 +8,21 @@ namespace CEDigital.API.Data
         public CEDigitalContext(DbContextOptions<CEDigitalContext> options) : base(options) { }
 
         public DbSet<Carrera> Carreras { get; set; }
+        public DbSet<Semestre> Semestres { get; set; }
+        public DbSet<Curso> Cursos { get; set; }
+        public DbSet<Grupo> Grupos { get; set; }
+        public DbSet<ProfesorGrupo> ProfesorGrupos { get; set; }
+        public DbSet<EstudianteGrupo> EstudianteGrupos { get; set; }
+        public DbSet<Carpeta> Carpetas { get; set; }
+        public DbSet<Noticia> Noticias { get; set; }
+        public DbSet<Archivo> Archivos { get; set; }
+        public DbSet<Rubro> Rubros { get; set; }
+        public DbSet<Evaluacion> Evaluaciones { get; set; }
+        public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
+        public DbSet<Entrega> Entregas { get; set; }
+        public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }
+        public DbSet<EstudianteGrupoTrabajo> EstudianteGrupoTrabajos { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Carrera>().ToTable("Carrera"); 
@@ -34,6 +49,17 @@ namespace CEDigital.API.Data
                 .HasOne(eg => eg.Grupo)
                 .WithMany(g => g.Estudiantes)  
                 .HasForeignKey(eg => eg.IdGrupo);
+                
+            modelBuilder.Entity<Grupo>()
+                .HasOne(g => g.Curso)
+                .WithMany()
+                .HasForeignKey(g => g.CodigoCurso)
+                .HasPrincipalKey(c => c.CodigoCurso);
+                
+            modelBuilder.Entity<Grupo>()
+                .HasOne(g => g.Semestre)
+                .WithMany()
+                .HasForeignKey(g => g.IdSemestre);
 
             modelBuilder.Entity<GrupoTrabajo>()
                 .ToTable("GrupoTrabajo");
@@ -49,19 +75,5 @@ namespace CEDigital.API.Data
 
             base.OnModelCreating(modelBuilder); 
         }   
-        public DbSet<Semestre> Semestres { get; set; }
-        public DbSet<Curso> Cursos { get; set; }
-        public DbSet<Grupo> Grupos { get; set; }
-        public DbSet<ProfesorGrupo> ProfesorGrupos { get; set; }
-        public DbSet<EstudianteGrupo> EstudianteGrupos { get; set; }
-        public DbSet<Carpeta> Carpetas { get; set; }
-        public DbSet<Noticia> Noticias { get; set; }
-        public DbSet<Archivo> Archivos { get; set; }
-        public DbSet<Rubro> Rubros { get; set; }
-        public DbSet<Evaluacion> Evaluaciones { get; set; }
-        public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
-        public DbSet<Entrega> Entregas { get; set; }
-        public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }
-        public DbSet<EstudianteGrupoTrabajo> EstudianteGrupoTrabajos { get; set; }
     }
 }

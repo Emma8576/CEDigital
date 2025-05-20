@@ -41,8 +41,9 @@ namespace CEDigital.API.Models
         public string CodigoCurso { get; set; }
         public string NombreCurso { get; set; }
         public int NumeroGrupo { get; set; }
-        public string Semestre { get; set; }
-        public string Periodo { get; set; }
+        public int IdSemestre { get; set; }
+        public int AñoSemestre { get; set; }
+        public string PeriodoSemestre { get; set; }
     }
 
 }

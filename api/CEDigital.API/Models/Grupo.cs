@@ -9,11 +9,8 @@ namespace CEDigital.API.Models
         public int IdGrupo { get; set; }
 
         [Required]
-        public required string CodigoCurso { get; set; }
-
-        [Required]
         [ForeignKey("Curso")]
-        public required string CodigoCursoNavigation { get; set; }
+        public required string CodigoCurso { get; set; }
         public required Curso Curso { get; set; }
 
         [Required]

@@ -12,19 +12,6 @@ namespace CEDigital.API.Models
         public required string Periodo { get; set; }
 
         [Required]
-        public required string Año { get; set; }
-
-        [Required]
-        public required string CodigoCurso { get; set; }
-
-        [ForeignKey("Curso")]
-        public required string CodigoCursoNavigation { get; set; }
-        public required Curso Curso { get; set; }
-
-        [ForeignKey("Semestre")]
-        public int? IdSemestreNavigation { get; set; }
-        public Semestre? SemestreNavigation { get; set; }
-
-        public ICollection<Semestre>? Semestres { get; set; }
+        public required int Año { get; set; }
     }
 }
