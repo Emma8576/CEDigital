@@ -31,7 +31,8 @@ interface Evaluacion {
     idRubroNavigation?: Rubro;
 }
 
-interface Entrega {
+// Rename Entrega interface to EntregaDto
+interface EntregaDto {
     idEntrega: number;
     idEvaluacion: number;
     idGrupoTrabajo?: number;
@@ -67,7 +68,7 @@ interface StudentEvaluationsProps {
 const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }) => {
     const [evaluations, setEvaluations] = useState<Evaluacion[]>([]);
     const [evaluationsByRubro, setEvaluationsByRubro] = useState<EvaluacionesPorRubro>({});
-    const [entregas, setEntregas] = useState<{ [key: number]: Entrega }>({});
+    const [entregas, setEntregas] = useState<{ [key: number]: EntregaDto }>({});
     const [notas, setNotas] = useState<{ [key: number]: NotaEvaluacion }>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -136,13 +137,13 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                 setEvaluations(processedEvaluations); // Keep flat list for easier iteration if needed
 
                 // Fetch deliveries and grades for each evaluation
-                const entregasMap: { [key: number]: Entrega } = {};
+                const entregasMap: { [key: number]: EntregaDto } = {};
                 const notasMap: { [key: number]: NotaEvaluacion } = {};
 
                 for (const evaluation of processedEvaluations) {
                     try {
                         // Fetch delivery status
-                        const entregaResponse = await axios.get<Entrega>(`http://localhost:5261/api/Entrega/estado/${evaluation.idEvaluacion}/${user.carnet}`);
+                        const entregaResponse = await axios.get<EntregaDto>(`http://localhost:5261/api/Entrega/estado/${evaluation.idEvaluacion}/${user.carnet}`);
                         entregasMap[evaluation.idEvaluacion] = entregaResponse.data;
                     } catch (err) {
                         // No delivery found, that's okay
@@ -215,31 +216,41 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
             }
 
             setUploadingFile(evaluationId);
-            // Clear previous success message for this evaluation
-            setUploadSuccessMessage(prev => ({ ...prev, [evaluationId]: null }));
+            // Clear previous success message for this evaluation (no longer needed with state update)
+            // setUploadSuccessMessage(prev => ({ ...prev, [evaluationId]: null }));
 
             const formData = new FormData();
             formData.append('file', file);
             formData.append('idEvaluacion', evaluationId.toString());
-            // Add idGrupoTrabajo if it's a group evaluation and available
+            // Add idGrupoTrabajo or carnetEstudiante based on evaluation type
             const evaluation = evaluations.find(e => e.idEvaluacion === evaluationId);
-            if (evaluation?.esGrupal && idGrupo) { // Assuming idGrupo from props is the group ID
-                formData.append('idGrupoTrabajo', idGrupo.toString());
-            } else if (!evaluation?.esGrupal) {
-                 formData.append('carnetEstudiante', user.carnet); // Only for individual uploads
-            }
-            
-            const response = await axios.post<{ message: string, filePath: string }>('http://localhost:5261/api/Entrega', formData, {
+             if (evaluation?.esGrupal) {
+                 // For group evaluations, need to find the IdGrupoTrabajo for the current user and evaluation
+                 // This might require a new endpoint or fetching all group memberships initially
+                 // For simplicity NOW, we'll assume the idGrupo passed to the component IS the IdGrupoTrabajo if esGrupal is true.
+                 // TODO: Implement proper fetching of IdGrupoTrabajo for the user/evaluation in a real app.
+                 formData.append('idGrupoTrabajo', idGrupo.toString()); // Using idGrupo from props as placeholder
+             } else {
+                  formData.append('carnetEstudiante', user.carnet); // For individual uploads
+             }
+
+            const response = await axios.post<EntregaDto>('http://localhost:5261/api/Entrega', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            // Temporarily show a success message instead of updating deliveries state
-            setUploadSuccessMessage(prev => ({ ...prev, [evaluationId]: response.data.message }));
-            
+            // Update the deliveries state with the new/updated delivery
+            setEntregas(prevEntregas => ({
+                ...prevEntregas,
+                [evaluationId]: response.data // Assuming response.data is the saved/updated EntregaDto
+            }));
+
+            // Temporarily show a success message instead of updating deliveries state (Removed)
+            // setUploadSuccessMessage(prev => ({ ...prev, [evaluationId]: response.data.message }));
+
             setUploadingFile(null);
-            
+
             // You might want to refetch deliveries here after a successful upload
             // to reflect the new state if the backend were fully functional.
             // For now, we just show a success message.
@@ -251,12 +262,37 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
         }
     };
 
+    // New function to handle delivery deletion
+    const handleDeleteDelivery = async (evaluationId: number, entregaId: number) => {
+        try {
+            // Optional: Add a confirmation dialog here
+            const confirmDelete = window.confirm("¿Estás seguro de que quieres eliminar esta entrega?");
+            if (!confirmDelete) return;
+
+            await axios.delete(`http://localhost:5261/api/Entrega/${entregaId}`);
+
+            // Remove the deleted delivery from the state
+            setEntregas(prevEntregas => {
+                const newEntregas = { ...prevEntregas };
+                delete newEntregas[evaluationId];
+                return newEntregas;
+            });
+
+            console.log(`Entrega ${entregaId} eliminada exitosamente.`);
+            // Optional: Show a success message to the user
+
+        } catch (err) {
+            console.error(`Error deleting delivery ${entregaId}:`, err);
+            // Optional: Show an error message to the user
+        }
+    };
+
     const handleFileDownload = async (evaluationId: number) => {
         try {
-            const entrega = entregas[evaluationId];
-            if (!entrega) return;
+            const entregaActual = entregas[evaluationId];
+            if (!entregaActual) return;
 
-            const response = await axios.get(`http://localhost:5261/api/Entrega/descargar/${entrega.idEntrega}`, {
+            const response = await axios.get(`http://localhost:5261/api/Entrega/descargar/${entregaActual.idEntrega}`, {
                 responseType: 'blob'
             });
 
@@ -264,7 +300,8 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `entregable_${evaluationId}.zip`); // or whatever extension is appropriate
+            // Use the actual file name from the backend response
+            link.setAttribute('download', entregaActual.rutaEntregable); // Use the correct filename
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -322,12 +359,15 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                         {rubroData.evaluaciones.map((evaluation) => {
                             const nota = notas[evaluation.idEvaluacion];
                              // Find the Entrega for this evaluation, considering both individual and group
-                             const entrega = entregas[evaluation.idEvaluacion];
+                             const entregaActual = entregas[evaluation.idEvaluacion]; // Renamed to avoid conflict
 
                             // Determine the grade display based on available data
                             const gradeDisplay = nota && nota.publicada
                                 ? `${nota.porcentajeObtenido} / ${evaluation.valorPorcentual}%`
                                 : `-- / ${evaluation.valorPorcentual}%`;
+
+                            // Check if the deadline has passed
+                            const deadlinePassed = new Date() > new Date(evaluation.fechaHoraLimite);
 
                             return (
                                 <li key={evaluation.idEvaluacion} className="border-b border-gray-200 last:border-b-0">
@@ -433,7 +473,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                         {/* Upload/Download area */}
                                                         {evaluation.tieneEntregable && ( /* Only show if deliverable is required */
                                                             <div>
-                                                                 {entrega ? (
+                                                                 {entregaActual ? (
                                                                     // If there is a delivery
                                                                     <div className="space-y-2">
                                                                         <div>
@@ -442,7 +482,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                         </div>
                                                                         <div>
                                                                             <span className="font-medium text-gray-700">Fecha de Entrega:</span>
-                                                                            <span className="text-gray-700 ml-1">{new Date(entrega.fechaEntrega).toLocaleString()}</span>
+                                                                            <span className="text-gray-700 ml-1">{new Date(entregaActual.fechaEntrega).toLocaleString()}</span>
                                                                         </div>
                                                                         <button
                                                                             onClick={() => handleFileDownload(evaluation.idEvaluacion)}
@@ -455,14 +495,14 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                     </div>
                                                                 ) : ( /* No delivery */
                                                                     // Check if the evaluation date limit has passed
-                                                                    new Date() > new Date(evaluation.fechaHoraLimite) ? (
+                                                                    deadlinePassed ? (
                                                                         // If no delivery and past due
                                                                         <p className="text-red-600">Entrega no realizada. La fecha límite ha pasado.</p>
-                                                                    ) : (
-                                                                        // If no delivery and not past due
+                                                                    ) : ( // If no delivery and not past due
                                                                         <div className="space-y-2">
                                                                              <p className="text-yellow-700 font-medium">Estado: Pendiente de entrega.</p>
-                                                                            {/* File Upload Area - Simplified for now */}                                                                             <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                                                            {/* File Upload Area - Simplified for now */}
+                                                                             <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                                                                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                                                                     <svg className="w-8 h-8 mb-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                                                                                     <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click para subir</span> o arrastra y suelta</p>
@@ -480,18 +520,29 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                             {uploadingFile === evaluation.idEvaluacion && (
                                                                                 <span className="ml-2 text-gray-600 text-sm">Subiendo...</span>
                                                                             )}
-                                                                            {/* Display success message */}                                                                             {uploadSuccessMessage[evaluation.idEvaluacion] && (
+                                                                            {/* Display success message */}
+                                                                             {/* {uploadSuccessMessage[evaluation.idEvaluacion] && (
                                                                                 <span className="ml-2 text-green-600 text-sm">{uploadSuccessMessage[evaluation.idEvaluacion]}</span>
-                                                                             )}
+                                                                             )} */}
                                                                             {/* Optional: Entrega mediante Enlace (URL) - Placeholder */}
                                                                             {/* <button className="text-blue-600 hover:underline text-sm mt-1">o Entregar mediante un Enlace (URL)</button> */}
                                                                         </div>
                                                                     )
                                                                 )}
+
+                                                                 {/* Eliminar Entrega button - Show only if delivery exists and deadline has not passed */}
+                                                                 {entregaActual && !deadlinePassed && (
+                                                                     <button
+                                                                         onClick={() => handleDeleteDelivery(evaluation.idEvaluacion, entregaActual.idEntrega)}
+                                                                         className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 mt-2"
+                                                                     >
+                                                                         Eliminar Entrega
+                                                                     </button>
+                                                                 )}
                                                             </div>
                                                         )}
 
-                                                        {/* Nota obtenida */}                                                         <div className="mt-4">
+                                                         {/* Nota obtenida */}                                                         <div className="mt-4">
                                                             <span className="font-medium text-gray-700">Nota obtenida:</span>
                                                              {/* Show obtained grade if available, otherwise -- */}
                                                             <span className="text-gray-800 ml-1">{nota && nota.publicada ? nota.porcentajeObtenido : '--'} / {evaluation.valorPorcentual}%</span> {/* Using ValorPorcentual as total here too */}                                                         </div>
