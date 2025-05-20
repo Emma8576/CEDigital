@@ -109,12 +109,11 @@ CREATE TABLE Evaluacion (
 
 -- GrupoTrabajo (muchos estudiantes por grupo de trabajo)
 CREATE TABLE GrupoTrabajo (
-    IdGrupoTrabajo INT IDENTITY PRIMARY KEY, --Auto incremental
-    CarnetEstudiante VARCHAR(20) NOT NULL,  -- CarnetEstudiante viene desde la base de MongoDB
-	--IdGrupo INT NOT NULL,
-	IdEvaluacion INT NOT NULL, 
-	--FOREIGN KEY (IdGrupo) REFERENCES Grupo(IdGrupo),
-	FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion)
+    CarnetEstudiante VARCHAR(20) NOT NULL, -- CarnetEstudiante viene desde la base de MongoDB
+    IdGrupoTrabajo INT NOT NULL,
+    IdEvaluacion INT NOT NULL,
+    PRIMARY KEY (CarnetEstudiante, IdGrupoTrabajo, IdEvaluacion),
+    FOREIGN KEY (IdEvaluacion) REFERENCES  Evaluacion(IdEvaluacion)
 );
 
 -- Entrega (una por estudiante o por grupo según Evaluacion.EsGrupal)

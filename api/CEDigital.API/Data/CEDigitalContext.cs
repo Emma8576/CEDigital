@@ -19,6 +19,7 @@ namespace CEDigital.API.Data
             modelBuilder.Entity<Archivo>().ToTable("Archivo");
             modelBuilder.Entity<Rubro>().ToTable("Rubro");
             modelBuilder.Entity<Evaluacion>().ToTable("Evaluacion");
+            modelBuilder.Entity<GrupoTrabajo>().ToTable("GrupoTrabajo");
 
             modelBuilder.Entity<ProfesorGrupo>()
                 .ToTable("ProfesorGrupo")
@@ -38,6 +39,10 @@ namespace CEDigital.API.Data
                 .WithMany(g => g.Estudiantes)  
                 .HasForeignKey(eg => eg.IdGrupo);
 
+            modelBuilder.Entity<GrupoTrabajo>()
+                .HasKey(gt => new { gt.CarnetEstudiante, gt.IdGrupoTrabajo, gt.IdEvaluacion });
+
+
             base.OnModelCreating(modelBuilder); 
         }   
         public DbSet<Semestre> Semestres { get; set; }
@@ -50,8 +55,8 @@ namespace CEDigital.API.Data
         public DbSet<Archivo> Archivos { get; set; }
         public DbSet<Rubro> Rubros { get; set; }
         public DbSet<Evaluacion> Evaluaciones { get; set; }
-        /*public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
-        public DbSet<Entrega> Entregas { get; set; }
+        public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
+        /*public DbSet<Entrega> Entregas { get; set; }
         public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }*/
     }
 }
