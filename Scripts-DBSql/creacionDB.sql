@@ -124,8 +124,7 @@ CREATE TABLE Entrega (
     CarnetEstudiante VARCHAR(20) NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = F; podría ser null
     FechaEntrega DATETIME NOT NULL,
     RutaEntregable VARCHAR(500),
-    FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion),
-	FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo)
+    FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion)
 );
 
 -- Nota de evaluacion
@@ -136,10 +135,9 @@ CREATE TABLE NotaEvaluacion (
 	RutaArchivoDetalles VARCHAR(500),
 	Publicada BIT NOT NULL,
 	IdEvaluacion INT,
-	IdGrupoTrabajo INT NOT NULL,
-    
+	CarnetEstudiante VARCHAR(20) NULL, -- Puede ser NULL si la evaluación es grupal
+    IdGrupoTrabajo INT NULL,           -- Puede ser NULL si la evaluación es individual
     FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion),
-	FOREIGN KEY (IdGrupoTrabajo) REFERENCES GrupoTrabajo(IdGrupoTrabajo)
 );
 
 

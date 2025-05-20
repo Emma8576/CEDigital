@@ -20,6 +20,8 @@ namespace CEDigital.API.Data
             modelBuilder.Entity<Rubro>().ToTable("Rubro");
             modelBuilder.Entity<Evaluacion>().ToTable("Evaluacion");
             modelBuilder.Entity<GrupoTrabajo>().ToTable("GrupoTrabajo");
+            modelBuilder.Entity<Entrega>().ToTable("Entrega");
+            modelBuilder.Entity<NotaEvaluacion>().ToTable("NotaEvaluacion");
 
             modelBuilder.Entity<ProfesorGrupo>()
                 .ToTable("ProfesorGrupo")
@@ -42,6 +44,20 @@ namespace CEDigital.API.Data
             modelBuilder.Entity<GrupoTrabajo>()
                 .HasKey(gt => new { gt.CarnetEstudiante, gt.IdGrupoTrabajo, gt.IdEvaluacion });
 
+            modelBuilder.Entity<GrupoTrabajo>()
+                .HasKey(gt => gt.IdGrupoTrabajo);
+
+            modelBuilder.Entity<Entrega>()
+                .HasOne<GrupoTrabajo>()
+                .WithMany(gt => gt.Entregas)
+                .HasForeignKey(e => e.IdGrupoTrabajo);
+
+        
+            modelBuilder.Entity<NotaEvaluacion>()
+                .HasOne(ne => ne.Evaluacion)
+                .WithMany() // <--- SIN propiedad inversa
+                .HasForeignKey(ne => ne.IdEvaluacion);
+
 
             base.OnModelCreating(modelBuilder); 
         }   
@@ -56,7 +72,7 @@ namespace CEDigital.API.Data
         public DbSet<Rubro> Rubros { get; set; }
         public DbSet<Evaluacion> Evaluaciones { get; set; }
         public DbSet<GrupoTrabajo> GrupoTrabajos { get; set; }
-        /*public DbSet<Entrega> Entregas { get; set; }
-        public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }*/
+        public DbSet<Entrega> Entregas { get; set; }
+        public DbSet<NotaEvaluacion> NotaEvaluaciones { get; set; }
     }
 }

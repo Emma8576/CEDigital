@@ -10,6 +10,9 @@ namespace CEDigital.API.Models
         public int IdGrupoTrabajo { get; set; }
 
         public int IdEvaluacion { get; set; }
+
+        public ICollection<Entrega> Entregas { get; set; }
+        public ICollection<NotaEvaluacion>? NotasEvaluacion { get; set; }
     }
 
     public class GrupoTrabajoCreateDto

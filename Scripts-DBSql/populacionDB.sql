@@ -112,15 +112,20 @@ VALUES ('EstudPrueba01', 1, 3),
 ('EstudPrueba02', 1, 3);
 
 -- Entregas
-INSERT INTO Entrega (IdEvaluacion, IdGrupoTrabajo, CarnetEstudiante, FechaEntrega, RutaEntregable)
-VALUES
 -- Para entregas individuales
-(1, NULL, 'EstudPrueba01', GETDATE(), '/entregas/quiz1_est1.pdf'),
-(2, NULL, 'EstudPrueba01', GETDATE(), '/entregas/examen1_est1.pdf'),
+INSERT INTO Entrega (IdEvaluacion, CarnetEstudiante, FechaEntrega, RutaEntregable)
+VALUES
+(1, 'EstudPrueba01', GETDATE(), '/entregas/quiz1_est1.pdf'),
+(2, 'EstudPrueba01', GETDATE(), '/entregas/examen1_est1.pdf');
 -- Para entrega grupal
-(3, 1, NULL, GETDATE(), '/entregas/proyecto1_grupo1.zip');
+INSERT INTO Entrega (IdEvaluacion, IdGrupoTrabajo, FechaEntrega, RutaEntregable)
+VALUES
+(3, 1, GETDATE(), '/entregas/proyecto1_grupo1.zip');
 
 -- NotaEvaluacion
+-- Grupal
 INSERT INTO NotaEvaluacion (PorcentajeObtenido, Observaciones, RutaArchivoDetalles, Publicada, IdEvaluacion, IdGrupoTrabajo)
-VALUES
-(85.50, 'Buen trabajo en el proyecto', '/notas/proyecto1_detalles.pdf', 1, 3, 1);
+VALUES (35.95, 'Buen trabajo en el proyecto', '/notas/proyecto1_detalles.pdf', 0, 3, 1);
+--individual
+INSERT INTO NotaEvaluacion (PorcentajeObtenido, Observaciones, RutaArchivoDetalles, Publicada, IdEvaluacion, CarnetEstudiante)
+VALUES (14.00, 'Excelente desempeño en el quiz', '/notas/quiz1_detalles.pdf', 0, 1, 'EstudPrueba01');
