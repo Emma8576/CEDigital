@@ -4,6 +4,8 @@ using CEDigital.API.Models;
 using CEDigital.API.Data;
 using System.Linq;
 using System.Collections.Generic;
+using CEDigital.API.Services;
+using Microsoft.Extensions.Logging;
 
 namespace CEDigital.API.Controllers
 {
@@ -12,10 +14,14 @@ namespace CEDigital.API.Controllers
     public class EstudianteGrupoController : ControllerBase
     {
         private readonly CEDigitalContext _context;
+        private readonly MongoDBService _mongoDbService;
+        private readonly ILogger<EstudianteGrupoController> _logger;
 
-        public EstudianteGrupoController(CEDigitalContext context)
+        public EstudianteGrupoController(CEDigitalContext context, MongoDBService mongoDbService, ILogger<EstudianteGrupoController> logger)
         {
             _context = context;
+            _mongoDbService = mongoDbService;
+            _logger = logger;
         }
 
        // GET: api/EstudianteGrupo/grupo-con-estudiantes/5
@@ -47,30 +53,65 @@ namespace CEDigital.API.Controllers
 
         // GET: api/EstudianteGrupo/grupo-trabajo-miembros/{carnetEstudiante}/{idEvaluacion}
         [HttpGet("grupo-trabajo-miembros/{carnetEstudiante}/{idEvaluacion}")]
-        public async Task<ActionResult<IEnumerable<string>>> GetGrupoTrabajoMiembros(
+        public async Task<ActionResult<IEnumerable<GrupoTrabajoMiembroDto>>> GetGrupoTrabajoMiembros(
             string carnetEstudiante, int idEvaluacion)
         {
+            _logger.LogInformation("Fetching group members for student {CarnetEstudiante} and evaluation {IdEvaluacion}", carnetEstudiante, idEvaluacion);
+
             // Find the IdGrupoTrabajo for the given student and evaluation
             var grupoTrabajo = await _context.GrupoTrabajo
                 .FirstOrDefaultAsync(gt => gt.CarnetEstudiante == carnetEstudiante && gt.IdEvaluacion == idEvaluacion);
 
             if (grupoTrabajo == null)
             {
+                _logger.LogWarning("No group found for student {CarnetEstudiante} and evaluation {IdEvaluacion}", carnetEstudiante, idEvaluacion);
                 return NotFound("Estudiante no encontrado en un grupo de trabajo para esta evaluación.");
             }
 
+            _logger.LogInformation("Found group trabajo ID: {IdGrupoTrabajo}", grupoTrabajo.IdGrupoTrabajo);
+
             // Find all students in the same GrupoTrabajo
-            var miembrosGrupo = await _context.GrupoTrabajo
+            var miembrosGrupoCarnets = await _context.GrupoTrabajo
                 .Where(gt => gt.IdGrupoTrabajo == grupoTrabajo.IdGrupoTrabajo)
                 .Select(gt => gt.CarnetEstudiante)
                 .ToListAsync();
 
-            if (!miembrosGrupo.Any())
+            if (!miembrosGrupoCarnets.Any())
             {
+                _logger.LogWarning("No members found in group trabajo {IdGrupoTrabajo}", grupoTrabajo.IdGrupoTrabajo);
                 return NotFound("No se encontraron miembros para este grupo de trabajo.");
             }
 
-            return miembrosGrupo;
+            _logger.LogInformation("Found {Count} members in group trabajo {IdGrupoTrabajo}: {Carnets}", miembrosGrupoCarnets.Count, grupoTrabajo.IdGrupoTrabajo, string.Join(", ", miembrosGrupoCarnets));
+
+            // Fetch student names from MongoDB for each carnet
+            var miembrosGrupoConNombres = new List<GrupoTrabajoMiembroDto>();
+            foreach (var carnet in miembrosGrupoCarnets)
+            {
+                _logger.LogInformation("Attempting to fetch student from MongoDB with carnet: {Carnet}", carnet);
+                var estudiante = await _mongoDbService.GetStudentByCarnetAsync(carnet);
+                if (estudiante != null)
+                {
+                    _logger.LogInformation("Found student in MongoDB: {Carnet} - {Nombre}", estudiante.Carnet, estudiante.Nombre);
+                    miembrosGrupoConNombres.Add(new GrupoTrabajoMiembroDto
+                    {
+                        Carnet = estudiante.Carnet,
+                        Nombre = estudiante.Nombre
+                    });
+                } else
+                {
+                    _logger.LogWarning("Student with carnet {Carnet} not found in MongoDB.", carnet);
+                     // Handle cases where student might not be in MongoDB (optional)
+                     miembrosGrupoConNombres.Add(new GrupoTrabajoMiembroDto
+                    {
+                        Carnet = carnet,
+                        Nombre = "Nombre no encontrado"
+                    });
+                }
+            }
+
+            _logger.LogInformation("Finished fetching group members. Returning {Count} members with names.", miembrosGrupoConNombres.Count);
+            return miembrosGrupoConNombres;
         }
 
         // POST: api/EstudianteGrupo
@@ -194,5 +235,12 @@ namespace CEDigital.API.Controllers
         public int IdSemestre { get; set; }
         public int AñoSemestre { get; set; }
         public string PeriodoSemestre { get; set; }
+    }
+
+    // DTO to return group member information
+    public class GrupoTrabajoMiembroDto
+    {
+        public string Carnet { get; set; }
+        public string Nombre { get; set; }
     }
 }

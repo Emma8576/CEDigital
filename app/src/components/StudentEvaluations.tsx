@@ -50,6 +50,12 @@ interface NotaEvaluacion {
     idGrupoTrabajo: number;
 }
 
+// New interface for group member DTO
+interface GrupoTrabajoMiembroDto {
+    carnet: string;
+    nombre: string;
+}
+
 interface StudentEvaluationsProps {
     idGrupo: number;
     user: {
@@ -67,7 +73,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
     const [error, setError] = useState<string | null>(null);
     const [uploadingFile, setUploadingFile] = useState<number | null>(null);
     const [expandedEvaluationIds, setExpandedEvaluationIds] = useState<Set<number>>(new Set());
-    const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: string[] }>({});
+    const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: GrupoTrabajoMiembroDto[] }>({}); // Updated state type
 
     // Function to toggle the expanded state of an evaluation
     const toggleExpand = (evaluationId: number) => {
@@ -183,7 +189,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                 // Only fetch if members haven't been fetched for this evaluation yet
                 if (!groupMembers[evaluation.idEvaluacion]) {
                     try {
-                        const membersResponse = await axios.get<string[]>(`http://localhost:5261/api/EstudianteGrupo/grupo-trabajo-miembros/${user.carnet}/${evaluation.idEvaluacion}`);
+                        const membersResponse = await axios.get<GrupoTrabajoMiembroDto[]>(`http://localhost:5261/api/EstudianteGrupo/grupo-trabajo-miembros/${user.carnet}/${evaluation.idEvaluacion}`); // Updated return type
                         setGroupMembers(prev => ({
                             ...prev,
                             [evaluation.idEvaluacion]: membersResponse.data
@@ -381,8 +387,8 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                     <ul className="list-disc list-inside ml-4">
                                                                         {/* Map group members here when data is available */}
                                                                         {groupMembers[evaluation.idEvaluacion]?.length > 0 ? (
-                                                                            groupMembers[evaluation.idEvaluacion].map(memberCarnet => (
-                                                                                <li key={memberCarnet}>{memberCarnet}</li> // Display the carnet for now
+                                                                            groupMembers[evaluation.idEvaluacion].map(member => ( // Iterate over GrupoTrabajoMiembroDto objects
+                                                                                <li key={member.carnet}>{member.nombre}</li> // Use carnet for key and display nombre
                                                                             ))
                                                                         ) : (
                                                                             <li>Cargando miembros...</li>
