@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getGrupos, getCursos, getSemestres, crearGrupo } from "../services/grupoService";
+import {
+  getGrupos,
+  getCursos,
+  getSemestres,
+  crearGrupo,
+} from "../services/grupoService";
 
 const CargaGrupos = () => {
   const [grupos, setGrupos] = useState<any[]>([]);
@@ -9,13 +14,19 @@ const CargaGrupos = () => {
   const [codigoCurso, setCodigoCurso] = useState("");
   const [idSemestre, setIdSemestre] = useState<number | "">("");
   const [numeroGrupo, setNumeroGrupo] = useState<number>(1);
+  const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setGrupos(await getGrupos());
-        setCursos(await getCursos());
-        setSemestres(await getSemestres());
+        const [gruposData, cursosData, semestresData] = await Promise.all([
+          getGrupos(),
+          getCursos(),
+          getSemestres(),
+        ]);
+        setGrupos(gruposData);
+        setCursos(cursosData);
+        setSemestres(semestresData);
       } catch (error) {
         console.error("Error cargando datos:", error);
       }
@@ -27,16 +38,36 @@ const CargaGrupos = () => {
     e.preventDefault();
     if (!codigoCurso || !idSemestre) return;
 
+    const grupoYaExiste = grupos.some(
+      (grupo) =>
+        grupo.codigoCurso === codigoCurso &&
+        grupo.idSemestre === idSemestre &&
+        grupo.numeroGrupo === numeroGrupo
+    );
+
+    if (grupoYaExiste) {
+      setMensaje(`Ya existe el grupo ${numeroGrupo} para este curso en este semestre.`);
+      return;
+    }
+
     try {
-      await crearGrupo({ codigoCurso, idSemestre: Number(idSemestre), numeroGrupo });
+      await crearGrupo({
+        codigoCurso,
+        idSemestre: Number(idSemestre),
+        numeroGrupo,
+      });
+
       const nuevosGrupos = await getGrupos();
       setGrupos(nuevosGrupos);
+
       // Limpiar formulario
       setCodigoCurso("");
       setIdSemestre("");
       setNumeroGrupo(1);
+      setMensaje(""); // Limpiar mensaje
     } catch (error) {
       console.error("Error al crear grupo:", error);
+      setMensaje("Error al crear el grupo. Intente nuevamente.");
     }
   };
 
@@ -91,12 +122,19 @@ const CargaGrupos = () => {
           />
         </div>
 
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+        {mensaje && <p className="text-red-600 font-semibold">{mensaje}</p>}
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
           Agregar Grupo
         </button>
       </form>
 
-      <h2 className="text-lg font-semibold mb-2">Grupos Registrados ({grupos.length})</h2>
+      <h2 className="text-lg font-semibold mb-2">
+        Grupos Registrados ({grupos.length})
+      </h2>
       <table className="w-full border">
         <thead>
           <tr className="bg-gray-100">

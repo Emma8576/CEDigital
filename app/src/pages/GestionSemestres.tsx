@@ -39,11 +39,17 @@ const [semestreSeleccionado, setSemestreSeleccionado] = useState<number | null>(
       .catch(error => console.error("Error al agregar semestre:", error));
   };
 
-  const handleEliminarSemestre = (id: number) => {
-    eliminarSemestre(id)
-      .then(() => setSemestres(semestres.filter(s => s.idSemestre !== id)))
-      .catch(error => console.error("Error al eliminar semestre:", error));
-  };
+const handleEliminarSemestre = (id: number) => {
+  eliminarSemestre(id)
+    .then(() => {
+      setSemestres(semestres.filter(s => s.idSemestre !== id));
+    })
+    .catch(error => {
+      const mensaje = error.response?.data || "Error al eliminar semestre.";
+      alert(mensaje);
+    });
+};
+
     const handleAgregarCursos = (idSemestre: number) => {
       // Por ahora solo imprime en consola. Luego puedes conectar a un modal o navegación.
       console.log(`Agregar cursos al semestre con ID: ${idSemestre}`);

@@ -78,19 +78,30 @@ namespace CEDigital.API.Controllers
 
             return NoContent();
         }
+[HttpDelete("{id}")]
+public async Task<IActionResult> DeleteSemestre(int id)
+{
+    var semestre = await _context.Semestres.FindAsync(id);
+    if (semestre == null)
+        return NotFound();
 
-        // DELETE: api/Semestre/5
-        [HttpDelete("{id}")] // busca un semestre por id
-        public async Task<IActionResult> DeleteSemestre(int id)
-        {
-            var semestre = await _context.Semestres.FindAsync(id);
-            if (semestre == null)
-                return NotFound();
+    bool tieneGrupos = await _context.Grupos.AnyAsync(g => g.IdSemestre == id);
+    if (tieneGrupos)
+    {
+        return BadRequest("No se puede eliminar el semestre porque tiene cursos asociados.");
+    }
 
-            _context.Semestres.Remove(semestre);
-            await _context.SaveChangesAsync();
+    try
+    {
+        _context.Semestres.Remove(semestre);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+    catch (DbUpdateException ex)
+    {
+        return StatusCode(500, "Error de base de datos al intentar eliminar el semestre.");
+    }
+}
 
-            return NoContent();
-        }
     }
 }
