@@ -11,18 +11,18 @@ interface User {
 }
 
 interface Course {
-    idGrupo: number; // Added IdGrupo
+    idGrupo: number;
     codigoCurso: string;
     nombreCurso: string;
-    numeroGrupo: number; // Added NumeroGrupo from backend DTO
-    semestre: string; // Corresponds to Semestre property (Year)
-    periodo: string; // Corresponds to Periodo property
-    // Removed mock data specific fields like professor, schedule, semesterId
+    numeroGrupo: number;
+    idSemestre: number; // Added IdSemestre back
+    añoSemestre: number; // Corrected type to number
+    periodoSemestre: string; // Corrected property name to match backend DTO
 }
 
 interface Semester {
-  year: string; // Changed to string to match backend Semestre property
-  periodo: string; // Added Periodo property
+  year: number; // Corrected type to number
+  periodo: string; // Matches backend DTO PeriodoSemestre
   courses: Course[];
 }
 
@@ -36,11 +36,11 @@ interface StudentDashboardProps {
 
 const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
   const navigate = useNavigate();
-  const [semestersData, setSemestersData] = useState<Semester[]>([]); // State to hold grouped courses by semester
+  const [semestersData, setSemestersData] = useState<Semester[]>([]);
   const [selectedSemester, setSelectedSemester] = useState<Semester | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStudentCourses = async () => {
@@ -54,9 +54,10 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
         setLoading(true);
         const response = await axios.get<Course[]>(`http://localhost:5261/api/EstudianteGrupo/estudiante-cursos/${user.carnet}`);
         
-        // Group courses by semester (Year and Period)
+        // Group courses by semester (AñoSemestre and PeriodoSemestre)
         const groupedBySemester: { [key: string]: Course[] } = response.data.reduce((acc, course) => {
-          const semesterKey = `${course.semestre} - ${course.periodo}`; // Use year and period as key
+          // Use correct property names from backend DTO
+          const semesterKey = `${course.añoSemestre} - ${course.periodoSemestre}`;
           if (!acc[semesterKey]) {
             acc[semesterKey] = [];
           }
@@ -65,18 +66,19 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
         }, {} as { [key: string]: Course[] });
 
         const semestersArray: Semester[] = Object.keys(groupedBySemester).map(key => {
-          const [year, periodo] = key.split(' - ');
+          const [yearStr, periodo] = key.split(' - ');
+          const year = parseInt(yearStr); // Parse year string to number
           return {
-            year: year.trim(),
-            periodo: periodo.trim(),
+            year: year, // Use correct property name
+            periodo: periodo.trim(), // Use correct property name
             courses: groupedBySemester[key]
           };
         });
         
-        // Sort semesters by year and then period (assuming Period is '1', '2', 'V' or similar, adjust sorting if needed)
+        // Sort semesters by year and then period
         semestersArray.sort((a, b) => {
             if (a.year !== b.year) {
-                return parseInt(a.year) - parseInt(b.year);
+                return a.year - b.year; // Sort numerically for year
             }
             // Basic sorting for period, adjust if needed for 'V'
             if (a.periodo === 'V') return 1;
@@ -94,9 +96,8 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
     };
 
     fetchStudentCourses();
-  }, [user]); // Refetch if user changes (e.g., after login)
+  }, [user]);
 
-  // Cursos filtrados por semestre seleccionado
   const filteredCourses = selectedSemester ? selectedSemester.courses : [];
 
   // Breadcrumbs
@@ -181,23 +182,24 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
               )}
               {filteredCourses.map((course) => (
                 <div
-                  key={course.idGrupo} // Use IdGrupo as key
+                  key={course.idGrupo}
                   className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all group"
-                  onClick={() => navigate(`/student/course/${course.idGrupo}`)} // Pass IdGrupo to the course view
+                  onClick={() => navigate(`/student/course/${course.idGrupo}`)}
                 >
                   <BookOpenIcon className="w-12 h-12 text-green-400 mb-3 group-hover:text-green-600 transition-colors" />
                   <h3 className="font-bold text-lg text-gray-800 mb-1">{course.nombreCurso}</h3>
                   <p className="text-gray-600 text-sm mb-1">{course.codigoCurso} - Grupo {course.numeroGrupo}</p>
-                   {/* You might want to fetch professor info separately or add to DTO if needed */}
-                   {/* <p className="text-gray-500 text-xs">{course.professor}</p> */}
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Información del Curso Seleccionado (will be replaced by navigation) */}
-        
+        {/* Render the specific course view when a course is selected */}
+        {/* This part was previously handled by state and will now be handled by routing */}
+        {/* {selectedCourse && (
+          <StudentCourseView course={selectedCourse} user={user} />
+        )} */}
       </div>
     </div>
   );
