@@ -131,16 +131,6 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
                 Evaluaciones
               </button>
             </li>
-            {/* Notas Tab */}
-            <li role="presentation">
-              <button
-                className={`inline-block p-4 border-b-2 rounded-t-lg ${activeTab === 'notas' ? 'border-blue-600 text-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'}`}
-                onClick={() => setActiveTab('notas')}
-                type="button" role="tab" aria-controls="notas" aria-selected={activeTab === 'notas'}
-              >
-                Notas
-              </button>
-            </li>
           </ul>
         </div>
 
@@ -159,16 +149,11 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
             )}
             {activeTab === 'evaluaciones' && (
                 <div className="p-4 rounded-lg bg-gray-50" role="tabpanel" aria-labelledby="evaluaciones-tab">
-                    {/* Placeholder for Evaluaciones component */}
-                    {/* <StudentEvaluations idGrupo={idGrupo} user={user} /> */}
-                    <StudentEvaluations idGrupo={idGrupo} /> {/* Use StudentEvaluations component */}
-                </div>
-            )}
-            {activeTab === 'notas' && (
-                <div className="p-4 rounded-lg bg-gray-50" role="tabpanel" aria-labelledby="notas-tab">
-                    {/* Placeholder for Notas component */}
-                     {/* <StudentGrades idGrupo={idGrupo} user={user} /> */}
-                    <p>Contenido de Notas para el grupo {idGrupo}</p>
+                    {user ? (
+                        <StudentEvaluations idGrupo={idGrupo} user={user} />
+                    ) : (
+                        <div className="text-center text-red-600">Error: Usuario no autenticado</div>
+                    )}
                 </div>
             )}
         </div>

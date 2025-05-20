@@ -16,7 +16,7 @@ builder.Services.AddCors();
 // Configure MongoDB
 var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
 builder.Services.AddSingleton(mongoDbSettings);
-builder.Services.AddSingleton<MongoDbService>();
+builder.Services.AddSingleton<MongoDBService>();
 
 // Configure SQL Server
 builder.Services.AddDbContext<CEDigitalContext>(options =>

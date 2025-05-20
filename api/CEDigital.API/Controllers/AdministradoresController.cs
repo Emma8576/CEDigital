@@ -9,10 +9,10 @@ namespace CEDigital.API.Controllers
     [Route("api/[controller]")]
     public class AdministradoresController : ControllerBase
     {
-        private readonly MongoDbService _mongoDbService;
+        private readonly MongoDBService _mongoDbService;
         private readonly IMongoCollection<Administrador> _administradores;
 
-        public AdministradoresController(MongoDbService mongoDbService)
+        public AdministradoresController(MongoDBService mongoDbService)
         {
             _mongoDbService = mongoDbService;
             _administradores = _mongoDbService.GetCollection<Administrador>("administradores");

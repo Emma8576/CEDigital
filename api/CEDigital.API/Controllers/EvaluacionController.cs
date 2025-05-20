@@ -21,11 +21,32 @@ namespace CEDigital.API.Controllers
 
         // GET: api/Evaluacion/grupo/5
         [HttpGet("grupo/{idGrupo}")]
-        public async Task<ActionResult<IEnumerable<Evaluacion>>> GetEvaluacionesPorGrupo(int idGrupo)
+        public async Task<ActionResult<IEnumerable<object>>> GetEvaluacionesPorGrupo(int idGrupo)
         {
             var evaluaciones = await _context.Evaluaciones
-                .Where(e => e.IdRubroNavigation.IdGrupo == idGrupo) // Asumiendo que Rubro tiene navegacin a Grupo
-                .Include(e => e.IdRubroNavigation) // Incluir el Rubro para filtrar por grupo
+                .Where(e => e.IdRubroNavigation.IdGrupo == idGrupo)
+                .Include(e => e.IdRubroNavigation)
+                .Select(e => new
+                {
+                    e.IdEvaluacion,
+                    e.NombreEvaluacion,
+                    e.FechaHoraLimite,
+                    e.ValorPorcentual,
+                    e.EsGrupal,
+                    e.TieneEntregable,
+                    e.CantEstudiantesGrupo,
+                    e.RutaEspecificacion,
+                    Rubro = new
+                    {
+                        e.IdRubroNavigation.NombreRubro,
+                        e.IdRubroNavigation.Porcentaje
+                    },
+                    // Include group members' carnets for group evaluations
+                    GrupoMiembrosCarnets = e.EsGrupal ? _context.GrupoTrabajos
+                        .Where(gt => gt.IdEvaluacion == e.IdEvaluacion)
+                        .Select(gt => gt.CarnetEstudiante)
+                        .ToList() : null
+                })
                 .ToListAsync();
 
             if (!evaluaciones.Any())

@@ -48,8 +48,17 @@ namespace CEDigital.API.Controllers
             {
                 NombreCarpeta = dto.NombreCarpeta,
                 IdGrupo = dto.IdGrupo,
-                Grupo = await _context.Grupos.FindAsync(dto.IdGrupo)
+                Grupo = null!
             };
+
+            var grupo = await _context.Grupos.FindAsync(dto.IdGrupo);
+
+            if (grupo == null)
+            {
+                return BadRequest("Grupo no encontrado.");
+            }
+
+            carpeta.Grupo = grupo;
 
             _context.Carpetas.Add(carpeta);
             await _context.SaveChangesAsync();

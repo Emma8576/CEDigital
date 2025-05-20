@@ -14,7 +14,7 @@ CREATE TABLE Carrera (
 CREATE TABLE Semestre (
     IdSemestre INT IDENTITY PRIMARY KEY, --Auto incremental
 	Periodo CHAR(1) CHECK (Periodo IN ('1', '2', 'V')) NOT NULL,
-    Año INT NOT NULL
+    Aï¿½o INT NOT NULL
 );
 
 -- Curso
@@ -67,7 +67,7 @@ CREATE TABLE Archivo (
 	IdArchivo INT IDENTITY PRIMARY KEY, --Auto incremental
 	NombreArchivo VARCHAR(255) NOT NULL,
     FechaPublicacion DATETIME NOT NULL,
-    TamañoArchivo INT NOT NULL, -- en bytes
+    Tamaï¿½oArchivo INT NOT NULL, -- en bytes
 	IdCarpeta INT NOT NULL,
     Ruta VARCHAR(500),
 	FOREIGN KEY (IdCarpeta) REFERENCES Carpeta(IdCarpeta)
@@ -117,12 +117,12 @@ CREATE TABLE GrupoTrabajo (
 	FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion)
 );
 
--- Entrega (una por estudiante o por grupo según Evaluacion.EsGrupal)
+-- Entrega (una por estudiante o por grupo segï¿½n Evaluacion.EsGrupal)
 CREATE TABLE Entrega (
     IdEntrega INT IDENTITY PRIMARY KEY, --Auto incremental
     IdEvaluacion INT NOT NULL,
-	IdGrupoTrabajo INT NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = V; podría ser null
-    CarnetEstudiante VARCHAR(20) NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = F; podría ser null
+	IdGrupoTrabajo INT NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = V; podrï¿½a ser null
+    CarnetEstudiante VARCHAR(20) NULL, --Se usa IdGrupoTrabajo si Evaluacion.EsGrupal = F; podrï¿½a ser null
     FechaEntrega DATETIME NOT NULL,
     RutaEntregable VARCHAR(500),
     FOREIGN KEY (IdEvaluacion) REFERENCES Evaluacion(IdEvaluacion),

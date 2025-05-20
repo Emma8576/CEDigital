@@ -13,7 +13,7 @@ namespace CEDigital.API.Controllers
         private readonly IMongoCollection<Profesor> _profesores;
         private readonly IMongoCollection<Administrador> _administradores;
 
-        public AuthController(MongoDbService mongoDbService)
+        public AuthController(MongoDBService mongoDbService)
         {
             _estudiantes = mongoDbService.GetCollection<Estudiante>("estudiantes");
             _profesores = mongoDbService.GetCollection<Profesor>("profesores");

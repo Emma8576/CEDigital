@@ -35,6 +35,15 @@ namespace CEDigital.API.Data
             modelBuilder.Entity<Evaluacion>().ToTable("Evaluacion");
             modelBuilder.Entity<Archivo>().ToTable("Archivo");
 
+            // Configurar conversin para mapear INT de la base de datos a decimal en los modelos
+            modelBuilder.Entity<Rubro>()
+                .Property(r => r.Porcentaje)
+                .HasConversion<int>();
+
+            modelBuilder.Entity<Evaluacion>()
+                .Property(e => e.ValorPorcentual)
+                .HasConversion<int>();
+
             modelBuilder.Entity<Evaluacion>()
                 .HasOne(e => e.IdRubroNavigation)
                 .WithMany(r => r.Evaluaciones)

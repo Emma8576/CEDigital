@@ -71,10 +71,27 @@ namespace CEDigital.API.Controllers
                 CodigoCurso = grupoDto.CodigoCurso,
                 IdSemestre = grupoDto.IdSemestre,
                 NumeroGrupo = grupoDto.NumeroGrupo,
-                Curso = await _context.Cursos.FindAsync(grupoDto.CodigoCurso),
-                Semestre = await _context.Semestres.FindAsync(grupoDto.IdSemestre),
-                Estudiantes = new List<EstudianteGrupo>()
+                Curso = null!,
+                Semestre = null!,
+                Estudiantes = null!
             };
+
+            var curso = await _context.Cursos.FindAsync(grupoDto.CodigoCurso);
+            var semestre = await _context.Semestres.FindAsync(grupoDto.IdSemestre);
+
+            if (curso == null)
+            {
+                return BadRequest("Curso no encontrado.");
+            }
+
+            if (semestre == null)
+            {
+                return BadRequest("Semestre no encontrado.");
+            }
+
+            grupo.Curso = curso;
+            grupo.Semestre = semestre;
+            grupo.Estudiantes = new List<EstudianteGrupo>();
 
             _context.Grupos.Add(grupo);
 
