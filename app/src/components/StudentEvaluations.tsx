@@ -26,10 +26,9 @@ interface Evaluacion {
     valorPorcentual: number;
     esGrupal: boolean;
     tieneEntregable: boolean;
-    cantEstudiantesGrupo?: number;
+    cantEstudiantesGrupo: number;
     rutaEspecificacion?: string;
     idRubroNavigation?: Rubro;
-    grupoMiembrosCarnets?: string[];
 }
 
 interface Entrega {
@@ -104,8 +103,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                          idRubro: item.idRubro, // Assuming idRubro is also in the projection
                          nombreRubro: item.rubro.nombreRubro, // Use the nested Rubro object
                          porcentaje: item.rubro.porcentaje // Assuming porcentaje is in the projection
-                    },
-                    grupoMiembrosCarnets: item.grupoMiembrosCarnets
+                    }
                 }));
 
                 // Group evaluations by rubro name
@@ -351,12 +349,9 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                 <div className="mt-2">
                                                                     <p className="font-medium">Miembros del grupo:</p>
                                                                     <ul className="list-disc list-inside ml-4">
-                                                                        {/* Display group members' carnets (replace with names if possible later) */}
-                                                                        {evaluation.grupoMiembrosCarnets && evaluation.grupoMiembrosCarnets.length > 0 ? (
-                                                                            evaluation.grupoMiembrosCarnets.map(carnet => <li key={carnet}>{carnet}</li>)
-                                                                        ) : (
-                                                                            <li>No se encontraron miembros del grupo.</li>
-                                                                        )}
+                                                                        {/* Map group members here when data is available */}
+                                                                        <li> {/* Placeholder */} Cargando miembros...</li>
+                                                                        {/* Example: {groupMembers.map(member => <li key={member.id}>{member.name}</li>)} */}
                                                                     </ul>
                                                                 </div>
                                                             </div>

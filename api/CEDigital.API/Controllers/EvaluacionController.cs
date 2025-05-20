@@ -40,12 +40,7 @@ namespace CEDigital.API.Controllers
                     {
                         e.IdRubroNavigation.NombreRubro,
                         e.IdRubroNavigation.Porcentaje
-                    },
-                    // Include group members' carnets for group evaluations
-                    GrupoMiembrosCarnets = e.EsGrupal ? _context.GrupoTrabajos
-                        .Where(gt => gt.IdEvaluacion == e.IdEvaluacion)
-                        .Select(gt => gt.CarnetEstudiante)
-                        .ToList() : null
+                    }
                 })
                 .ToListAsync();
 
