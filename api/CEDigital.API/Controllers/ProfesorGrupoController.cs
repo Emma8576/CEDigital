@@ -47,6 +47,31 @@ namespace CEDigital.API.Controllers
             return profesores;
         }
 
+        [HttpGet("grupos-profesor/{cedula}")] //devuelve la cedula de los profesores por el id del grupo
+        public async Task<ActionResult<List<CursoProfesorDto>>> GetCursosPorProfesor(string cedula)
+        {
+            var grupos = await _context.ProfesorGrupos
+                    .Where(pg => pg.CedulaProfesor == cedula)
+                    .Include(pg => pg.Grupo)
+                        .ThenInclude(g => g.Curso) // Incluye el curso del grupo
+                    .Select(pg => new CursoProfesorDto{
+                        IdGrupo = pg.Grupo.IdGrupo,
+                        CodigoCurso = pg.Grupo.CodigoCurso,
+                        NombreCurso = pg.Grupo.Curso.NombreCurso,
+                        NumeroGrupo = pg.Grupo.NumeroGrupo,
+                        IdSemestre = pg.Grupo.Semestre.IdSemestre,
+                        AñoSemestre = pg.Grupo.Semestre.Año,
+                        PeriodoSemestre = pg.Grupo.Semestre.Periodo,
+                    })
+
+                    .ToListAsync();
+            if (grupos == null || grupos.Count == 0)
+                return NotFound($"El profesor no cuenta con grupos asignados");
+            
+
+            return grupos;
+        }
+
         // POST: api/ProfesorGrupo
         [HttpPost] //Agrega un profesor a un grupo, verifica que no hayan mas de 2
         public async Task<IActionResult> PostProfesoresGrupo(ProfesorGrupoCreateDto dto)
@@ -159,5 +184,16 @@ namespace CEDigital.API.Controllers
 
             return NoContent();
         }
+    }
+
+    public class CursoProfesorDto
+    {
+        public int IdGrupo { get; set; }
+        public string CodigoCurso { get; set; }
+        public string NombreCurso { get; set; }
+        public int NumeroGrupo { get; set; }
+        public int IdSemestre { get; set; }
+        public int AñoSemestre { get; set; }
+        public string PeriodoSemestre { get; set; }
     }
 }

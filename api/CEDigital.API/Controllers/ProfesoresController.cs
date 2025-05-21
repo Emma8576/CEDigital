@@ -33,6 +33,15 @@ namespace CEDigital.API.Controllers
             return profesor;
         }
 
+        [HttpGet("/cedula/{cedula}")]
+        public async Task<ActionResult<Profesor>> GetByCedula(string cedula)
+        {
+            var profesor = await _profesores.Find(e => e.Cedula == cedula).FirstOrDefaultAsync();
+            if (profesor == null)
+                return NotFound();
+            return profesor;
+        }
+
         [HttpPost]
         public async Task<ActionResult<Profesor>> Create(Profesor profesor)
         {

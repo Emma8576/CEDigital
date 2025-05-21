@@ -33,10 +33,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseCors(policy =>
     policy.AllowAnyOrigin()
           .AllowAnyHeader()
           .AllowAnyMethod());
+app.UseSwagger();
+app.UseSwaggerUI(o => o.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
 app.UseAuthorization();
 app.MapControllers();
 
