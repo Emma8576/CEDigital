@@ -198,9 +198,52 @@ namespace CEDigital.API.Controllers
             return Ok(notas);
         }
 
+        // GET: api/NotaEvaluacion/estudiante/{carnetEstudiante}/grupo/{idGrupo}
+        [HttpGet("estudiante/{carnetEstudiante}/grupo/{idGrupo}")] // Obtiene las notas de un estudiante para las evaluaciones dentro de un grupo específico
+        public async Task<ActionResult<IEnumerable<NotaEvaluacionDto>>> GetNotasPorEstudianteYGrupo(string carnetEstudiante, int idGrupo)
+        {
+            // Primero, encontrar los Rubros asociados a este grupo
+            var rubrosIds = await _context.Rubros
+                .Where(r => r.IdGrupo == idGrupo)
+                .Select(r => r.IdRubro)
+                .ToListAsync();
 
+            if (!rubrosIds.Any())
+            {
+                return Ok(new List<NotaEvaluacionDto>()); // No hay rubros para este grupo, por lo tanto no hay evaluaciones/notas
+            }
 
+            // Luego, encontrar las Evaluaciones asociadas a esos Rubros
+            var evaluacionesIds = await _context.Evaluaciones
+                .Where(e => rubrosIds.Contains(e.IdRubro))
+                .Select(e => e.IdEvaluacion)
+                .ToListAsync();
 
+            if (!evaluacionesIds.Any())
+            {
+                 return Ok(new List<NotaEvaluacionDto>()); // No hay evaluaciones para estos rubros, por lo tanto no hay notas
+            }
+
+            // Finalmente, buscar las Notas para estas Evaluaciones y el estudiante (o su grupo de trabajo si es grupal)
+            var notas = await _context.NotaEvaluaciones
+                .Where(n => evaluacionesIds.Contains(n.IdEvaluacion) &&
+                           (n.CarnetEstudiante == carnetEstudiante || // Para evaluaciones individuales
+                            (_context.GrupoTrabajos.Any(gt => gt.IdEvaluacion == n.IdEvaluacion && gt.CarnetEstudiante == carnetEstudiante && gt.IdGrupoTrabajo == n.IdGrupoTrabajo)))) // Para evaluaciones grupales
+                .Select(n => new NotaEvaluacionDto
+                {
+                    IdNotaEvaluacion = n.IdNotaEvaluacion,
+                    PorcentajeObtenido = n.PorcentajeObtenido,
+                    Observaciones = n.Observaciones,
+                    RutaArchivoDetalles = n.RutaArchivoDetalles,
+                    Publicada = n.Publicada,
+                    IdEvaluacion = n.IdEvaluacion,
+                    CarnetEstudiante = n.CarnetEstudiante,
+                    IdGrupoTrabajo = n.IdGrupoTrabajo
+                })
+                .ToListAsync();
+
+            return Ok(notas); // Retorna la lista de notas encontradas (puede estar vacía)
+        }
     }
 }
 

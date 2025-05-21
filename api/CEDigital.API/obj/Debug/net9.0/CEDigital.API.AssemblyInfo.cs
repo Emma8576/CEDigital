@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CEDigital.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b850f8b1baafd64f48894623ea700cef61b4c7a5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+32e0bf7df825019231faa4b50f9b8b6c125f3219")]
 [assembly: System.Reflection.AssemblyProductAttribute("CEDigital.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CEDigital.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

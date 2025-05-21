@@ -77,6 +77,18 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
     const [expandedEvaluationIds, setExpandedEvaluationIds] = useState<Set<number>>(new Set());
     const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: GrupoTrabajoMiembroDto[] }>({}); // Updated state type
 
+    // Calculate total obtained percentage
+    const totalObtainedPercentage = Object.values(notas).reduce((sum, nota) => {
+        // Only include published notes in the calculation
+        if (nota.publicada) {
+            return sum + nota.porcentajeObtenido;
+        }
+        return sum;
+    }, 0);
+
+    // Calculate final rounded grade
+    const finalRoundedGrade = Math.round(totalObtainedPercentage);
+
     // Function to toggle the expanded state of an evaluation
     const toggleExpand = (evaluationId: number) => {
         setExpandedEvaluationIds(prevIds => {
@@ -109,9 +121,9 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                     cantEstudiantesGrupo: item.cantEstudiantesGrupo,
                     rutaEspecificacion: item.rutaEspecificacion,
                     idRubroNavigation: {
-                         idRubro: item.idRubroNavigation?.idRubro, // Access from IdRubroNavigation
-                         nombreRubro: item.IdRubroNavigation?.nombreRubro, // Access from IdRubroNavigation
-                         porcentaje: item.IdRubroNavigation?.porcentaje // Access from IdRubroNavigation
+                         idRubro: item.idRubroNavigation?.idRubro, // Access from idRubroNavigation (corrected casing)
+                         nombreRubro: item.idRubroNavigation?.nombreRubro, // Access from idRubroNavigation (corrected casing)
+                         porcentaje: item.idRubroNavigation?.porcentaje // Access from idRubroNavigation (corrected casing)
                     }
                 }));
 
@@ -337,7 +349,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                     </div>
                 </div>
                 {/* Placeholder for Final Grade */}
-                <div className="text-xl font-bold text-gray-800">-- / 100</div>
+                <div className="text-xl font-bold text-gray-800">{finalRoundedGrade} / 100</div>
             </div>
 
             {/* Evaluaciones grouped by Rubro */}
@@ -347,7 +359,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                     <div className="flex items-center justify-between bg-gray-200 px-4 py-3">
                         <h4 className="text-lg font-semibold text-gray-700">{rubroNombre}</h4>
                         {/* Display Rubro's total percentage/points */}
-                        <div className="text-gray-700">-- / {rubroData.rubroPorcentaje}%</div>
+                        <div className="text-gray-700">{rubroData.rubroPorcentaje}%</div>
                          {/* Placeholder for Add/Remove Rubro if needed - Use the existing icon styles */}
                          {/* <button className="text-gray-500 hover:text-gray-700"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button> */}
                          {/* Placeholder for Expand/Collapse Rubro if needed - Use the existing icon styles */}
@@ -568,13 +580,13 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
             <div className="space-y-2 border-t pt-4">
                 <div className="flex justify-between items-center text-lg font-semibold text-gray-800">
                     <span>Nota Total (sin redondear)</span>
-                    {/* Placeholder Calculation */}
-                    <span>-- / 100</span>
+                    {/* Display calculated total obtained percentage */}
+                    <span>{totalObtainedPercentage.toFixed(2)} / 100</span>
                 </div>
                 <div className="flex justify-between items-center text-xl font-bold text-gray-800">
                     <span>Nota final</span>
-                    {/* Placeholder Calculation */}
-                    <span>-- / 100</span>
+                    {/* Display rounded final grade */}
+                    <span>{finalRoundedGrade} / 100</span>
                 </div>
             </div>
         </div>
