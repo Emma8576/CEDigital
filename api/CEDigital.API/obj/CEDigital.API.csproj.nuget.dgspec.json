@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Emmanuel Calvo\\Documents\\GitHub\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj": {}
+    "C:\\Users\\jrami\\Desktop\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Emmanuel Calvo\\Documents\\GitHub\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj": {
+    "C:\\Users\\jrami\\Desktop\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Emmanuel Calvo\\Documents\\GitHub\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
+        "projectUniqueName": "C:\\Users\\jrami\\Desktop\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
         "projectName": "CEDigital.API",
-        "projectPath": "C:\\Users\\Emmanuel Calvo\\Documents\\GitHub\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
-        "packagesPath": "C:\\Users\\Emmanuel Calvo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Emmanuel Calvo\\Documents\\GitHub\\CEDigital\\api\\CEDigital.API\\obj\\",
+        "projectPath": "C:\\Users\\jrami\\Desktop\\CEDigital\\api\\CEDigital.API\\CEDigital.API.csproj",
+        "packagesPath": "C:\\Users\\jrami\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jrami\\Desktop\\CEDigital\\api\\CEDigital.API\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Emmanuel Calvo\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\jrami\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -86,7 +92,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.202/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
