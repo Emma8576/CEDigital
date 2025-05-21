@@ -34,7 +34,26 @@ namespace CEDigital.API.Controllers
 
             return semestre;
         }
+        // GET: api/Semestre/5/cantidad-grupos
+        [HttpGet("{id}/cantidad-grupos")]
+        public async Task<ActionResult<SemestreCantidadGruposDto>> GetSemestreCantidadCursos(int id)
+        {
+            var semestreConGrupos = await _context.Semestres
+                .Where(s => s.IdSemestre == id)
+                .Select(s => new SemestreCantidadGruposDto
+                {
+                    IdSemestre = s.IdSemestre,
+                    Periodo = s.Periodo,
+                    Año = s.Año,
+                    CantidadGrupos = s.Grupos.Count()
+                })
+                .FirstOrDefaultAsync();
 
+            if (semestreConGrupos == null)
+                return NotFound();
+
+            return semestreConGrupos;
+        }
         // POST: api/Semestre
         [HttpPost] //enviar una nueva tupla ( un nuevo semestre a la DB)
         public async Task<ActionResult<Semestre>> CreateSemestre(SemestreCreateDto dto)

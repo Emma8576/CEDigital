@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { obtenerSemestres, crearSemestre, eliminarSemestre } from "../services/semestreService"; // Ajusta ruta si es necesario
+import { obtenerSemestres, crearSemestre, eliminarSemestre,obtenerSemestreCantidadGrupos } from "../services/semestreService"; // Ajusta ruta si es necesario
 //import FormularioAgregarGrupo from "./AgregarGrupo";
 type Semestre = {
   idSemestre: number;
   año: number;
   periodo: string;
+  cantidadGrupos: number;
 };
 
 const GestionSemestres = () => {
@@ -15,14 +16,39 @@ const GestionSemestres = () => {
 const [mostrarFormularioGrupo, setMostrarFormularioGrupo] = useState(false);
 const [semestreSeleccionado, setSemestreSeleccionado] = useState<number | null>(null);
 
+//Cada semestre muestra sus datos y la cantidad de grupos
+useEffect(() => {
+  obtenerSemestres()
+    .then(async response => {
+      const listaSemestres = response.data;
+      const semestresConGrupos = await Promise.all(
+        listaSemestres.map(async (sem: Semestre) => {
+          try {
+            const resp = await obtenerSemestreCantidadGrupos(sem.idSemestre);
+            return {
+              ...sem,
+              cantidadGrupos: resp.data.cantidadGrupos ?? 0,
+            };
+            //Si hay un error se muestra 0 en Grupos Activos
+          } catch (error) {
+            console.error(`Error al obtener cantidad de grupos para semestre ${sem.idSemestre}`, error);
+            return { ...sem, cantidadGrupos: 0 }; // fallback
+          }
+        })
+      );
 
+      setSemestres(semestresConGrupos);
+    })
+    .catch(error => console.error("Error al obtener semestres:", error));
+}, []);
 
+/*
   useEffect(() => {
     obtenerSemestres()
       .then(response => setSemestres(response.data))
       .catch(error => console.error("Error al obtener semestres:", error));
   }, []);
-
+*/
   const periodos = [
     { valor: "1", nombre: "1 - Primer Semestre" },
     { valor: "2", nombre: "2 - Segundo Semestre" },
@@ -80,6 +106,7 @@ const handleEliminarSemestre = (id: number) => {
             <tr className="bg-blue-100 text-left">
               <th className="p-3">Año</th>
               <th className="p-3">Periodo</th>
+              <th className="p-3">Grupos Activos</th>
               <th className="p-3">Acciones</th>
             </tr>
           </thead>
@@ -88,6 +115,7 @@ const handleEliminarSemestre = (id: number) => {
               <tr key={sem.idSemestre} className="border-t">
                 <td className="p-3">{sem.año}</td>
                 <td className="p-3">{sem.periodo}</td>
+                <td className="p-3">{sem.cantidadGrupos ?? 0}</td>
                 <td className="p-3 flex gap-2">
                   <button 
                     onClick={() => handleEliminarSemestre(sem.idSemestre)}

@@ -13,3 +13,7 @@ export const crearSemestre = (semestre: { año: number; periodo: string }) => {
 export const eliminarSemestre = (id: number) => {
   return axios.delete(`${API_URL}/${id}`);
 };
+
+export const obtenerSemestreCantidadGrupos = (id: number) => {
+  return axios.get(`${API_URL}/${id}/cantidad-grupos`);
+};
