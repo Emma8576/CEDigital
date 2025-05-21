@@ -3,7 +3,7 @@ import Navbar from "./components/NavBar";
 import Dashboard from "./pages/Dashboard";
 import GestionCursos from "./pages/GestionCursos";
 import GestionSemestres from "./pages/GestionSemestres";
-import CargaGrupos from "./pages/CargaGrupos";
+import CargaGrupos from "./pages/GestionGrupos";
 import CargaSemestre from "./pages/CargaSemestre";
 import GestionProfesores from "./pages/GestionProfesores";
 

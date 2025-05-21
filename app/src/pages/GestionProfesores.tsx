@@ -63,7 +63,10 @@ const GestionProfesores = () => {
           Registrar Profesor
         </button>
       </div>
-
+      {/* Descripción */}
+      <div className="text-gray-700">
+        En esta sección puede agregar nuevos profesores al sistema.
+      </div>
       {mostrarFormulario && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-md space-y-4">
           <h2 className="text-lg font-bold text-gray-800">Nuevo Profesor</h2>
