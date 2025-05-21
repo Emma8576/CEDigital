@@ -1,28 +1,32 @@
 import { useState, useEffect } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { crearProfesor, obtenerProfesores } from "../services/profesorService";
+import { crearEstudiante, obtenerEstudiantes } from "../services/estudianteService";
 
-export type Profesor = {
+export type Estudiante = {
+  carnet: number;
   cedula: number;
   nombre: string;
   correo: string;
+  telefono: string;
   password: string;
 };
 
-const GestionProfesores = () => {
-  const [profesores, setProfesores] = useState<Profesor[]>([]);
+const GestionEstudiantes = () => {
+  const [estudiantes, setEstudiantes] = useState<Estudiante[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [nuevoProfesor, setNuevoProfesor] = useState<Profesor>({
+  const [nuevoEstudiante, setNuevoEstudiante] = useState<Estudiante>({
+    carnet: 0,
     cedula: 0,
     nombre: "",
     correo: "",
+    telefono: "",
     password: "",
   });
 
   useEffect(() => {
-    obtenerProfesores()
-      .then((response) => setProfesores(response.data))
-      .catch((error) => console.error("Error al obtener profesores:", error));
+    obtenerEstudiantes()
+      .then((response) => setEstudiantes(response.data))
+      .catch((error) => console.error("Error al obtener estudiantes:", error));
   }, []);
 
   const hashPassword = async (password: string) => {
@@ -34,56 +38,70 @@ const GestionProfesores = () => {
       .join("");
   };
 
-  const handleAgregarProfesor = async () => {
+  const handleAgregarEstudiante = async () => {
     try {
-      const hashedPassword = await hashPassword(nuevoProfesor.password);
-      const profesorConPasswordEncriptado = {
-        ...nuevoProfesor,
+      const hashedPassword = await hashPassword(nuevoEstudiante.password);
+      const estudianteConPasswordEncriptado = {
+        ...nuevoEstudiante,
         password: hashedPassword,
       };
 
-      const response = await crearProfesor(profesorConPasswordEncriptado);
-      setProfesores([...profesores, response.data]);
-      setNuevoProfesor({ cedula: 0, nombre: "", correo: "", password: "" });
+      const response = await crearEstudiante(estudianteConPasswordEncriptado);
+      setEstudiantes([...estudiantes, response.data]);
+      setNuevoEstudiante({
+        carnet: 0,
+        cedula: 0,
+        nombre: "",
+        correo: "",
+        telefono: "",
+        password: "",
+      });
       setMostrarFormulario(false);
     } catch (error: any) {
-      console.error("Error al crear profesor:", error);
+      console.error("Error al crear estudiante:", error);
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-blue-900">Gestión de Profesores</h1>
+        <h1 className="text-2xl font-bold text-blue-900">Gestión de Estudiantes</h1>
         <button
           onClick={() => setMostrarFormulario(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
         >
           <PlusIcon className="w-5 h-5" />
-          Registrar Profesor
+          Registrar Estudiante
         </button>
       </div>
-      {/* Descripción */}
+
       <div className="text-gray-700">
-        En esta sección puede agregar nuevos profesores al sistema.
+        En esta sección puede agregar nuevos estudiantes al sistema.
       </div>
+
       {mostrarFormulario && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-md space-y-4">
-          <h2 className="text-lg font-bold text-gray-800">Nuevo Profesor</h2>
+          <h2 className="text-lg font-bold text-gray-800">Nuevo Estudiante</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="mb-1 text-sm text-gray-600">Carnet</label>
+              <input
+                type="number"
+                className="p-2 border rounded"
+                value={nuevoEstudiante.carnet}
+                onChange={(e) =>
+                  setNuevoEstudiante({ ...nuevoEstudiante, carnet:  parseInt(e.target.value || "0"),})
+                }
+              />
+            </div>
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Cédula</label>
               <input
-                type="text"
+                type="number"
                 className="p-2 border rounded"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={nuevoProfesor.cedula}
+                value={nuevoEstudiante.cedula}
                 onChange={(e) =>
-                  setNuevoProfesor({
-                    ...nuevoProfesor,
-                    cedula: parseInt(e.target.value || "0"),
-                  })
+                  setNuevoEstudiante({...nuevoEstudiante,cedula: parseInt(e.target.value || "0"),})
                 }
               />
             </div>
@@ -92,9 +110,9 @@ const GestionProfesores = () => {
               <input
                 type="text"
                 className="p-2 border rounded"
-                value={nuevoProfesor.nombre}
+                value={nuevoEstudiante.nombre}
                 onChange={(e) =>
-                  setNuevoProfesor({ ...nuevoProfesor, nombre: e.target.value })
+                  setNuevoEstudiante({ ...nuevoEstudiante, nombre: e.target.value })
                 }
               />
             </div>
@@ -103,9 +121,20 @@ const GestionProfesores = () => {
               <input
                 type="email"
                 className="p-2 border rounded"
-                value={nuevoProfesor.correo}
+                value={nuevoEstudiante.correo}
                 onChange={(e) =>
-                  setNuevoProfesor({ ...nuevoProfesor, correo: e.target.value })
+                  setNuevoEstudiante({ ...nuevoEstudiante, correo: e.target.value })
+                }
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="mb-1 text-sm text-gray-600">Teléfono</label>
+              <input
+                type="text"
+                className="p-2 border rounded"
+                value={nuevoEstudiante.telefono}
+                onChange={(e) =>
+                  setNuevoEstudiante({ ...nuevoEstudiante, telefono: e.target.value })
                 }
               />
             </div>
@@ -114,16 +143,17 @@ const GestionProfesores = () => {
               <input
                 type="password"
                 className="p-2 border rounded"
-                value={nuevoProfesor.password}
+                value={nuevoEstudiante.password}
                 onChange={(e) =>
-                  setNuevoProfesor({ ...nuevoProfesor, password: e.target.value })
+                  setNuevoEstudiante({ ...nuevoEstudiante, password: e.target.value })
                 }
               />
             </div>
           </div>
+
           <div className="flex gap-3">
             <button
-              onClick={handleAgregarProfesor}
+              onClick={handleAgregarEstudiante}
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
             >
               Guardar
@@ -142,23 +172,27 @@ const GestionProfesores = () => {
         <table className="min-w-full bg-white shadow-md rounded-xl">
           <thead>
             <tr className="bg-blue-100 text-left">
+              <th className="p-3">Carnet</th>
               <th className="p-3">Cédula</th>
               <th className="p-3">Nombre</th>
               <th className="p-3">Correo</th>
+              <th className="p-3">Teléfono</th>
             </tr>
           </thead>
           <tbody>
-            {profesores.map((prof) => (
-              <tr key={prof.cedula} className="border-t">
-                <td className="p-3">{prof.cedula}</td>
-                <td className="p-3">{prof.nombre}</td>
-                <td className="p-3">{prof.correo}</td>
+            {estudiantes.map((est) => (
+              <tr key={est.carnet} className="border-t">
+                <td className="p-3">{est.carnet}</td>
+                <td className="p-3">{est.cedula}</td>
+                <td className="p-3">{est.nombre}</td>
+                <td className="p-3">{est.correo}</td>
+                <td className="p-3">{est.telefono}</td>
               </tr>
             ))}
-            {profesores.length === 0 && (
+            {estudiantes.length === 0 && (
               <tr>
-                <td colSpan={3} className="p-3 text-center text-gray-500">
-                  No hay profesores registrados
+                <td colSpan={5} className="p-3 text-center text-gray-500">
+                  No hay estudiantes registrados
                 </td>
               </tr>
             )}
@@ -169,4 +203,4 @@ const GestionProfesores = () => {
   );
 };
 
-export default GestionProfesores;
+export default GestionEstudiantes;

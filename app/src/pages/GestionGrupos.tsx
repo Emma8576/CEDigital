@@ -17,7 +17,7 @@ import axios from "axios";
  * Componente para la gestión de grupos académicos
  * Permite crear nuevos grupos, asignar profesores y ver los grupos existentes
  */
-const CargaGrupos = () => {
+const GestionGrupos = () => {
   // Estados para almacenar datos de la API
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [cursos, setCursos] = useState<Curso[]>([]);
@@ -202,11 +202,15 @@ const CargaGrupos = () => {
   return (
     <div className="p-6">
       <h1 className="text-xl font-bold mb-4">Gestión de Grupos</h1>
+      {/* Descripción */}
+      <div className="text-gray-700">
+        En esta sección puede crear semestres con su respectivo año y periodo académico.
+      </div>
 
       {/* Formulario de creación de grupos */}
-      <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+      <form onSubmit={handleSubmit} className="space-y-5 mb-6">
         {/* Selector de curso con búsqueda integrada */}
-        <div ref={cursoRef} className="relative">
+        <div ref={cursoRef} className="relative mt-6">
           <label className="block mb-1">Curso:</label>
           <div className="relative">
             <input
@@ -427,4 +431,4 @@ const CargaGrupos = () => {
   );
 };
 
-export default CargaGrupos;
+export default GestionGrupos;

@@ -3,9 +3,10 @@ import Navbar from "./components/NavBar";
 import Dashboard from "./pages/Dashboard";
 import GestionCursos from "./pages/GestionCursos";
 import GestionSemestres from "./pages/GestionSemestres";
-import CargaGrupos from "./pages/CargaGrupos";
+import CargaGrupos from "./pages/GestionGrupos";
 import CargaSemestre from "./pages/CargaSemestre";
 import GestionProfesores from "./pages/GestionProfesores";
+import GestionEstudiantes from "./pages/GestionEstudiantes";
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
                <Route path="/profesores" element={<GestionProfesores />} />
               <Route path="/grupos" element={<CargaGrupos />} />
               <Route path="/contenido" element={<CargaSemestre />} />
+              <Route path="/estudiantes" element={<GestionEstudiantes />} />
+
               
             </Routes>
           </div>

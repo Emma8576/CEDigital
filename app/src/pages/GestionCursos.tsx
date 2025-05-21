@@ -93,6 +93,7 @@ const obtenerNombreCarrera = (id: number) => {
 };
 
   return (
+    
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -105,7 +106,10 @@ const obtenerNombreCarrera = (id: number) => {
           Agregar Curso
         </button>
       </div>
-
+      {/* Descripción */}
+      <div className="text-gray-700">
+        En esta sección puede añadir nuevos cursos y eliminarlos.
+      </div>
       {/* Formulario para agregar curso */}
       {mostrarFormulario && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-md space-y-4">
