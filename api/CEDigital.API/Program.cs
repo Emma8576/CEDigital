@@ -22,12 +22,17 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configure MongoDB
-var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
-builder.Services.AddSingleton(mongoDbSettings);
-builder.Services.AddSingleton<MongoDbService>();
+// Configurar MongoDB
+builder.Services.Configure<MongoDbSettings>(
+    builder.Configuration.GetSection("MongoDbSettings"));
 
-// Configure SQL Server
+builder.Services.AddSingleton<MongoDbSettings>(
+    builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>());
+
+builder.Services.AddSingleton<MongoDbService>();
+builder.Services.AddSingleton<ProfesorMongoService>();
+
+// Configurar SQL Server
 builder.Services.AddDbContext<CEDigitalContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
 
@@ -42,13 +47,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ¡Importante! Añadir el middleware de CORS justo aquí, antes de UseAuthorization
+// Middleware CORS
 app.UseCors();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
+// Endpoint de prueba (WeatherForecast)
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"

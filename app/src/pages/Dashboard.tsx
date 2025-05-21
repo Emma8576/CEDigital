@@ -48,7 +48,7 @@ useEffect(() => {
           <p className="text-2xl font-bold text-blue-700">{cantidadCursos}</p>
         </div>
         <div className="bg-white shadow-md rounded-xl p-4 border-l-4 border-green-600">
-          <h2 className="text-lg font-semibold">Semestres Activos</h2>
+          <h2 className="text-lg font-semibold">Semestres Añadidos</h2>
           <p className="text-2xl font-bold text-green-700">{cantidadSemestres}</p>
         </div>
         <div className="bg-white shadow-md rounded-xl p-4 border-l-4 border-purple-600">

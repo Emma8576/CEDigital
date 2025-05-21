@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { obtenerSemestres, crearSemestre, eliminarSemestre } from "../services/semestreService"; // Ajusta ruta si es necesario
-import FormularioAgregarGrupo from "./AgregarGrupo";
+//import FormularioAgregarGrupo from "./AgregarGrupo";
 type Semestre = {
   idSemestre: number;
   año: number;
@@ -149,15 +149,6 @@ const handleEliminarSemestre = (id: number) => {
             >
               Cancelar
             </button>
-            {mostrarFormularioGrupo && semestreSeleccionado !== null && (
-            <FormularioAgregarGrupo
-            idSemestre={semestreSeleccionado}
-            onClose={() => setMostrarFormularioGrupo(false)}
-            onGrupoCreado={() => {
-              // Lógica para actualizar la lista de semestres o grupos si es necesario
-            }}
-          />
-        )}
           </div>
         </div>
       )}

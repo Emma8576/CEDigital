@@ -24,4 +24,13 @@
   "nombre": "Jason Leiton Jimenéz",
   "correo": "jasonleiton@cecr.ac.cr",
   "password": "d23c2be862db7e9abcd1691a877ae6c8"
+},
+{
+  "_id": {
+    "$oid": "682d66fb3560d5ea85a0b780"
+  },
+  "cedula": 127894756,
+  "nombre": "Isaac Ramirez",
+  "correo": "saacramirez@cecr.ac.cr",
+  "password": "d23c2be862db7e9ab91a877ae6c8"
 }]

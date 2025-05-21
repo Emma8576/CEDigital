@@ -17,8 +17,8 @@ interface NavLinkProps {
 }
 
 const Navbar: FC = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const [scrolled, setScrolled] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
   const links: NavLinkProps[] = [
@@ -27,7 +27,6 @@ const Navbar: FC = () => {
     { path: "/semestres", name: "Gestión de Semestres", icon: <CalendarIcon className="w-5 h-5" /> },
     { path: "/grupos", name: "Gestión de Grupos", icon: <UsersIcon className="w-5 h-5" /> },
     { path: "/contenido", name: "Cargar Semestre", icon: <ArrowUpTrayIcon className="w-5 h-5" /> },
-    
   ];
 
   useEffect(() => {
@@ -36,9 +35,7 @@ const Navbar: FC = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const toggleMobileMenu = (): void => {
@@ -51,66 +48,63 @@ const Navbar: FC = () => {
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0 flex items-center">
+          
+          {/* Logo completamente alineado a la izquierda */}
+          <div className="flex items-center flex-grow">
             <Link to="/" className="text-white text-xl font-bold">
               CEDigital
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-4">
-              {links.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    location.pathname === link.path
-                      ? "bg-blue-700 text-white"
-                      : "text-gray-200 hover:bg-blue-700 hover:text-white"
-                  }`}
-                >
-                  {link.icon}
-                  <span>{link.name}</span>
-                </Link>
-              ))}
-            </div>
+          {/* Navegación en escritorio */}
+          <div className="hidden md:flex space-x-4">
+            {links.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === link.path
+                    ? "bg-blue-700 text-white"
+                    : "text-gray-200 hover:bg-blue-700 hover:text-white"
+                }`}
+              >
+                {link.icon}
+                <span>{link.name}</span>
+              </Link>
+            ))}
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          {/* Botón de menú móvil */}
+          <div className="md:hidden ml-4">
             <button
               onClick={toggleMobileMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-white hover:bg-blue-700 focus:outline-none"
+              className="p-2 rounded-md text-gray-200 hover:text-white hover:bg-blue-700 focus:outline-none"
             >
               {isMobileMenuOpen ? (
-                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                <XMarkIcon className="h-6 w-6" aria-hidden="true" />
               ) : (
-                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
               )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
-      <div
-        className={`md:hidden transition-all duration-300 ease-in-out ${
-          isMobileMenuOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
-        }`}
-      >
+      {/* Menú móvil desplegable */}
+      <div className={`md:hidden transition-all duration-300 ease-in-out ${
+        isMobileMenuOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
+      }`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-blue-900">
           {links.map((link) => (
             <Link
               key={link.path}
               to={link.path}
+              onClick={() => setIsMobileMenuOpen(false)}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium ${
                 location.pathname === link.path
                   ? "bg-blue-700 text-white"
                   : "text-gray-200 hover:bg-blue-700 hover:text-white"
               }`}
-              onClick={() => setIsMobileMenuOpen(false)}
             >
               {link.icon}
               {link.name}

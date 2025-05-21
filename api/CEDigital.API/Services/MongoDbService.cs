@@ -1,6 +1,5 @@
 using MongoDB.Driver;
 using CEDigital.API.Configuration;
-using CEDigital.API.Models;
 
 namespace CEDigital.API.Services
 {
@@ -19,4 +18,4 @@ namespace CEDigital.API.Services
             return _database.GetCollection<T>(collectionName);
         }
     }
-} 
+}
