@@ -6,7 +6,8 @@ import {
   ArrowUpTrayIcon,
   UsersIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { useState, useEffect, FC } from "react";
 
@@ -23,9 +24,10 @@ const Navbar: FC = () => {
 
   const links: NavLinkProps[] = [
     { path: "/", name: "Inicio", icon: <HomeIcon className="w-5 h-5" /> },
-    { path: "/cursos", name: "Gestión de Cursos", icon: <BookOpenIcon className="w-5 h-5" /> },
-    { path: "/semestres", name: "Gestión de Semestres", icon: <CalendarIcon className="w-5 h-5" /> },
-    { path: "/grupos", name: "Gestión de Grupos", icon: <UsersIcon className="w-5 h-5" /> },
+    { path: "/semestres", name: "Semestres", icon: <CalendarIcon className="w-5 h-5" /> },
+    { path: "/cursos", name: "Cursos", icon: <BookOpenIcon className="w-5 h-5" /> },
+    { path: "/profesores", name: "Profesores", icon: <UserGroupIcon className="w-5 h-5" /> },
+    { path: "/grupos", name: "Grupos", icon: <UsersIcon className="w-5 h-5" /> },
     { path: "/contenido", name: "Cargar Semestre", icon: <ArrowUpTrayIcon className="w-5 h-5" /> },
   ];
 

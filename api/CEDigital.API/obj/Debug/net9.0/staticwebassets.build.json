@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "3pr643yuyyIdlpfqicTpTj8buXoXah6JyGOtEOJajqE=",
+  "Source": "CEDigital.API",
+  "BasePath": "_content/CEDigital.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

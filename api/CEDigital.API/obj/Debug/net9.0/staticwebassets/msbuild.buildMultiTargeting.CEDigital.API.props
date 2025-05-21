@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\CEDigital.API.props" />
+</Project>

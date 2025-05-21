@@ -12,8 +12,12 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "CEDigital API", Version = "v1" });
+});
 
 // Configurar CORS para permitir cualquier origen (solo para desarrollo)
 builder.Services.AddCors(options =>
@@ -42,12 +46,13 @@ builder.Services.AddDbContext<CEDigitalContext>(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Activar Swagger SIEMPRE
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CEDigital API V1");
+    c.RoutePrefix = "swagger"; // Accedé desde http://localhost:5261/swagger
+});
 
 app.UseHttpsRedirection();
 

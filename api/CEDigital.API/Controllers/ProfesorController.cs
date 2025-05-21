@@ -21,5 +21,15 @@ namespace CEDigital.API.Controllers
             var profesores = await _profesorService.GetProfesoresAsync();
             return Ok(profesores);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> CrearProfesor([FromBody] ProfesorMongo nuevoProfesor)
+        {
+            Console.WriteLine("Llega al POST con: " + nuevoProfesor.Nombre);
+            await _profesorService.CrearProfesorAsync(nuevoProfesor);
+            return CreatedAtAction(nameof(GetProfesores), new { cedula = nuevoProfesor.Cedula }, nuevoProfesor);
+        }
+
+
     }
 }

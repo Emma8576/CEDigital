@@ -5,6 +5,7 @@ import GestionCursos from "./pages/GestionCursos";
 import GestionSemestres from "./pages/GestionSemestres";
 import CargaGrupos from "./pages/CargaGrupos";
 import CargaSemestre from "./pages/CargaSemestre";
+import GestionProfesores from "./pages/GestionProfesores";
 
 function App() {
   return (
@@ -15,8 +16,9 @@ function App() {
           <div className="max-w-7xl mx-auto">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/cursos" element={<GestionCursos />} />
               <Route path="/semestres" element={<GestionSemestres />} />
+              <Route path="/cursos" element={<GestionCursos />} />
+               <Route path="/profesores" element={<GestionProfesores />} />
               <Route path="/grupos" element={<CargaGrupos />} />
               <Route path="/contenido" element={<CargaSemestre />} />
               
