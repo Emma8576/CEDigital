@@ -8,7 +8,7 @@ namespace CEDigital.API.Models
         public int IdSemestre { get; set; }
         public string Periodo { get; set; } // "1", "2", "V"
         public int Año { get; set; }
-        public virtual ICollection<Grupo> Grupos { get; set; } = new List<Grupo>();
+       public virtual ICollection<Grupo> Grupos { get; set; } = new List<Grupo>();
     }
     public class SemestreCantidadGruposDto
     {
