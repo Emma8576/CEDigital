@@ -30,6 +30,13 @@ namespace CEDigital.API.Models
         public int IdGrupo { get; set; }
     }
 
+    public class NoticiaUpdateDto
+    {
+        public int IdNoticia { get; set; }
+        public string Titulo { get; set; }
+        public string Mensaje { get; set; }
+    }
+
     public class NoticiaDto
     {
         public int IdNoticia { get; set; }

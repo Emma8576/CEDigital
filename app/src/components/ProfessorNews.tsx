@@ -16,6 +16,22 @@ interface ProfessorNewsProps {
   idGrupo: number;
 }
 
+function startEditingBlock(newsId: number, newsEditedId: number, isEditing: boolean, isEditBlock: boolean){
+  if(isEditBlock){
+    if((newsId === newsEditedId) && isEditing){
+      return 'block';
+    }else{
+      return 'None';
+    }
+  }else{
+    if((newsId === newsEditedId) && isEditing){
+      return 'None';
+    }else{
+      return 'block';
+    }
+  }
+}
+
 const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
   const port = '5000';
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -23,6 +39,10 @@ const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
   const [error, setError] = useState<string | null>(null);
   const [newsTitle, setNewsTitle] = useState("");
   const [newsDescription, setNewsDescription] = useState("");
+  const [newsTitleEdit, setNewsTitleEdit] = useState("");
+  const [newsDescriptionEdit, setNewsDescriptionEdit] = useState("");
+  const [newsEditedId, setNewsEditedId] = useState(-1);
+  const [isEditing, setIsEditing] = useState(false);
 
   const fetchNews = async () => {
       try {
@@ -92,6 +112,34 @@ const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
     }
   }
 
+  const startEditing = (idNoticia: number, noticiaTitle: string, noticiaDesc: string) =>{
+    setNewsEditedId(idNoticia);
+    setNewsTitleEdit(noticiaTitle);
+    setNewsDescriptionEdit(noticiaDesc);
+    setIsEditing(true);
+  }
+
+  const saveChanges = async() =>{
+    if(newsTitleEdit.length > 0 && newsDescriptionEdit.length > 0){
+      let updateThisNews = window.confirm("¿Editar esta noticia?");
+      if(updateThisNews){
+        const updatedData = {
+          idNoticia: newsEditedId,
+          titulo: newsTitleEdit,
+          mensaje: newsDescriptionEdit
+        }
+        const url = 'http://localhost:' + port + '/api/Noticia/' + newsEditedId;
+        await axios.put(url, updatedData);
+        fetchNews();
+      }else{
+        console.error('Error al hacer PUT: ', error);
+      }
+    }else{
+      alert("No puede dejar la noticia vacía");
+    }
+    setIsEditing(false);
+  }
+
   return (
       <div className="space-y-4">
           
@@ -130,13 +178,37 @@ const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
               <div key={item.idNoticia} className="bg-white rounded-lg shadow p-4" style={{display:'grid'}}>
                 <div>
                   <div style={{display: 'float', marginBottom:'5px'}}>
-                    <h3 className="text-lg font-semibold text-gray-800" style={{float:'left'}}>{item.titulo}</h3>
+                    <div style={{ float:'left'}}>
+                      <h3 className="text-lg font-semibold text-gray-800" >{item.titulo}</h3>
+                    </div>
                     <div className='delete-button' onClick={() => {deleteNews(item.idNoticia)}} style={{float: 'right'}}>x</div>
                   </div>
                 </div>
-                <p className="text-gray-600 text-sm mb-2">Publicado: {new Date(item.fechaPublicacion).toLocaleString()}</p>
-                <p className="text-gray-700">{item.mensaje}</p>
-
+                <p style={{display:startEditingBlock(item.idNoticia, newsEditedId, isEditing, false)}} className="text-gray-600 text-sm mb-2">Publicado: {new Date(item.fechaPublicacion).toLocaleString()}</p>
+                <p style={{display:startEditingBlock(item.idNoticia, newsEditedId, isEditing, false)}} className="text-gray-700">{item.mensaje}</p>
+                <input
+                  id="newsTitleEdit"
+                  name="newsTitleEdit"
+                  type="email"
+                  style={{maxWidth:'500px', marginBottom:'5px', display:startEditingBlock(item.idNoticia, newsEditedId, isEditing, true)}}
+                  required
+                  className="custom-input"
+                  placeholder="Título de la noticia"
+                  value={newsTitleEdit}
+                  onChange={e => setNewsTitleEdit(e.target.value)}
+                />
+                <textarea
+                  id="newsDescriptorEdit"
+                  name="newsDescriptorEdit"
+                  style={{maxWidth:'500px', minHeight:'100px', display:startEditingBlock(item.idNoticia, newsEditedId, isEditing, true)}}
+                  required
+                  className="custom-input"
+                  placeholder="Descripción..."
+                  value={newsDescriptionEdit}
+                  onChange={e => setNewsDescriptionEdit(e.target.value)}
+                />
+                <div className='publish-button' style={{marginTop:'5px', display:startEditingBlock(item.idNoticia, newsEditedId, isEditing, false)}}  onClick={() => startEditing(item.idNoticia, item.titulo, item.mensaje)}>Editar</div>
+                <div className='publish-button' style={{marginTop:'5px', display:startEditingBlock(item.idNoticia, newsEditedId, isEditing, true)}}  onClick={saveChanges}>Guardar</div>
               </div>
             ))}
 
