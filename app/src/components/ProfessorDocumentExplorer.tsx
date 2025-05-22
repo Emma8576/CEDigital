@@ -55,6 +55,8 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
   const [createFileInputs, setCreateFileInputs] = useState(0);
   const [folderName, setFolderName] = useState("");
 
+  const primeFilesNames = ['Exámenes', 'Presentaciones', 'Proyectos', 'Quices'];
+
   const fetchDocuments = async () => {
       setLoading(true);
       setError(null);
@@ -175,6 +177,26 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
     }
   }
 
+  const deleteFolder = async(id: number,nombreCarpeta: string, type:string) =>{
+    if(type === 'folder'){
+      if(primeFilesNames.includes(nombreCarpeta)){
+        alert("Las carpetas primarias no se pueden borrar");
+      }else{
+        const confirmDelete = window.confirm("¿Borrar la carpeta " + nombreCarpeta + " permanentemente?");
+        if(confirmDelete){
+          try{
+            const response = await axios.delete(`http://localhost:${path}/api/Carpeta/${id}`);
+            alert("La carpeta " + nombreCarpeta + " se ha borrado exitosamente.");
+            fetchDocuments();
+          }catch(err){
+            console.log("Error al borrar la carpeta: ", err);
+          }
+
+        }
+      }
+    }
+  }
+
   if (loading) {
     return <div className="text-center mt-8 text-gray-600">Cargando documentos...</div>;
   }
@@ -243,7 +265,7 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
             </svg>
             {/* Use appropriate name property from backend data based on type */}
             <span className="text-gray-700">{item.type === 'folder' ? item.nombreCarpeta : item.nombreArchivo}</span>
-            <div className='delete-button' style={{fontSize:'25px', marginTop: '-3px'}}>
+            <div className='delete-button' style={{fontSize:'25px', marginTop: '-3px'}} onClick={(e) => deleteFolder(item.idCarpeta,item.type === 'folder' ? item.nombreCarpeta : item.nombreArchivo, item.type)}>
               -
             </div>
           </div>
