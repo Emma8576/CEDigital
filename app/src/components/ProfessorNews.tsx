@@ -45,18 +45,18 @@ const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchNews = async () => {
-      try {
-        setLoading(true);
-        // Use the correct backend endpoint
-        const response = await axios.get<NewsItem[]>(`http://localhost:${port}/api/Noticia/grupo/${idGrupo}`);
-        setNews(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching news:", err);
-        setError("Error al cargar las noticias.");
-        setLoading(false);
-      }
-    };
+    try {
+      setLoading(true);
+      // Use the correct backend endpoint
+      const response = await axios.get<NewsItem[]>(`http://localhost:${port}/api/Noticia/grupo/${idGrupo}`);
+      setNews(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching news:", err);
+      setError("Error al cargar las noticias.");
+      setLoading(false);
+    }
+  };
   
 
   useEffect(() => {

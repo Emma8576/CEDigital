@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './ProfessorDocumentExplorer.css'
 
 interface User {
   id: string;
@@ -34,6 +35,14 @@ interface ProfessorDocumentExplorerProps {
   user: User | null;
 }
 
+function showBlock(key:number, divNumber:number){
+  if(key === divNumber){
+    return 'block';
+  }else{
+    return 'None';
+  }
+}
+
 const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ idGrupo, user }) => {
   // currentPath will now store a list of folder IDs
   const path = '5000'
@@ -43,9 +52,10 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
   const [documents, setDocuments] = useState<FileExplorerItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [createFileInputs, setCreateFileInputs] = useState(0);
+  const [folderName, setFolderName] = useState("");
 
-  useEffect(() => {
-    const fetchDocuments = async () => {
+  const fetchDocuments = async () => {
       setLoading(true);
       setError(null);
       try {
@@ -77,6 +87,7 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
       }
     };
 
+  useEffect(() => {
     fetchDocuments();
   }, [idGrupo, currentPath]); // Dependency on idGrupo and currentPath
 
@@ -127,6 +138,43 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
     );
   };
 
+  const crearForlderOFile = () =>{
+    (document.getElementById('dialogCreate') as HTMLDialogElement)?.showModal();
+  }
+  const closeDialog = () =>{
+    (document.getElementById('dialogCreate') as HTMLDialogElement)?.close();
+    setCreateFileInputs(0);
+  }
+
+  const changeCreateDialog = (isFolder: boolean) =>{
+    if(isFolder){
+      setCreateFileInputs(1);
+    }else{
+      setCreateFileInputs(2);
+    }
+  }
+
+  const createNewFolder = async() =>{
+    if(folderName.length === 0){
+      alert("La carpeta debe tener un nombre");
+    }else{
+      try{
+        const url = 'http://localhost:' + path + '/api/Carpeta';
+        const newFolder = {
+          nombreCarpeta: folderName,
+          idGrupo: idGrupo
+        }
+        await axios.post(url, newFolder);
+        alert("La carpeta se ha creado exitosamente.");
+        setCreateFileInputs(0);
+        closeDialog();
+        fetchDocuments();
+      }catch(error){
+        console.error('Error al hacer POST:', error);
+      }
+    }
+  }
+
   if (loading) {
     return <div className="text-center mt-8 text-gray-600">Cargando documentos...</div>;
   }
@@ -153,7 +201,6 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
       </div>
 
       {renderBreadcrumb()}
-
       <div className="space-y-2">
         {documents.length === 0 && (
           <div className="text-gray-500">No hay documentos en esta carpeta.</div>
@@ -196,6 +243,9 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
             </svg>
             {/* Use appropriate name property from backend data based on type */}
             <span className="text-gray-700">{item.type === 'folder' ? item.nombreCarpeta : item.nombreArchivo}</span>
+            <div className='delete-button' style={{fontSize:'25px', marginTop: '-3px'}}>
+              -
+            </div>
           </div>
         ))}
       </div>
@@ -220,6 +270,54 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
           </button>
         </div>
       )}
+
+      <div className='delete-button' onClick={crearForlderOFile} style={{fontSize:'25px'}}>
+        +
+      </div>
+      <dialog className='dialog-box' id='dialogCreate'>
+        <div style={{display:showBlock(createFileInputs, 0)}}>
+          <div className='dialog-text' >
+            ¿Crear una carpeta o agregar un archivo a la carpeta actual?
+          </div>
+          <div className='button-rows'>
+            <div className='delete-button' onClick={() => changeCreateDialog(true)}>
+              Carpeta
+            </div>
+            <div className='delete-button' onClick={() => changeCreateDialog(false)}>
+              Archivo
+            </div>
+            <div className='delete-button' onClick={closeDialog}>
+              Cancelar
+            </div>
+          </div>
+        </div>
+        <div style={{display:showBlock(createFileInputs, 1)}}>
+          <input
+            id="folderTitleInput"
+            name="folderTitleInput"
+            type="email"
+            style={{maxWidth:'200px', marginBottom:'5px', justifyContent:'center'}}
+            required
+            className="custom-input"
+            placeholder="Nombre de la carpeta..."
+            value={folderName}
+            onChange={e => setFolderName(e.target.value)}
+          />
+          <div className='button-rows' style={{marginTop:'25px'}}>
+            <div className='delete-button' onClick={closeDialog}>
+              Cancelar
+            </div>
+            <div className='delete-button' onClick={createNewFolder}>
+              Crear
+            </div>
+          </div>
+        </div>
+        <div style={{display:showBlock(createFileInputs, 2)}}>
+          <div className='delete-button' onClick={closeDialog}>
+            Cancelar
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 };

@@ -1,0 +1,23 @@
+.dialog-box{
+    padding: 1.5rem;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 300px;
+}
+
+.dialog-box::backdrop{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.dialog-text{
+    color: rgb(109, 110, 110);
+    margin-bottom: 20px;
+}
+
+.button-rows{
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+}
