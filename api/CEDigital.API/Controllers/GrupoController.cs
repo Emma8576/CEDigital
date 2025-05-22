@@ -94,7 +94,7 @@ namespace CEDigital.API.Controllers
                 await _context.SaveChangesAsync(); // Guarda las carpetas
             }
             catch (DbUpdateException ex)
-            { 
+            {
                 return Conflict(ex.InnerException?.Message);
             }
 
@@ -140,5 +140,21 @@ namespace CEDigital.API.Controllers
 
             return NoContent();
         }
+        // GET: api/Grupo/conCursos
+        [HttpGet("conCursos")]
+        public async Task<ActionResult<IEnumerable<object>>> GetGruposConCursos()
+        {
+            var grupos = await _context.Grupos
+                .Include(g => g.Curso)
+                .Select(g => new {
+                    g.IdGrupo,
+                    g.NumeroGrupo,
+                    NombreCurso = g.Curso.NombreCurso
+                })
+                .ToListAsync();
+
+            return Ok(grupos);
+        }
+
     }
 }

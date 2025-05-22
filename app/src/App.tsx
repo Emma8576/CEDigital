@@ -6,6 +6,7 @@ import GestionSemestres from "./pages/GestionSemestres";
 import CargaGrupos from "./pages/GestionGrupos";
 import CargaSemestre from "./pages/CargaSemestre";
 import GestionProfesores from "./pages/GestionProfesores";
+import GestionMatricula from "./pages/GestionMatricula";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/cursos" element={<GestionCursos />} />
                <Route path="/profesores" element={<GestionProfesores />} />
               <Route path="/grupos" element={<CargaGrupos />} />
+              <Route path="/matricula" element={<GestionMatricula />} />
               <Route path="/contenido" element={<CargaSemestre />} />
               
             </Routes>

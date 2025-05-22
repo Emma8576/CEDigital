@@ -140,3 +140,30 @@ VALUES ('Ingeniería en Sistemas'),
 */
 SELECT * FROM Grupo;
 SELECT * FROM Semestre;
+SELECT * FROM ProfesorGrupo;
+SELECT * FROM Carpeta;
+SELECT IdGrupo, CodigoCurso, IdSemestre, NumeroGrupo FROM Grupo;
+EXEC sp_fkeys 'Grupo';
+
+
+--Mostrar grupos con profesor asignado
+SELECT DISTINCT g.*
+FROM Grupo g
+INNER JOIN ProfesorGrupo pg ON g.IdGrupo = pg.IdGrupo;
+
+--Selecciona Grupos sin profesor asignado
+SELECT g.*
+FROM Grupo g
+LEFT JOIN ProfesorGrupo pg ON g.IdGrupo = pg.IdGrupo
+WHERE pg.IdGrupo IS NULL;
+
+--Se elimina relaciones entre grupos no asignados y carpetas
+SELECT DISTINCT g.*
+FROM Grupo g
+INNER JOIN ProfesorGrupo pg ON g.IdGrupo = pg.IdGrupo;
+DELETE FROM Carpeta
+WHERE IdGrupo IN (4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
+
+--Se eliminan grupos sin asignar
+DELETE FROM Grupo
+WHERE IdGrupo IN (4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);

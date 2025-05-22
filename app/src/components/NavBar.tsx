@@ -8,6 +8,7 @@ import {
   Bars3Icon,
   XMarkIcon,
   UserGroupIcon,
+  AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import { useState, useEffect, FC } from "react";
 
@@ -28,7 +29,9 @@ const Navbar: FC = () => {
     { path: "/cursos", name: "Cursos", icon: <BookOpenIcon className="w-5 h-5" /> },
     { path: "/profesores", name: "Profesores", icon: <UserGroupIcon className="w-5 h-5" /> },
     { path: "/grupos", name: "Grupos", icon: <UsersIcon className="w-5 h-5" /> },
+    { path: "/matricula", name: "Matrícula", icon: <AcademicCapIcon className="w-5 h-5" /> },
     { path: "/contenido", name: "Cargar Semestre", icon: <ArrowUpTrayIcon className="w-5 h-5" /> },
+    
   ];
 
   useEffect(() => {
