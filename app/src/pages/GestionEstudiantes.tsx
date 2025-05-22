@@ -3,11 +3,11 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import { crearEstudiante, obtenerEstudiantes } from "../services/estudianteService";
 
 export type Estudiante = {
-  carne: number;
-  cedula: number;
+  carne: string;
+  cedula: string;
   nombre: string;
   correo: string;
-  telefono: number;
+  telefono: string;
   password: string;
 };
 
@@ -15,11 +15,11 @@ const GestionEstudiantes = () => {
   const [estudiantes, setEstudiantes] = useState<Estudiante[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [nuevoEstudiante, setNuevoEstudiante] = useState<Estudiante>({
-    carne: 0,
-    cedula: 0,
+    carne: "",
+    cedula: "",
     nombre: "",
     correo: "",
-    telefono: 0,
+    telefono: "",
     password: "",
   });
 
@@ -49,11 +49,11 @@ const GestionEstudiantes = () => {
       const response = await crearEstudiante(estudianteConPasswordEncriptado);
       setEstudiantes([...estudiantes, response.data]);
       setNuevoEstudiante({
-        carne: 0,
-        cedula: 0,
+        carne: "",
+        cedula: "",
         nombre: "",
         correo: "",
-        telefono: 0,
+        telefono: "",
         password: "",
       });
       setMostrarFormulario(false);
@@ -86,22 +86,22 @@ const GestionEstudiantes = () => {
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Carnet</label>
               <input
-                type="number"
+                type="text"
                 className="p-2 border rounded"
                 value={nuevoEstudiante.carne}
                 onChange={(e) =>
-                  setNuevoEstudiante({ ...nuevoEstudiante, carne:  parseInt(e.target.value || "0"),})
+                  setNuevoEstudiante({ ...nuevoEstudiante, carne: e.target.value })
                 }
               />
             </div>
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Cédula</label>
               <input
-                type="number"
+                type="text"
                 className="p-2 border rounded"
                 value={nuevoEstudiante.cedula}
                 onChange={(e) =>
-                  setNuevoEstudiante({...nuevoEstudiante,cedula: parseInt(e.target.value || "0"),})
+                  setNuevoEstudiante({...nuevoEstudiante,cedula: e.target.value })
                 }
               />
             </div>
@@ -134,7 +134,7 @@ const GestionEstudiantes = () => {
                 className="p-2 border rounded"
                 value={nuevoEstudiante.telefono}
                 onChange={(e) =>
-                  setNuevoEstudiante({ ...nuevoEstudiante, telefono:parseInt(e.target.value || "0"),})
+                  setNuevoEstudiante({ ...nuevoEstudiante, telefono: e.target.value })
                 }
               />
             </div>

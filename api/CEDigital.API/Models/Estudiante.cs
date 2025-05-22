@@ -10,16 +10,16 @@ namespace CEDigital.API.Models
         public string Id { get; set; } = "";
 
         [BsonElement("cedula")]
-        public long Cedula { get; set; }
+        public string Cedula { get; set; } = "";
 
         [BsonElement("carne")]
-        public long Carne { get; set; }
+        public string Carne { get; set; } = "";
 
         [BsonElement("nombre")]
         public string Nombre { get; set; } = "";
 
         [BsonElement("telefono")]
-        public long Telefono { get; set; }
+        public string Telefono { get; set; } = "";
 
         [BsonElement("correo")]
         public string Correo { get; set; } = "";
