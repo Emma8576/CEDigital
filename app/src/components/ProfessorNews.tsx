@@ -21,15 +21,10 @@ const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [newsTitle, setNewsTitle] = useState("");
   const [newsDescription, setNewsDescription] = useState("");
 
-
-  
-
-  useEffect(() => {
-    const fetchNews = async () => {
+  const fetchNews = async () => {
       try {
         setLoading(true);
         // Use the correct backend endpoint
@@ -42,6 +37,10 @@ const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
         setLoading(false);
       }
     };
+  
+
+  useEffect(() => {
+    
 
     fetchNews();
   }, [idGrupo]); // Re-fetch news if idGrupo changes
@@ -58,6 +57,23 @@ const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
     return <div className="text-center mt-4 text-gray-500">No hay noticias disponibles para este grupo.</div>;
   }
 
+  
+
+  const deleteNews = async (newsId: number) =>{
+    let deleteThisNews = window.confirm("¿Eliminar esta noticia?");
+    if(deleteThisNews === true){
+      try{
+        await axios.delete(`http://localhost:${port}/api/Noticia/${newsId}`);
+        alert("La noticia ha sido borrada.");
+        fetchNews();
+      }catch(error){
+        console.log(error);
+      }
+    }else{
+      console.log("Denied");
+    }
+  }
+
   const publishNews = async () =>{
     if(newsTitle.length > 0 && newsDescription.length > 0){
       const newsPublished = {
@@ -67,8 +83,9 @@ const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
       }
       try{
         const url = 'http://localhost:' + port + '/api/Noticia';
-        const response = await axios.post(url, newsPublished);
-        console.log('Respuesta:', response.data);
+        await axios.post(url, newsPublished);
+        alert("La noticia ha sido publicada exitosamente.");
+        fetchNews();
       }catch(error){
         console.error('Error al hacer POST:', error);
       }
@@ -109,10 +126,17 @@ const ProfessorNews: React.FC<ProfessorNewsProps> = ({ idGrupo }) => {
             </div>
             <div style={{fontWeight: 'bold'}}>Noticias Publicadas</div>
             {news.map((item) => (
-              <div key={item.idNoticia} className="bg-white rounded-lg shadow p-4">
-                <h3 className="text-lg font-semibold text-gray-800">{item.titulo}</h3>
+              
+              <div key={item.idNoticia} className="bg-white rounded-lg shadow p-4" style={{display:'grid'}}>
+                <div>
+                  <div style={{display: 'float', marginBottom:'5px'}}>
+                    <h3 className="text-lg font-semibold text-gray-800" style={{float:'left'}}>{item.titulo}</h3>
+                    <div className='delete-button' onClick={() => {deleteNews(item.idNoticia)}} style={{float: 'right'}}>x</div>
+                  </div>
+                </div>
                 <p className="text-gray-600 text-sm mb-2">Publicado: {new Date(item.fechaPublicacion).toLocaleString()}</p>
                 <p className="text-gray-700">{item.mensaje}</p>
+
               </div>
             ))}
 

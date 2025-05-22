@@ -15,6 +15,20 @@
     transition: 0.3s;
 }
 
+.delete-button{
+    color: rgb(198, 198, 198);
+    padding: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.delete-button:hover{
+    color: rgb(48, 48, 48);
+    font-weight: bold;
+    padding: 4px;
+    transition: 0.3s;
+}
+
 .custom-input {
   appearance: none;
   border: 1px solid #d1d5db; /* border-gray-300 */

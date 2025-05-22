@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\NoticiaController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Controllers\\NoticiaController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -73,12 +77,25 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 175,
-          "SelectedChildIndex": 5,
+          "DockedWidth": 103,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
+              "Title": "NoticiaController.cs",
+              "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\NoticiaController.cs",
+              "RelativeDocumentMoniker": "Controllers\\NoticiaController.cs",
+              "ToolTip": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\NoticiaController.cs",
+              "RelativeToolTip": "Controllers\\NoticiaController.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAIAwwCQAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T02:54:50.592Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "Grupo.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\Grupo.cs",
               "RelativeDocumentMoniker": "Models\\Grupo.cs",
@@ -90,7 +107,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -102,7 +119,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "MongoDbService.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Services\\MongoDbService.cs",
               "RelativeDocumentMoniker": "Services\\MongoDbService.cs",
@@ -114,7 +131,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "EstudiantesGrupoController.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\EstudiantesGrupoController.cs",
               "RelativeDocumentMoniker": "Controllers\\EstudiantesGrupoController.cs",
@@ -122,12 +139,11 @@
               "RelativeToolTip": "Controllers\\EstudiantesGrupoController.cs",
               "ViewState": "AgIAALAAAAAAAAAAAAAAAMIAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-21T04:45:15.912Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-21T04:45:15.912Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "EstudianteGrupo.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\EstudianteGrupo.cs",
               "RelativeDocumentMoniker": "Models\\EstudianteGrupo.cs",
@@ -139,7 +155,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -152,7 +168,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "ProfesoresController.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\ProfesoresController.cs",
               "RelativeDocumentMoniker": "Controllers\\ProfesoresController.cs",
@@ -165,7 +181,7 @@
           ]
         },
         {
-          "DockedWidth": 225,
+          "DockedWidth": 297,
           "SelectedChildIndex": 9,
           "Children": [
             {
@@ -174,7 +190,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Curso.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\Curso.cs",
               "RelativeDocumentMoniker": "Models\\Curso.cs",
@@ -186,7 +202,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Carpeta.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\Carpeta.cs",
               "RelativeDocumentMoniker": "Models\\Carpeta.cs",
@@ -198,7 +214,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "CEDigitalContext.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Data\\CEDigitalContext.cs",
               "RelativeDocumentMoniker": "Data\\CEDigitalContext.cs",
@@ -210,7 +226,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "GrupoController.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\GrupoController.cs",
               "RelativeDocumentMoniker": "Controllers\\GrupoController.cs",
@@ -222,7 +238,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "BasePerson.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\BasePerson.cs",
               "RelativeDocumentMoniker": "Models\\BasePerson.cs",
@@ -234,7 +250,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Profesor.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\Profesor.cs",
               "RelativeDocumentMoniker": "Models\\Profesor.cs",
@@ -246,7 +262,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "Estudiante.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\Estudiante.cs",
               "RelativeDocumentMoniker": "Models\\Estudiante.cs",
@@ -258,7 +274,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "ProfesorGrupo.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\ProfesorGrupo.cs",
               "RelativeDocumentMoniker": "Models\\ProfesorGrupo.cs",
@@ -270,13 +286,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "ProfesorGrupoController.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\ProfesorGrupoController.cs",
               "RelativeDocumentMoniker": "Controllers\\ProfesorGrupoController.cs",
               "ToolTip": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\ProfesorGrupoController.cs",
               "RelativeToolTip": "Controllers\\ProfesorGrupoController.cs",
-              "ViewState": "AgIAAC0AAAAAAAAAAAAAADEAAAAhAAAAAAAAAA==",
+              "ViewState": "AgIAACQAAAAAAAAAAAAAADEAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-21T04:36:35.529Z",
               "EditorCaption": ""
