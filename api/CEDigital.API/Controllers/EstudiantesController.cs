@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using CEDigital.API.Models;
 using CEDigital.API.Services;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using System.Threading.Tasks;
 
 namespace CEDigital.API.Controllers
 {
@@ -28,6 +29,15 @@ namespace CEDigital.API.Controllers
         public async Task<ActionResult<Estudiante>> Get(string id)
         {
             var estudiante = await _estudiantes.Find(e => e.Id == id).FirstOrDefaultAsync();
+            if (estudiante == null)
+                return NotFound();
+            return estudiante;
+        }
+
+        [HttpGet("get-by-carnet/{carnet}")]
+        public async Task<ActionResult<Estudiante>> GetByCarnet(string carnet)
+        {
+            var estudiante = await _estudiantes.Find(e => e.Carnet == carnet).FirstOrDefaultAsync();
             if (estudiante == null)
                 return NotFound();
             return estudiante;

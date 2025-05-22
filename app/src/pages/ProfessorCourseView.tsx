@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ProfessorDocumentExplorer from '../components/ProfessorDocumentExplorer';
 // Importar componentes para las otras pestañas (los crearemos despus)
 import ProfessorEvaluations from '../components/ProfessorEvaluations'; // Import StudentEvaluations component
-// import StudentGrades from '../components/StudentGrades';
+import ProfessorStudentList from '../components/ProfessorStudentList';
 import ProfessorNews from '../components/ProfessorNews'; // Import the StudentNews component
 import axios from 'axios'; // Added axios for fetching group info
 
@@ -154,7 +154,7 @@ const ProfessorCourseView: React.FC<ProfessorCourseViewProps> = ({ user }) => {
             {activeTab === 'evaluaciones' && (
                 <div className="p-4 rounded-lg bg-gray-50" role="tabpanel" aria-labelledby="evaluaciones-tab">
                     {user ? (
-                        <ProfessorEvaluations idGrupo={idGrupo} user={user} />
+                        <ProfessorStudentList idGrupo={idGrupo} user={user} />
                     ) : (
                         <div className="text-center text-red-600">Error: Usuario no autenticado</div>
                     )}

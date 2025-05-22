@@ -20,6 +20,7 @@ namespace CEDigital.API.Models
         public string CarnetEstudiante { get; set; }
     }
 
+
     public class EstudianteGrupoCreateDto
     {
         public int IdGrupo { get; set; }

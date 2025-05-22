@@ -5,6 +5,7 @@ using CEDigital.API.Data;
 using System.Linq;
 using System.Collections.Generic;
 using CEDigital.API.Services;
+using MongoDB.Driver;
 using Microsoft.Extensions.Logging;
 
 namespace CEDigital.API.Controllers
@@ -49,6 +50,30 @@ namespace CEDigital.API.Controllers
             };
 
             return grupoDto;
+        }
+
+        [HttpGet("grupo-con-estudiantes-full/{id}")]
+        public async Task<ActionResult<List<Estudiante>>> GetGrupoConEstudiantesFull(int id)
+        {
+            var grupo = await _context.Grupos
+                .Include(g => g.Estudiantes)
+                .FirstOrDefaultAsync(g => g.IdGrupo == id);
+            var carnets = grupo.Estudiantes.Select(e => e.CarnetEstudiante).ToList();
+
+            var estudiantesRegistrados = new List<Estudiante>();
+            foreach (var carnet in carnets)
+            {
+                var estudiante = await _mongoDbService.GetStudentByCarnetAsync(carnet);
+                if (estudiante != null)
+                {
+                    estudiantesRegistrados.Add(estudiante);
+                }
+            }
+
+            if (estudiantesRegistrados == null)
+                return NotFound();
+
+            return estudiantesRegistrados;
         }
 
         // GET: api/EstudianteGrupo/grupo-trabajo-miembros/{carnetEstudiante}/{idEvaluacion}
@@ -235,6 +260,12 @@ namespace CEDigital.API.Controllers
         public int IdSemestre { get; set; }
         public int AñoSemestre { get; set; }
         public string PeriodoSemestre { get; set; }
+    }
+
+    public class EstudiantesNombradosDto
+    {
+        public string Carnet { get; set; }
+        public string Nombre { get; set; }
     }
 
     // DTO to return group member information
