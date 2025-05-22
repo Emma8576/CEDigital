@@ -3,11 +3,11 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import { crearEstudiante, obtenerEstudiantes } from "../services/estudianteService";
 
 export type Estudiante = {
-  carnet: number;
+  carne: number;
   cedula: number;
   nombre: string;
   correo: string;
-  telefono: string;
+  telefono: number;
   password: string;
 };
 
@@ -15,11 +15,11 @@ const GestionEstudiantes = () => {
   const [estudiantes, setEstudiantes] = useState<Estudiante[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [nuevoEstudiante, setNuevoEstudiante] = useState<Estudiante>({
-    carnet: 0,
+    carne: 0,
     cedula: 0,
     nombre: "",
     correo: "",
-    telefono: "",
+    telefono: 0,
     password: "",
   });
 
@@ -49,11 +49,11 @@ const GestionEstudiantes = () => {
       const response = await crearEstudiante(estudianteConPasswordEncriptado);
       setEstudiantes([...estudiantes, response.data]);
       setNuevoEstudiante({
-        carnet: 0,
+        carne: 0,
         cedula: 0,
         nombre: "",
         correo: "",
-        telefono: "",
+        telefono: 0,
         password: "",
       });
       setMostrarFormulario(false);
@@ -88,9 +88,9 @@ const GestionEstudiantes = () => {
               <input
                 type="number"
                 className="p-2 border rounded"
-                value={nuevoEstudiante.carnet}
+                value={nuevoEstudiante.carne}
                 onChange={(e) =>
-                  setNuevoEstudiante({ ...nuevoEstudiante, carnet:  parseInt(e.target.value || "0"),})
+                  setNuevoEstudiante({ ...nuevoEstudiante, carne:  parseInt(e.target.value || "0"),})
                 }
               />
             </div>
@@ -134,7 +134,7 @@ const GestionEstudiantes = () => {
                 className="p-2 border rounded"
                 value={nuevoEstudiante.telefono}
                 onChange={(e) =>
-                  setNuevoEstudiante({ ...nuevoEstudiante, telefono: e.target.value })
+                  setNuevoEstudiante({ ...nuevoEstudiante, telefono:parseInt(e.target.value || "0"),})
                 }
               />
             </div>
@@ -181,8 +181,8 @@ const GestionEstudiantes = () => {
           </thead>
           <tbody>
             {estudiantes.map((est) => (
-              <tr key={est.carnet} className="border-t">
-                <td className="p-3">{est.carnet}</td>
+              <tr key={est.carne} className="border-t">
+                <td className="p-3">{est.carne}</td>
                 <td className="p-3">{est.cedula}</td>
                 <td className="p-3">{est.nombre}</td>
                 <td className="p-3">{est.correo}</td>

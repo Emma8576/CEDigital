@@ -39,6 +39,7 @@ builder.Services.AddSingleton<MongoDbSettings>(
 
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddSingleton<ProfesorMongoService>();
+builder.Services.AddSingleton<EstudianteMongoService>();
 
 // Configurar SQL Server
 builder.Services.AddDbContext<CEDigitalContext>(options =>

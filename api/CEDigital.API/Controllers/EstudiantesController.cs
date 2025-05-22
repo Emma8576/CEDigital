@@ -9,42 +9,41 @@ namespace CEDigital.API.Controllers
     [Route("api/[controller]")]
     public class EstudiantesController : ControllerBase
     {
-        private readonly MongoDbService _mongoDbService;
-        private readonly IMongoCollection<Estudiante> _estudiantes;
+        private readonly EstudianteMongoService _estudianteService;
 
-        public EstudiantesController(MongoDbService mongoDbService)
+        public EstudiantesController(EstudianteMongoService estudianteService)
         {
-            _mongoDbService = mongoDbService;
-            _estudiantes = _mongoDbService.GetCollection<Estudiante>("estudiantes");
+            _estudianteService = estudianteService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Estudiante>>> Get()
+        public async Task<ActionResult<List<EstudianteMongo>>> Get()
         {
-            return await _estudiantes.Find(_ => true).ToListAsync();
+            var estudiantes = await _estudianteService.GetEstudiantesAsync();
+            return Ok(estudiantes);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Estudiante>> Get(string id)
+        public async Task<ActionResult<EstudianteMongo>> Get(string id)
         {
-            var estudiante = await _estudiantes.Find(e => e.Id == id).FirstOrDefaultAsync();
+            var estudiante = await _estudianteService.GetEstudianteByIdAsync(id);
             if (estudiante == null)
                 return NotFound();
-            return estudiante;
+            return Ok(estudiante);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Estudiante>> Create(Estudiante estudiante)
+        public async Task<ActionResult<EstudianteMongo>> Create(EstudianteMongo estudiante)
         {
-            await _estudiantes.InsertOneAsync(estudiante);
+            await _estudianteService.CrearEstudianteAsync(estudiante);
             return CreatedAtAction(nameof(Get), new { id = estudiante.Id }, estudiante);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, Estudiante estudiante)
+        public async Task<IActionResult> Update(string id, EstudianteMongo estudiante)
         {
-            var result = await _estudiantes.ReplaceOneAsync(e => e.Id == id, estudiante);
-            if (result.ModifiedCount == 0)
+            var updated = await _estudianteService.UpdateEstudianteAsync(id, estudiante);
+            if (!updated)
                 return NotFound();
             return NoContent();
         }
@@ -52,10 +51,10 @@ namespace CEDigital.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var result = await _estudiantes.DeleteOneAsync(e => e.Id == id);
-            if (result.DeletedCount == 0)
+            var deleted = await _estudianteService.DeleteEstudianteAsync(id);
+            if (!deleted)
                 return NotFound();
             return NoContent();
         }
     }
-} 
+}
