@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CEDigital.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e02949cecf5751a5c040100795d6452888ad0e9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+239177cb73d9ef26794585fd32e9c7b3019a83fd")]
 [assembly: System.Reflection.AssemblyProductAttribute("CEDigital.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CEDigital.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

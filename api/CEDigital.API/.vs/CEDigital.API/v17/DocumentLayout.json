@@ -69,7 +69,7 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 313,
+          "DockedWidth": 186,
           "SelectedChildIndex": 5,
           "Children": [
             {
@@ -83,8 +83,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-21T20:39:51.265Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -96,8 +95,7 @@
               "RelativeToolTip": "Models\\Estudiante.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-22T06:32:20.63Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-22T06:32:20.63Z"
             },
             {
               "$type": "Document",
@@ -109,8 +107,7 @@
               "RelativeToolTip": "Controllers\\EstudiantesController.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-22T06:26:56.41Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-22T06:26:56.41Z"
             },
             {
               "$type": "Document",
@@ -122,8 +119,7 @@
               "RelativeToolTip": "Controllers\\GrupoController.cs",
               "ViewState": "AgIAAA8AAAAAAAAAAAAAACMAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-22T04:06:43.698Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-22T04:06:43.698Z"
             },
             {
               "$type": "Document",
@@ -135,8 +131,7 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-05-21T17:09:40.561Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-21T17:09:40.561Z"
             },
             {
               "$type": "Document",
@@ -161,13 +156,12 @@
               "RelativeToolTip": "Services\\MongoDbService.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAABMAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-21T17:08:59.42Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-21T17:08:59.42Z"
             }
           ]
         },
         {
-          "DockedWidth": 87,
+          "DockedWidth": 214,
           "SelectedChildIndex": 5,
           "Children": [
             {
@@ -184,8 +178,7 @@
               "RelativeToolTip": "Controllers\\ProfesorGrupoController.cs",
               "ViewState": "AgIAACEAAAAAAAAAAAAAACoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-22T06:57:25.486Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-22T06:57:25.486Z"
             },
             {
               "$type": "Document",
@@ -197,8 +190,7 @@
               "RelativeToolTip": "Models\\EstudianteGrupo.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-22T06:52:01.186Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-22T06:52:01.186Z"
             },
             {
               "$type": "Document",
@@ -210,8 +202,7 @@
               "RelativeToolTip": "Controllers\\NoticiaController.cs",
               "ViewState": "AgIAAEcAAAAAAAAAAAAAwFwAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-22T02:54:50.592Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-22T02:54:50.592Z"
             },
             {
               "$type": "Document",
@@ -233,7 +224,7 @@
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-22T04:04:57.099Z",
               "EditorCaption": ""
@@ -272,8 +263,7 @@
               "RelativeToolTip": "Data\\CEDigitalContext.cs",
               "ViewState": "AgIAADYAAAAAAAAAAAAAADkAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-21T17:41:12.593Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-21T17:41:12.593Z"
             }
           ]
         }
