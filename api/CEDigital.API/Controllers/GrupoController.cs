@@ -91,15 +91,26 @@ namespace CEDigital.API.Controllers
                     _context.Carpetas.Add(carpeta);
                 }
 
-                await _context.SaveChangesAsync(); // Guarda las carpetas
+                // Crear rubros por defecto 
+                var rubrosPorDefecto = new List<Rubro>
+                {
+                    new Rubro { NombreRubro = "Quices", Porcentaje = 30, IdGrupo = grupo.IdGrupo },
+                    new Rubro { NombreRubro = "Exámenes", Porcentaje = 30, IdGrupo = grupo.IdGrupo },
+                    new Rubro { NombreRubro = "Proyectos", Porcentaje = 40, IdGrupo = grupo.IdGrupo }
+                };
+
+                _context.Rubros.AddRange(rubrosPorDefecto);
+
+                await _context.SaveChangesAsync(); // Guarda las carpetas y rubros
             }
             catch (DbUpdateException ex)
-            {
+            { 
                 return Conflict(ex.InnerException?.Message);
             }
 
             return CreatedAtAction(nameof(GetGrupo), new { id = grupo.IdGrupo }, grupo);
         }
+
 
         // PUT: api/Grupo/5
         [HttpPut("{id}")] // actualiza cualquier valor de las columnas de Grupo por un id especifico 
@@ -140,7 +151,7 @@ namespace CEDigital.API.Controllers
 
             return NoContent();
         }
-        // GET: api/Grupo/conCursos
+// GET: api/Grupo/conCursos
         [HttpGet("conCursos")]
         public async Task<ActionResult<IEnumerable<object>>> GetGruposConCursos()
         {
@@ -149,12 +160,14 @@ namespace CEDigital.API.Controllers
                 .Select(g => new {
                     g.IdGrupo,
                     g.NumeroGrupo,
+                    g.CodigoCurso, 
                     NombreCurso = g.Curso.NombreCurso
                 })
                 .ToListAsync();
 
             return Ok(grupos);
         }
+
 
     }
 }

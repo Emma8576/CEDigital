@@ -204,7 +204,7 @@ const GestionGrupos = () => {
       <h1 className="text-xl font-bold mb-4">Gestión de Grupos</h1>
       {/* Descripción */}
       <div className="text-gray-700">
-        En esta sección puede crear semestres con su respectivo año y periodo académico.
+        En esta sección puede crear grupos y asignar profesores.
       </div>
 
       {/* Formulario de creación de grupos */}
