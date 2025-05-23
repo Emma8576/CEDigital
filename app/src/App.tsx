@@ -4,10 +4,14 @@ import Navbar from "./components/NavBar";
 import Dashboard from "./pages/Dashboard";
 import GestionCursos from "./pages/GestionCursos";
 import GestionSemestres from "./pages/GestionSemestres";
-import CargaSemestre from "./pages/CargaSemestre";
+import CargaSemestre from "./pages/CargarSemestre";
 import Login from "./components/Login";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentCourseView from "./pages/StudentCourseView";
+import CargaGrupos from "./pages/GestionGrupos";
+import GestionProfesores from "./pages/GestionProfesores";
+import GestionMatricula from "./pages/GestionMatricula";
+import GestionEstudiantes from "./pages/GestionEstudiantes";
 
 function App() {
   const [user, setUser] = useState<null | { id: string; nombre: string; tipo: string }>(null);
@@ -68,6 +72,26 @@ function App() {
               <Route path="/contenido" element={
                 <ProtectedRoute allowedTypes={["administrador"]}>
                   <CargaSemestre />
+                </ProtectedRoute>
+              } />
+              <Route path="/profesores" element={
+                <ProtectedRoute allowedTypes={["administrador"]}>
+                  <GestionProfesores />
+                </ProtectedRoute>
+              } />
+              <Route path="/grupos" element={
+                <ProtectedRoute allowedTypes={["administrador"]}>
+                  <CargaGrupos />
+                </ProtectedRoute>
+              } />
+              <Route path="/matricula" element={
+                <ProtectedRoute allowedTypes={["administrador"]}>
+                  <GestionMatricula />
+                </ProtectedRoute>
+              } />
+              <Route path="/estudiantes" element={
+                <ProtectedRoute allowedTypes={["administrador"]}>
+                  <GestionEstudiantes />
                 </ProtectedRoute>
               } />
 

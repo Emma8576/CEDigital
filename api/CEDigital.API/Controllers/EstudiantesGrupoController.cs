@@ -203,6 +203,25 @@ namespace CEDigital.API.Controllers
 
             return cursos;
         }
+
+        // GET: api/EstudianteGrupo/grupos-con-cantidad
+        [HttpGet("grupos-con-cantidad")]
+        public async Task<ActionResult<IEnumerable<object>>> GetCantidadEstudiantesPorGrupo()
+        {
+            var resultado = await _context.Grupos
+                .Include(g => g.Curso)
+                .Include(g => g.Estudiantes)
+                .Select(g => new {
+                    g.IdGrupo,
+                    g.NumeroGrupo,
+                    g.CodigoCurso, 
+                    NombreCurso = g.Curso.NombreCurso,
+                    CantidadEstudiantes = g.Estudiantes.Count
+                })
+                .ToListAsync();
+
+            return Ok(resultado);
+        }
     }
 
     public class GrupoDto

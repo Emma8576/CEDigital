@@ -1,9 +1,26 @@
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using CEDigital.API.Services;
+
 
 namespace CEDigital.API.Models
 {
-    public class Profesor : BasePerson
+    public class Profesor
     {
-        // Por ahora no tiene campos adicionales, pero podemos agregarlos según sea necesario
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+
+        [BsonElement("nombre")]
+        public string? Nombre { get; set; }
+
+        [BsonElement("correo")]
+        public string? Correo { get; set; }
+
+        [BsonElement("password")]
+        public string? Password { get; set; }
+
+        [BsonElement("cedula")]
+        public string? Cedula { get; set; }
     }
-} 
+}

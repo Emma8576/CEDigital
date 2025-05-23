@@ -90,12 +90,19 @@ namespace CEDigital.API.Controllers
 
 
         // DELETE: api/Curso/CS101
-        [HttpDelete("{codigo}")] //elimina un curso
+        [HttpDelete("{codigo}")]
         public async Task<IActionResult> DeleteCurso(string codigo)
         {
             var curso = await _context.Cursos.FindAsync(codigo);
             if (curso == null)
                 return NotFound();
+
+            // Verificar si tiene dependencias (grupos, inscripciones, etc.)
+            bool tieneDependencias = await _context.Grupos.AnyAsync(g => g.CodigoCurso == codigo);
+            if (tieneDependencias)
+            {
+                return BadRequest("No se puede eliminar el curso porque tiene grupos asociados.");
+            }
 
             _context.Cursos.Remove(curso);
             await _context.SaveChangesAsync();

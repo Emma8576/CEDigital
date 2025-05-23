@@ -33,19 +33,24 @@ namespace CEDigital.API.Controllers
         }
 
         // GET: api/ProfesorGrupo/5
-        [HttpGet("{idGrupo}")] //devuelve la cedula de los profesores por el id del grupo
+        [HttpGet("{idGrupo}")] // Devuelve las cédulas de los profesores por ID del grupo
         public async Task<ActionResult<IEnumerable<string>>> GetProfesoresDeGrupo(int idGrupo)
         {
+            // Verificar si el grupo existe
+            var grupoExiste = await _context.Grupos.AnyAsync(g => g.IdGrupo == idGrupo);
+            if (!grupoExiste)
+                return NotFound($"El grupo con ID {idGrupo} no existe.");
+
+            // Obtener las cédulas de los profesores asignados
             var profesores = await _context.ProfesorGrupos
                 .Where(pg => pg.IdGrupo == idGrupo)
                 .Select(pg => pg.CedulaProfesor)
                 .ToListAsync();
 
-            if (profesores == null || profesores.Count == 0)
-                return NotFound($"No hay profesores asignados al grupo {idGrupo}");
-
-            return profesores;
+            // Siempre devolver 200 OK, incluso si la lista está vacía
+            return Ok(profesores);
         }
+
 
         // POST: api/ProfesorGrupo
         [HttpPost] //Agrega un profesor a un grupo, verifica que no hayan mas de 2
@@ -159,5 +164,7 @@ namespace CEDigital.API.Controllers
 
             return NoContent();
         }
+
+        
     }
 }

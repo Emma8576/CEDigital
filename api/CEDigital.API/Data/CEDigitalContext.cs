@@ -24,7 +24,7 @@ namespace CEDigital.API.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Carrera>().ToTable("Carrera"); 
+            modelBuilder.Entity<Carrera>().ToTable("Carrera");
             modelBuilder.Entity<Semestre>().ToTable("Semestre");
             modelBuilder.Entity<Curso>().ToTable("Curso");
             modelBuilder.Entity<Grupo>().ToTable("Grupo");
@@ -45,18 +45,15 @@ namespace CEDigital.API.Data
                 .HasOne(pg => pg.Grupo)
                 .WithMany()
                 .HasForeignKey(pg => pg.IdGrupo);
-            
+
             modelBuilder.Entity<EstudianteGrupo>()
-                .ToTable("EstudianteGrupo") 
+                .ToTable("EstudianteGrupo")
                 .HasKey(eg => new { eg.IdGrupo, eg.CarnetEstudiante });
 
             modelBuilder.Entity<EstudianteGrupo>()
                 .HasOne(eg => eg.Grupo)
-                .WithMany(g => g.Estudiantes)  
+                .WithMany(g => g.Estudiantes)
                 .HasForeignKey(eg => eg.IdGrupo);
-
-            modelBuilder.Entity<GrupoTrabajo>()
-                .HasKey(gt => new { gt.CarnetEstudiante, gt.IdGrupoTrabajo, gt.IdEvaluacion });
 
             modelBuilder.Entity<GrupoTrabajo>()
                 .HasKey(gt => gt.IdGrupoTrabajo);
@@ -66,14 +63,12 @@ namespace CEDigital.API.Data
                 .WithMany(gt => gt.Entregas)
                 .HasForeignKey(e => e.IdGrupoTrabajo);
 
-        
             modelBuilder.Entity<NotaEvaluacion>()
                 .HasOne(ne => ne.Evaluacion)
-                .WithMany() // <--- SIN propiedad inversa
+                .WithMany()
                 .HasForeignKey(ne => ne.IdEvaluacion);
 
-
-            base.OnModelCreating(modelBuilder); 
-        }   
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

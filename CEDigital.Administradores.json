@@ -1,0 +1,18 @@
+[{
+  "_id": {
+    "$oid": "681cf82e104e7850daaf4205"
+  },
+  "cedula": 305640987,
+  "nombre": "Fátima Alvarado Salazar",
+  "correo": "fatimalva@admince.ac.cr",
+  "password": "02675d126f900873ca52c0611a98de48"
+},
+{
+  "_id": {
+    "$oid": "681cf82e104e7850daaf4206"
+  },
+  "cedula": 209120875,
+  "nombre": "Roberto Rivas Navarro",
+  "correo": "robrivas@admince.ac.cr",
+  "password": "1fc127e3baec602c6a38ce098952f086"
+}]

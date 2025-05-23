@@ -35,6 +35,27 @@ namespace CEDigital.API.Controllers
             return semestre;
         }
 
+        // GET: api/Semestre/5/cantidad-grupos
+        [HttpGet("{id}/cantidad-grupos")]
+        public async Task<ActionResult<SemestreCantidadGruposDto>> GetSemestreCantidadCursos(int id)
+        {
+            var semestreConGrupos = await _context.Semestres
+                .Where(s => s.IdSemestre == id)
+                .Select(s => new SemestreCantidadGruposDto
+                {
+                    IdSemestre = s.IdSemestre,
+                    Periodo = s.Periodo,
+                    Año = s.Año,
+                    CantidadGrupos = s.Grupos.Count()
+                })
+                .FirstOrDefaultAsync();
+
+            if (semestreConGrupos == null)
+                return NotFound();
+
+            return semestreConGrupos;
+        }
+
         // POST: api/Semestre
         [HttpPost]
         public async Task<ActionResult<Semestre>> CreateSemestre(SemestreCreateDto dto)
@@ -87,10 +108,34 @@ namespace CEDigital.API.Controllers
             if (semestre == null)
                 return NotFound();
 
-            _context.Semestres.Remove(semestre);
-            await _context.SaveChangesAsync();
+            bool tieneGrupos = await _context.Grupos.AnyAsync(g => g.IdSemestre == id);
+            if (tieneGrupos)
+            {
+                return BadRequest("No se puede eliminar el semestre porque tiene cursos asociados.");
+            }
 
-            return NoContent();
+            try
+            {
+                _context.Semestres.Remove(semestre);
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, "Error de base de datos al intentar eliminar el semestre.");
+            }
         }
+    }
+
+    public class SemestreCreateDto
+    {
+        public string Periodo { get; set; }
+        public int Año { get; set; }
+    }
+
+    public class SemestreUpdateDto
+    {
+        public string Periodo { get; set; }
+        public int Año { get; set; }
     }
 }

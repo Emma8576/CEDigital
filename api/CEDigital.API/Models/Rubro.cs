@@ -42,5 +42,4 @@ namespace CEDigital.API.Models
         public string NombreRubro { get; set; }
         public int Porcentaje { get; set; }
     }
-
 }

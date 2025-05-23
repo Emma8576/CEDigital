@@ -132,6 +132,7 @@ namespace CEDigital.API.Controllers
             return CreatedAtAction(nameof(GetGrupo), new { id = grupo.IdGrupo }, grupo);
         }
 
+
         // PUT: api/Grupo/5
         [HttpPut("{id}")] // actualiza cualquier valor de las columnas de Grupo por un id especifico 
         public async Task<IActionResult> PutGrupo(int id, GrupoUpdateDto grupoDto)
@@ -171,5 +172,23 @@ namespace CEDigital.API.Controllers
 
             return NoContent();
         }
+// GET: api/Grupo/conCursos
+        [HttpGet("conCursos")]
+        public async Task<ActionResult<IEnumerable<object>>> GetGruposConCursos()
+        {
+            var grupos = await _context.Grupos
+                .Include(g => g.Curso)
+                .Select(g => new {
+                    g.IdGrupo,
+                    g.NumeroGrupo,
+                    g.CodigoCurso, 
+                    NombreCurso = g.Curso.NombreCurso
+                })
+                .ToListAsync();
+
+            return Ok(grupos);
+        }
+
+
     }
 }

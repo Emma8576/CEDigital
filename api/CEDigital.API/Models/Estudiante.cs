@@ -13,20 +13,16 @@ namespace CEDigital.API.Models
         public string? Id { get; set; }
 
         [BsonElement("nombre")]
-        [Required]
-        public required string Nombre { get; set; }
+        public string? Nombre { get; set; }
 
         [BsonElement("correo")]
-        [Required]
-        public required string Correo { get; set; }
+        public string? Correo { get; set; }
 
         [BsonElement("password")]
-        [Required]
-        public required string Password { get; set; }
+        public string? Password { get; set; }
 
-        [BsonElement("carne")]
-        [Required]
-        public required string Carnet { get; set; }
+        [BsonElement("carnet")]
+        public string? Carnet { get; set; }
 
         [BsonElement("telefono")]
         public string? Telefono { get; set; }

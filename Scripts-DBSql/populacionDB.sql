@@ -154,7 +154,50 @@ VALUES
 -- NotaEvaluacion
 -- Grupal
 INSERT INTO NotaEvaluacion (PorcentajeObtenido, Observaciones, RutaArchivoDetalles, Publicada, IdEvaluacion, IdGrupoTrabajo)
+
 VALUES (35.95, 'Buen trabajo en el proyecto', '/notas/proyecto1_detalles.pdf', 0, 3, 1);
 --individual
 INSERT INTO NotaEvaluacion (PorcentajeObtenido, Observaciones, RutaArchivoDetalles, Publicada, IdEvaluacion, CarnetEstudiante)
 VALUES (14.00, 'Excelente desempeño en el quiz', '/notas/quiz1_detalles.pdf', 0, 1, '2023298134');
+
+/*
+SELECT IdCarrera, NombreCarrera FROM Carrera;
+DELETE FROM Carrera WHERE IdCarrera > 6;
+SELECT * FROM Curso;
+SELECT * FROM Carrera;
+USE CEDigital;
+
+INSERT INTO Carrera (NombreCarrera)
+VALUES ('Ingeniería en Sistemas'),
+       ('Ingeniería Civil'),
+       ('Mantenimiento');
+*/
+SELECT * FROM Grupo;
+SELECT * FROM Semestre;
+SELECT * FROM ProfesorGrupo;
+SELECT * FROM Carpeta;
+SELECT IdGrupo, CodigoCurso, IdSemestre, NumeroGrupo FROM Grupo;
+EXEC sp_fkeys 'Grupo';
+
+
+--Mostrar grupos con profesor asignado
+SELECT DISTINCT g.*
+FROM Grupo g
+INNER JOIN ProfesorGrupo pg ON g.IdGrupo = pg.IdGrupo;
+
+--Selecciona Grupos sin profesor asignado
+SELECT g.*
+FROM Grupo g
+LEFT JOIN ProfesorGrupo pg ON g.IdGrupo = pg.IdGrupo
+WHERE pg.IdGrupo IS NULL;
+
+--Se elimina relaciones entre grupos no asignados y carpetas
+SELECT DISTINCT g.*
+FROM Grupo g
+INNER JOIN ProfesorGrupo pg ON g.IdGrupo = pg.IdGrupo;
+DELETE FROM Carpeta
+WHERE IdGrupo IN (4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
+
+--Se eliminan grupos sin asignar
+DELETE FROM Grupo
+WHERE IdGrupo IN (4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
