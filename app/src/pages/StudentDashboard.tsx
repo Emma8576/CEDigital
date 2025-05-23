@@ -7,7 +7,7 @@ interface User {
   id: string;
   nombre: string;
   tipo: string;
-  carnet?: string; // Make carnet optional as it might not be present for other user types
+  carne?: string; // Use carne to match backend LoginResponse
 }
 
 interface Course {
@@ -44,15 +44,15 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
 
   useEffect(() => {
     const fetchStudentCourses = async () => {
-      if (!user || !user.carnet) {
-        setError("No se pudo obtener el carnet del estudiante.");
+      if (!user || !user.carne) {
+        setError("No se pudo obtener el carne del estudiante.");
         setLoading(false);
         return;
       }
 
       try {
         setLoading(true);
-        const response = await axios.get<Course[]>(`http://localhost:5261/api/EstudianteGrupo/estudiante-cursos/${user.carnet}`);
+        const response = await axios.get<Course[]>(`http://localhost:5261/api/EstudianteGrupo/estudiante-cursos/${user.carne}`);
         
         // Group courses by semester (AñoSemestre and PeriodoSemestre)
         const groupedBySemester: { [key: string]: Course[] } = response.data.reduce((acc, course) => {
@@ -115,7 +115,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
       return <div className="text-center mt-8 text-red-600">Error: {error}</div>;
   }
 
-   if (!user || !user.carnet) {
+   if (!user || !user.carne) {
         return <div className="text-center mt-8 text-red-600">Informacin de usuario no disponible.</div>;
     }
 

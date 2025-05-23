@@ -92,10 +92,10 @@ namespace CEDigital.API.Controllers
                 var estudiante = await _mongoDbService.GetStudentByCarnetAsync(carnet);
                 if (estudiante != null)
                 {
-                    _logger.LogInformation("Found student in MongoDB: {Carnet} - {Nombre}", estudiante.Carnet, estudiante.Nombre);
+                    _logger.LogInformation("Found student in MongoDB: {Carne} - {Nombre}. Full object: {@Estudiante}", estudiante.Carne, estudiante.Nombre, estudiante);
                     miembrosGrupoConNombres.Add(new GrupoTrabajoMiembroDto
                     {
-                        Carnet = estudiante.Carnet,
+                        Carne = estudiante.Carne,
                         Nombre = estudiante.Nombre
                     });
                 } else
@@ -104,7 +104,7 @@ namespace CEDigital.API.Controllers
                      // Handle cases where student might not be in MongoDB (optional)
                      miembrosGrupoConNombres.Add(new GrupoTrabajoMiembroDto
                     {
-                        Carnet = carnet,
+                        Carne = carnet,
                         Nombre = "Nombre no encontrado"
                     });
                 }
@@ -259,7 +259,7 @@ namespace CEDigital.API.Controllers
     // DTO to return group member information
     public class GrupoTrabajoMiembroDto
     {
-        public string Carnet { get; set; }
+        public string Carne { get; set; }
         public string Nombre { get; set; }
     }
 }

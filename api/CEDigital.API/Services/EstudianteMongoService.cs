@@ -28,7 +28,7 @@ namespace CEDigital.API.Services
 
         public async Task<Estudiante?> GetEstudiantePorCarneAsync(string carne)
         {
-            return await _estudiantes.Find(e => e.Carnet == carne).FirstOrDefaultAsync();
+            return await _estudiantes.Find(e => e.Carne == carne).FirstOrDefaultAsync();
         }
     }
 }

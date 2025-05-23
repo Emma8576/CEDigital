@@ -77,8 +77,7 @@ namespace CEDigital.API.Controllers
             {
                 IdGrupo = dto.IdGrupo,
                 CedulaProfesor = cedula,
-                Grupo = grupo,
-                CedulasProfesores = new List<string> { cedula }
+                Grupo = grupo
             });
 
             await _context.ProfesorGrupos.AddRangeAsync(asignaciones);
@@ -114,8 +113,7 @@ namespace CEDigital.API.Controllers
             {
                 IdGrupo = idGrupo,
                 CedulaProfesor = cedula,
-                Grupo = grupo,
-                CedulasProfesores = new List<string> { cedula }
+                Grupo = grupo
             });
 
             await _context.ProfesorGrupos.AddRangeAsync(nuevos);

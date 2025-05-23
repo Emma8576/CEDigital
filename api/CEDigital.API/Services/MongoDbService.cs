@@ -22,8 +22,8 @@ namespace CEDigital.API.Services
 
         public async Task<Models.Estudiante?> GetStudentByCarnetAsync(string carnet)
         {
-            var collection = _database.GetCollection<Models.Estudiante>("estudiantes"); // Assuming collection name is "Estudiantes"
-            var filter = Builders<Models.Estudiante>.Filter.Eq(s => s.Carnet, carnet);
+            var collection = _database.GetCollection<Models.Estudiante>("Estudiantes"); // Assuming collection name is "Estudiantes"
+            var filter = Builders<Models.Estudiante>.Filter.Eq(s => s.Carne, carnet);
             return await collection.Find(filter).FirstOrDefaultAsync();
         }
     }

@@ -53,14 +53,14 @@ interface NotaEvaluacion {
 
 // New interface for group member DTO
 interface GrupoTrabajoMiembroDto {
-    carnet: string;
+    carne: string;
     nombre: string;
 }
 
 interface StudentEvaluationsProps {
     idGrupo: number;
     user: {
-        carnet?: string;
+        carne?: string;
         nombre?: string;
     };
 }
@@ -155,7 +155,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                 for (const evaluation of processedEvaluations) {
                     try {
                         // Fetch delivery status
-                        const entregaResponse = await axios.get<EntregaDto>(`http://localhost:5261/api/Entrega/estado/${evaluation.idEvaluacion}/${user.carnet}`);
+                        const entregaResponse = await axios.get<EntregaDto>(`http://localhost:5261/api/Entrega/estado/${evaluation.idEvaluacion}/${user.carne}`);
                         entregasMap[evaluation.idEvaluacion] = entregaResponse.data;
                     } catch (err) {
                         // No delivery found, that's okay
@@ -163,7 +163,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
 
                     try {
                         // Fetch grade
-                        const notaResponse = await axios.get<NotaEvaluacion[]>(`http://localhost:5261/api/NotaEvaluacion/estudiante/${user.carnet}/grupo/${idGrupo}`);
+                        const notaResponse = await axios.get<NotaEvaluacion[]>(`http://localhost:5261/api/NotaEvaluacion/estudiante/${user.carne}/grupo/${idGrupo}`);
                         const nota = notaResponse.data.find(n => n.idEvaluacion === evaluation.idEvaluacion);
                         if (nota) {
                             notasMap[evaluation.idEvaluacion] = nota;
@@ -188,12 +188,12 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
         };
 
         fetchData();
-    }, [idGrupo, user.carnet]);
+    }, [idGrupo, user.carne]);
 
     // New useEffect to fetch group members when evaluations are expanded
     useEffect(() => {
         const fetchGroupMembers = async () => {
-            if (!user.carnet) return; // Ensure carnet is available
+            if (!user.carne) return; // Ensure carne is available
 
             const evaluationsToFetchMembersFor = evaluations.filter(
                 evaluation => evaluation.esGrupal && expandedEvaluationIds.has(evaluation.idEvaluacion)
@@ -203,7 +203,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                 // Only fetch if members haven't been fetched for this evaluation yet
                 if (!groupMembers[evaluation.idEvaluacion]) {
                     try {
-                        const membersResponse = await axios.get<GrupoTrabajoMiembroDto[]>(`http://localhost:5261/api/EstudianteGrupo/grupo-trabajo-miembros/${user.carnet}/${evaluation.idEvaluacion}`); // Updated return type
+                        const membersResponse = await axios.get<GrupoTrabajoMiembroDto[]>(`http://localhost:5261/api/EstudianteGrupo/grupo-trabajo-miembros/${user.carne}/${evaluation.idEvaluacion}`); // Updated return type
                         setGroupMembers(prev => ({
                             ...prev,
                             [evaluation.idEvaluacion]: membersResponse.data
@@ -217,12 +217,12 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
         };
 
         fetchGroupMembers();
-    }, [expandedEvaluationIds, evaluations, user.carnet, groupMembers]); // Depend on expandedEvaluationIds and evaluations
+    }, [expandedEvaluationIds, evaluations, user.carne, groupMembers]); // Depend on expandedEvaluationIds and evaluations
 
     const handleFileUpload = async (evaluationId: number, file: File) => {
         try {
-            if (!user.carnet) {
-                console.error("Error: Student carnet is not available for file upload.");
+            if (!user.carne) {
+                console.error("Error: Student carne is not available for file upload.");
                 // Optionally, show a user-friendly message in the UI
                 return; // Stop the upload process
             }
@@ -243,7 +243,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                  // TODO: Implement proper fetching of IdGrupoTrabajo for the user/evaluation in a real app.
                  formData.append('idGrupoTrabajo', idGrupo.toString()); // Using idGrupo from props as placeholder
              } else {
-                  formData.append('carnetEstudiante', user.carnet); // For individual uploads
+                  formData.append('carnetEstudiante', user.carne); // For individual uploads
              }
 
             const response = await axios.post<EntregaDto>('http://localhost:5261/api/Entrega', formData, {
@@ -345,7 +345,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                     <svg className="w-10 h-10 text-gray-500 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
                     <div>
                         {/* Use user.carnet as placeholder, replace with name if available */}
-                        <h3 className="text-xl font-semibold text-gray-800">{user.nombre || user.carnet}</h3>
+                        <h3 className="text-xl font-semibold text-gray-800">{user.nombre || user.carne}</h3>
                     </div>
                 </div>
                 {/* Placeholder for Final Grade */}
@@ -452,7 +452,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                         {/* Map group members here when data is available */}
                                                                         {groupMembers[evaluation.idEvaluacion]?.length > 0 ? (
                                                                             groupMembers[evaluation.idEvaluacion].map(member => ( // Iterate over GrupoTrabajoMiembroDto objects
-                                                                                <li key={member.carnet}>{member.nombre}</li> // Use carnet for key and display nombre
+                                                                                <li key={member.carne}>{member.nombre}</li> // Use carne for key and display nombre
                                                                             ))
                                                                         ) : (
                                                                             <li>Cargando miembros...</li>

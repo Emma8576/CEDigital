@@ -35,7 +35,7 @@ namespace CEDigital.API.Controllers
         public async Task<ActionResult> Post(Estudiante estudiante)
         {
             await _estudianteService.CrearEstudianteAsync(estudiante);
-            return CreatedAtAction(nameof(GetPorCarne), new { carne = estudiante.Carnet }, estudiante);
+            return CreatedAtAction(nameof(GetPorCarne), new { carne = estudiante.Carne }, estudiante);
         }
     }
 }

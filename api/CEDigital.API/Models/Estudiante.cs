@@ -25,7 +25,7 @@ namespace CEDigital.API.Models
         public string? Password { get; set; }
 
         [BsonElement("carne")]
-        public string? Carnet { get; set; }
+        public string? Carne { get; set; }
 
         [BsonElement("telefono")]
         public string? Telefono { get; set; }

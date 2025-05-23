@@ -12,8 +12,6 @@ namespace CEDigital.API.Models
         [ForeignKey("Grupo")]
         public int IdGrupo { get; set; }
         public required Grupo Grupo { get; set; }
-
-        public required ICollection<string> CedulasProfesores { get; set; } = new List<string>();
     }
 
     public class ProfesorGrupoCreateDto

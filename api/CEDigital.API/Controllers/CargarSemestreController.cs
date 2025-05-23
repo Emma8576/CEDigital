@@ -109,8 +109,7 @@ namespace CEDigital.API.Controllers
                             {
                                 IdGrupo = grupo.IdGrupo,
                                 CedulaProfesor = cedula1,
-                                Grupo = grupo,
-                                CedulasProfesores = new List<string> { cedula1 }
+                                Grupo = grupo
                             });
                         }
 
@@ -120,8 +119,7 @@ namespace CEDigital.API.Controllers
                             {
                                 IdGrupo = grupo.IdGrupo,
                                 CedulaProfesor = cedula2,
-                                Grupo = grupo,
-                                CedulasProfesores = new List<string> { cedula2 }
+                                Grupo = grupo
                             });
                         }
 
