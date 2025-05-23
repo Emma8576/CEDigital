@@ -7,28 +7,28 @@ namespace CEDigital.API.Services
 {
     public class EstudianteMongoService
     {
-        private readonly IMongoCollection<EstudianteMongo> _estudiantes;
+        private readonly IMongoCollection<Estudiante> _estudiantes;
 
         public EstudianteMongoService(IOptions<MongoDbSettings> mongoSettings)
         {
             var client = new MongoClient(mongoSettings.Value.ConnectionString);
             var database = client.GetDatabase(mongoSettings.Value.DatabaseName);
-            _estudiantes = database.GetCollection<EstudianteMongo>("Estudiantes");
+            _estudiantes = database.GetCollection<Estudiante>("Estudiantes");
         }
 
-        public async Task<List<EstudianteMongo>> GetEstudiantesAsync()
+        public async Task<List<Estudiante>> GetEstudiantesAsync()
         {
             return await _estudiantes.Find(_ => true).ToListAsync();
         }
 
-        public async Task CrearEstudianteAsync(EstudianteMongo estudiante)
+        public async Task CrearEstudianteAsync(Estudiante estudiante)
         {
             await _estudiantes.InsertOneAsync(estudiante);
         }
 
-        public async Task<EstudianteMongo?> GetEstudiantePorCarneAsync(long carne)
+        public async Task<Estudiante?> GetEstudiantePorCarneAsync(string carne)
         {
-            return await _estudiantes.Find(e => e.Carne == carne).FirstOrDefaultAsync();
+            return await _estudiantes.Find(e => e.Carnet == carne).FirstOrDefaultAsync();
         }
     }
 }

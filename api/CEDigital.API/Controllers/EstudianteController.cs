@@ -16,14 +16,14 @@ namespace CEDigital.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<EstudianteMongo>>> Get()
+        public async Task<ActionResult<List<Estudiante>>> Get()
         {
             var estudiantes = await _estudianteService.GetEstudiantesAsync();
             return Ok(estudiantes);
         }
 
         [HttpGet("{carne}")]
-        public async Task<ActionResult<EstudianteMongo>> GetPorCarne(long carne)
+        public async Task<ActionResult<Estudiante>> GetPorCarne(string carne)
         {
             var estudiante = await _estudianteService.GetEstudiantePorCarneAsync(carne);
             if (estudiante == null)
@@ -32,10 +32,10 @@ namespace CEDigital.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(EstudianteMongo estudiante)
+        public async Task<ActionResult> Post(Estudiante estudiante)
         {
             await _estudianteService.CrearEstudianteAsync(estudiante);
-            return CreatedAtAction(nameof(GetPorCarne), new { carne = estudiante.Carne }, estudiante);
+            return CreatedAtAction(nameof(GetPorCarne), new { carne = estudiante.Carnet }, estudiante);
         }
     }
 }

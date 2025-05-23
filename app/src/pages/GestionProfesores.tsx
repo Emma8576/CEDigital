@@ -4,7 +4,7 @@ import { crearProfesor, obtenerProfesores } from "../services/profesorService";
 
 // Tipo de datos para la entidad Profesor
 export type Profesor = {
-  cedula: number;
+  cedula: string;
   nombre: string;
   correo: string;
   password: string;
@@ -15,7 +15,7 @@ const GestionProfesores = () => {
   const [profesores, setProfesores] = useState<Profesor[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [nuevoProfesor, setNuevoProfesor] = useState<Profesor>({
-    cedula: 0,
+    cedula: "",
     nombre: "",
     correo: "",
     password: "",
@@ -24,7 +24,10 @@ const GestionProfesores = () => {
   // Carga inicial de profesores desde el backend
   useEffect(() => {
     obtenerProfesores()
-      .then((response) => setProfesores(response.data))
+      .then((response) => {
+        console.log("Profesores response:", response);
+        setProfesores(response.data);
+      })
       .catch((error) => console.error("Error al obtener profesores:", error));
   }, []);
 
@@ -52,7 +55,7 @@ const GestionProfesores = () => {
       const response = await crearProfesor(profesorConPasswordEncriptado);
       setProfesores([...profesores, response.data]);
       // Resetea el formulario
-      setNuevoProfesor({ cedula: 0, nombre: "", correo: "", password: "" });
+      setNuevoProfesor({ cedula: "", nombre: "", correo: "", password: "" });
       setMostrarFormulario(false);
     } catch (error: any) {
       console.error("Error al crear profesor:", error);
@@ -87,13 +90,11 @@ const GestionProfesores = () => {
               <input
                 type="text"
                 className="p-2 border rounded"
-                inputMode="numeric"
-                pattern="[0-9]*"
                 value={nuevoProfesor.cedula}
                 onChange={(e) =>
                   setNuevoProfesor({
                     ...nuevoProfesor,
-                    cedula: parseInt(e.target.value || "0"),
+                    cedula: e.target.value,
                   })
                 }
               />

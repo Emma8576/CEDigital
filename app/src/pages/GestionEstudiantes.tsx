@@ -4,6 +4,7 @@ import { crearEstudiante, obtenerEstudiantes } from "../services/estudianteServi
 
 // Definición del tipo de datos para un estudiante
 export type Estudiante = {
+  id?: string;
   carne: string;
   cedula: string;
   nombre: string;
@@ -36,9 +37,40 @@ const GestionEstudiantes = () => {
   // Efecto que se ejecuta al montar el componente para cargar la lista de estudiantes
   useEffect(() => {
     obtenerEstudiantes()
-      .then((response) => setEstudiantes(response.data))
-      .catch((error) => console.error("Error al obtener estudiantes:", error));
-  }, []);
+      .then((response) => {
+        console.log("Raw API response:", response);
+        
+        if (response.data && Array.isArray(response.data)) {
+          console.log("Processing students array:", response.data);
+          
+          // Process the received data to ensure correct structure
+          const processedStudents = response.data.map((est: any) => {
+            console.log("Processing student:", est);
+            const processed = {
+              id: est.id,
+              carne: est.carne || est.carnet, // Try both possible property names
+              cedula: est.cedula,
+              nombre: est.nombre,
+              correo: est.correo,
+              telefono: est.telefono,
+              password: est.password
+            };
+            console.log("Processed student:", processed);
+            return processed;
+          });
+
+          console.log("Final processed students:", processedStudents);
+          setEstudiantes(processedStudents);
+        } else {
+          console.error("Invalid response data format:", response.data);
+          setEstudiantes([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error al obtener estudiantes:", error);
+        setEstudiantes([]);
+      });
+  }, []); // Empty dependency array to run only once on mount
 
   /**
    * Función para encriptar la contraseña usando SHA-256
@@ -229,16 +261,17 @@ const GestionEstudiantes = () => {
           
           {/* Cuerpo de la tabla con datos de estudiantes */}
           <tbody>
-            {/* Mapeo de cada estudiante a una fila de la tabla */}
-            {estudiantes.map((est) => (
-              <tr key={est.carne} className="border-t">
-                <td className="p-3">{est.carne}</td>
-                <td className="p-3">{est.cedula}</td>
-                <td className="p-3">{est.nombre}</td>
-                <td className="p-3">{est.correo}</td>
-                <td className="p-3">{est.telefono}</td>
-              </tr>
-            ))}
+            {
+              Array.isArray(estudiantes) && estudiantes.map((est) => (
+                <tr key={est.id} className="border-b">
+                  <td className="p-3">{est.carne}</td>
+                  <td className="p-3">{est.cedula}</td>
+                  <td className="p-3">{est.nombre}</td>
+                  <td className="p-3">{est.correo}</td>
+                  <td className="p-3">{est.telefono}</td>
+                </tr>
+              ))
+            }
             
             {/* Mensaje cuando no hay estudiantes registrados */}
             {estudiantes.length === 0 && (

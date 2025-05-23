@@ -15,9 +15,9 @@ namespace CEDigital.API.Controllers
 
         public AuthController(MongoDBService mongoDbService)
         {
-            _estudiantes = mongoDbService.GetCollection<Estudiante>("estudiantes");
-            _profesores = mongoDbService.GetCollection<Profesor>("profesores");
-            _administradores = mongoDbService.GetCollection<Administrador>("administradores");
+            _estudiantes = mongoDbService.GetCollection<Estudiante>("Estudiantes");
+            _profesores = mongoDbService.GetCollection<Profesor>("Profesores");
+            _administradores = mongoDbService.GetCollection<Administrador>("Administradores");
         }
 
         public class LoginRequest
