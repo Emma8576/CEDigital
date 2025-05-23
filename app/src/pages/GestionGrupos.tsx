@@ -28,12 +28,12 @@ const GestionGrupos = () => {
   const [profesoresSeleccionados, setProfesoresSeleccionados] = useState<string[]>([]);
 
   // Estados para el formulario de creación de grupos
-  const [busquedaCurso, setBusquedaCurso] = useState("");
-  const [codigoCurso, setCodigoCurso] = useState("");
-  const [busquedaProfesor, setBusquedaProfesor] = useState("");
+  const [busquedaCurso, setBusquedaCurso] = useState(""); 
+  const [codigoCurso, setCodigoCurso] = useState(""); 
+  const [busquedaProfesor, setBusquedaProfesor] = useState(""); 
   const [idSemestre, setIdSemestre] = useState<number | "">("");
   const [numeroGrupo, setNumeroGrupo] = useState<number>(1);
-  const [mensaje, setMensaje] = useState("");
+  const [mensaje, setMensaje] = useState(""); 
   const [mensajeExito, setMensajeExito] = useState("");
   
   // Estados para controlar los dropdowns
@@ -109,6 +109,7 @@ const GestionGrupos = () => {
   const handleBusquedaCursoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBusquedaCurso(e.target.value);
     if (!cursoDropdownOpen) setCursoDropdownOpen(true);
+    // Limpiar selección si el texto no coincide con ningún curso
     if (e.target.value === "" || !cursos.some(curso => 
       `${curso.codigoCurso} - ${curso.nombreCurso}` === e.target.value)) {
       setCodigoCurso("");
@@ -160,8 +161,8 @@ const GestionGrupos = () => {
         cedulasProfesores: profesoresSeleccionados
         });
 
+        // Asignar profesores al grupo recién creado
         await asignarProfesoresAGrupo(nuevoGrupo.idGrupo, profesoresSeleccionados.map(String));
-
 
         console.log("Profesores asignados correctamente");
 
@@ -176,7 +177,7 @@ const GestionGrupos = () => {
         `¡Éxito! ${cantidadProfesores > 1 ? 'Profesores asignados' : 'Profesor asignado'} correctamente al grupo ${numeroGrupo} de ${nombreCurso}`
       );
       
-      // Limpiar el formulario después de un tiempo
+      // Limpiar el mensaje de éxito después de un tiempo
       setTimeout(() => {
         setMensajeExito("");
       }, 5000); // El mensaje desaparecerá después de 5 segundos
@@ -222,6 +223,7 @@ const GestionGrupos = () => {
               placeholder="Buscar y seleccionar curso"
               required
             />
+            {/* Botón dropdown para cursos */}
             <button 
               type="button"
               className="absolute right-2 top-2 text-gray-500"
@@ -231,6 +233,7 @@ const GestionGrupos = () => {
             </button>
           </div>
           
+          {/* Lista desplegable de cursos filtrados */}
           {cursoDropdownOpen && (
             <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
               {cursosFiltrados.length > 0 ? (
@@ -296,6 +299,7 @@ const GestionGrupos = () => {
               className="border p-2 w-full"
               placeholder="Buscar profesores por nombre o cédula"
             />
+            {/* Botón dropdown para profesores */}
             <button 
               type="button"
               className="absolute right-2 top-2 text-gray-500"
@@ -313,6 +317,7 @@ const GestionGrupos = () => {
                 return profesor ? (
                   <div key={cedula} className="bg-blue-100 px-2 py-1 rounded-full flex items-center">
                     <span>{profesor.nombre}</span>
+                    {/* Botón para remover profesor seleccionado */}
                     <button
                       type="button"
                       className="ml-2 text-blue-700 font-bold"
@@ -326,6 +331,7 @@ const GestionGrupos = () => {
             </div>
           )}
           
+          {/* Lista desplegable de profesores filtrados */}
           {profesorDropdownOpen && (
             <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
               {profesoresFiltrados.length > 0 ? (
@@ -338,6 +344,7 @@ const GestionGrupos = () => {
                         isSelected ? "bg-blue-50" : ""
                       }`}
                       onClick={() => {
+                        // Toggle selección del profesor (máximo 2)
                         if (isSelected) {
                           setProfesoresSeleccionados(prev => 
                             prev.filter(id => id !== profesor.cedula)
@@ -352,6 +359,7 @@ const GestionGrupos = () => {
                       <div className="flex-grow">
                         {profesor.nombre} ({profesor.cedula})
                       </div>
+                      {/* Indicador visual de profesor seleccionado */}
                       {isSelected && <span className="text-blue-600">✓</span>}
                     </div>
                   );
@@ -367,6 +375,7 @@ const GestionGrupos = () => {
         {mensaje && <p className="text-red-600 font-semibold">{mensaje}</p>}
         {mensajeExito && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative flex items-center" role="alert">
+            {/* Icono de éxito */}
             <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -401,12 +410,15 @@ const GestionGrupos = () => {
         <tbody>
           {grupos.map((grupo) => (
             <tr key={grupo.idGrupo}>
+              {/* Información del curso */}
               <td className="border p-2">
                 {grupo.codigoCurso} - {grupo.curso?.nombreCurso}
               </td>
+              {/* Información del semestre */}
               <td className="border p-2">
                 {grupo.semestre?.año} - {grupo.semestre?.periodo}
               </td>
+              {/* Número del grupo */}
               <td className="border p-2">{grupo.numeroGrupo}</td>
               {/* Comentada la celda de profesores 
               <td className="border p-2">

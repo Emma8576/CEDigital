@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { crearEstudiante, obtenerEstudiantes } from "../services/estudianteService";
 
+// Definición del tipo de datos para un estudiante
 export type Estudiante = {
   carne: string;
   cedula: string;
@@ -11,9 +12,18 @@ export type Estudiante = {
   password: string;
 };
 
+/**
+ * Componente principal para la gestión de estudiantes
+ * Permite agregar nuevos estudiantes y visualizar la lista existente
+ */
 const GestionEstudiantes = () => {
+  // Estado para almacenar la lista de estudiantes
   const [estudiantes, setEstudiantes] = useState<Estudiante[]>([]);
+  
+  // Estado para controlar la visibilidad del formulario de registro
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  
+  // Estado para almacenar los datos del nuevo estudiante mientras se está creando
   const [nuevoEstudiante, setNuevoEstudiante] = useState<Estudiante>({
     carne: "",
     cedula: "",
@@ -23,12 +33,18 @@ const GestionEstudiantes = () => {
     password: "",
   });
 
+  // Efecto que se ejecuta al montar el componente para cargar la lista de estudiantes
   useEffect(() => {
     obtenerEstudiantes()
       .then((response) => setEstudiantes(response.data))
       .catch((error) => console.error("Error al obtener estudiantes:", error));
   }, []);
 
+  /**
+   * Función para encriptar la contraseña usando SHA-256
+   * @param password - Contraseña en texto plano
+   * @returns Promise con la contraseña encriptada en formato hexadecimal
+   */
   const hashPassword = async (password: string) => {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
@@ -38,16 +54,26 @@ const GestionEstudiantes = () => {
       .join("");
   };
 
+  /**
+   * Función para manejar el registro de un nuevo estudiante
+   * Encripta la contraseña antes de enviarla al servidor
+   */
   const handleAgregarEstudiante = async () => {
     try {
+      // Encriptar la contraseña antes de enviar
       const hashedPassword = await hashPassword(nuevoEstudiante.password);
       const estudianteConPasswordEncriptado = {
         ...nuevoEstudiante,
         password: hashedPassword,
       };
 
+      // Enviar el estudiante al servidor
       const response = await crearEstudiante(estudianteConPasswordEncriptado);
+      
+      // Actualizar la lista local de estudiantes
       setEstudiantes([...estudiantes, response.data]);
+      
+      // Limpiar el formulario
       setNuevoEstudiante({
         carne: "",
         cedula: "",
@@ -56,6 +82,8 @@ const GestionEstudiantes = () => {
         telefono: "",
         password: "",
       });
+      
+      // Ocultar el formulario
       setMostrarFormulario(false);
     } catch (error: any) {
       console.error("Error al crear estudiante:", error);
@@ -64,6 +92,7 @@ const GestionEstudiantes = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header con título y botón para agregar estudiante */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-blue-900">Gestión de Estudiantes</h1>
         <button
@@ -75,14 +104,19 @@ const GestionEstudiantes = () => {
         </button>
       </div>
 
+      {/* Descripción de la funcionalidad */}
       <div className="text-gray-700">
         En esta sección puede agregar nuevos estudiantes al sistema.
       </div>
 
+      {/* Formulario de registro (solo visible cuando mostrarFormulario es true) */}
       {mostrarFormulario && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-md space-y-4">
           <h2 className="text-lg font-bold text-gray-800">Nuevo Estudiante</h2>
+          
+          {/* Grid de campos de entrada */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Campo Carnet */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Carnet</label>
               <input
@@ -94,6 +128,8 @@ const GestionEstudiantes = () => {
                 }
               />
             </div>
+            
+            {/* Campo Cédula */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Cédula</label>
               <input
@@ -105,6 +141,8 @@ const GestionEstudiantes = () => {
                 }
               />
             </div>
+            
+            {/* Campo Nombre */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Nombre</label>
               <input
@@ -116,6 +154,8 @@ const GestionEstudiantes = () => {
                 }
               />
             </div>
+            
+            {/* Campo Correo */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Correo</label>
               <input
@@ -127,6 +167,8 @@ const GestionEstudiantes = () => {
                 }
               />
             </div>
+            
+            {/* Campo Teléfono */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Teléfono</label>
               <input
@@ -138,6 +180,8 @@ const GestionEstudiantes = () => {
                 }
               />
             </div>
+            
+            {/* Campo Contraseña */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Contraseña</label>
               <input
@@ -151,6 +195,7 @@ const GestionEstudiantes = () => {
             </div>
           </div>
 
+          {/* Botones de acción del formulario */}
           <div className="flex gap-3">
             <button
               onClick={handleAgregarEstudiante}
@@ -168,8 +213,10 @@ const GestionEstudiantes = () => {
         </div>
       )}
 
+      {/* Tabla para mostrar la lista de estudiantes */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-xl">
+          {/* Encabezados de la tabla */}
           <thead>
             <tr className="bg-blue-100 text-left">
               <th className="p-3">Carnet</th>
@@ -179,7 +226,10 @@ const GestionEstudiantes = () => {
               <th className="p-3">Teléfono</th>
             </tr>
           </thead>
+          
+          {/* Cuerpo de la tabla con datos de estudiantes */}
           <tbody>
+            {/* Mapeo de cada estudiante a una fila de la tabla */}
             {estudiantes.map((est) => (
               <tr key={est.carne} className="border-t">
                 <td className="p-3">{est.carne}</td>
@@ -189,6 +239,8 @@ const GestionEstudiantes = () => {
                 <td className="p-3">{est.telefono}</td>
               </tr>
             ))}
+            
+            {/* Mensaje cuando no hay estudiantes registrados */}
             {estudiantes.length === 0 && (
               <tr>
                 <td colSpan={5} className="p-3 text-center text-gray-500">

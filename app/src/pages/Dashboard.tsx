@@ -15,13 +15,17 @@ import { obtenerSemestres } from "../services/semestreService";
 import { getGrupos } from "../services/grupoService";
 import { obtenerEstudiantes } from "../services/estudianteService";
 
+// Componente principal del panel de control
 const Dashboard = () => {
   const navigate = useNavigate();
+
+  // Estados para almacenar la cantidad de registros por entidad
   const [cantidadCursos, setCantidadCursos] = useState(0);
   const [cantidadSemestres, setCantidadSemestres] = useState(0);
   const [cantidadGrupos, setCantidadGrupos] = useState(0);
   const [cantidadEstudiantes, setCantidadEstudiantes] = useState(0);
 
+  // Al montar el componente, obtener los datos desde los servicios correspondientes
   useEffect(() => {
     obtenerCursos()
       .then((res) => setCantidadCursos(res.data.length))
@@ -42,6 +46,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
+      {/* Encabezado de bienvenida */}
       <div>
         <h1 className="text-3xl font-bold text-blue-900">Bienvenido a CEDigital</h1>
         <p className="text-gray-700 mt-2">
@@ -49,6 +54,7 @@ const Dashboard = () => {
         </p>
       </div>
 
+      {/* Tarjetas resumen con la cantidad de registros */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white shadow-md rounded-xl p-4 border-l-4 border-blue-600">
           <h2 className="text-lg font-semibold">Cursos Registrados</h2>
@@ -68,6 +74,7 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Sección de acceso rápido con botones de navegación */}
       <div className="flex flex-col items-center">
         <h2 className="text-xl font-semibold text-blue-900 mb-4">Acceso Rápido</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl mx-auto">
@@ -119,6 +126,7 @@ const Dashboard = () => {
             <span>Gestión de Profesores</span>
           </button>
 
+          {/* Botón centrado de acceso a estudiantes */}
           <div className="col-span-full flex justify-center">
             <button
               onClick={() => navigate("/estudiantes")}

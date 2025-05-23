@@ -9,6 +9,7 @@ import {
 } from "../services/matriculaService";
 
 const GestionMatricula = () => {
+  // Estados principales para datos de la API
   const [estudiantes, setEstudiantes] = useState<Estudiante[]>([]);
   const [grupos, setGrupos] = useState<GrupoConCurso[]>([]);
   const [grupoId, setGrupoId] = useState<number>(0);
@@ -27,6 +28,7 @@ const GestionMatricula = () => {
   const grupoRef = useRef<HTMLDivElement>(null);
   const estudianteRef = useRef<HTMLDivElement>(null);
 
+  // Función para cargar todos los datos necesarios
   const cargarDatos = async () => {
     const estudiantesData = await getEstudiantes();
     const gruposData = await getGruposConCurso();
@@ -39,6 +41,7 @@ const GestionMatricula = () => {
     setGruposResumen(resumenData);
   };
 
+  // Cargar datos iniciales y configurar event listeners
   useEffect(() => {
     cargarDatos();
     
@@ -58,14 +61,14 @@ const GestionMatricula = () => {
     };
   }, []);
 
-  // Filtrar grupos según el texto de búsqueda
+  // Filtrar grupos según el texto de búsqueda (por nombre, código o número)
   const gruposFiltrados = grupos.filter((grupo: GrupoConCurso) =>
     grupo.nombreCurso.toLowerCase().includes(busquedaGrupo.toLowerCase()) ||
     (grupo.codigoCurso && grupo.codigoCurso.toLowerCase().includes(busquedaGrupo.toLowerCase())) ||
     grupo.numeroGrupo.toString().includes(busquedaGrupo)
   );
 
-  // Filtrar estudiantes según el texto de búsqueda
+  // Filtrar estudiantes según el texto de búsqueda (por nombre o carné)
   const estudiantesFiltrados = estudiantes.filter((estudiante: Estudiante) =>
     estudiante.nombre.toLowerCase().includes(busquedaEstudiante.toLowerCase()) ||
     estudiante.carne.toString().toLowerCase().includes(busquedaEstudiante.toLowerCase())
@@ -85,26 +88,30 @@ const GestionMatricula = () => {
   const handleBusquedaGrupoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBusquedaGrupo(e.target.value);
     if (!grupoDropdownOpen) setGrupoDropdownOpen(true);
+    // Limpiar selección si el texto no coincide con ningún grupo
     if (e.target.value === "" || !grupos.some(grupo => 
       `Grupo ${grupo.numeroGrupo} - ${grupo.nombreCurso}${grupo.codigoCurso ? ` (${grupo.codigoCurso})` : ""}` === e.target.value)) {
       setGrupoId(0);
     }
   };
 
+  // Función principal para asignar estudiantes al grupo seleccionado
   const manejarAsignacion = async () => {
     // Limpiar mensajes previos
     setMensaje("");
     setMensajeExito("");
 
+    // Validar que se hayan seleccionado grupo y estudiantes
     if (!grupoId || seleccionados.length === 0) {
       setMensaje("Debes seleccionar al menos un estudiante y un grupo.");
       return;
     }
 
     try {
+      // Realizar la asignación en el backend
       await asignarEstudiantesAGrupo(grupoId, seleccionados);
       
-      // Mostrar mensaje de éxito
+      // Mostrar mensaje de éxito personalizado
       const cantidadEstudiantes = seleccionados.length;
       const nombreGrupo = grupoSeleccionado ? 
         `Grupo ${grupoSeleccionado.numeroGrupo} - ${grupoSeleccionado.nombreCurso}` : 
@@ -119,7 +126,7 @@ const GestionMatricula = () => {
       setBusquedaEstudiante("");
       setMensaje("");
       
-      // Actualizar datos
+      // Actualizar datos para reflejar cambios
       await cargarDatos();
       
       // Limpiar mensaje de éxito después de un tiempo
@@ -161,6 +168,7 @@ const GestionMatricula = () => {
               placeholder="Buscar y seleccionar grupo"
               required
             />
+            {/* Botón dropdown para grupos */}
             <button 
               type="button"
               className="absolute right-2 top-2 text-gray-500"
@@ -170,6 +178,7 @@ const GestionMatricula = () => {
             </button>
           </div>
           
+          {/* Lista desplegable de grupos filtrados */}
           {grupoDropdownOpen && (
             <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
               {gruposFiltrados.length > 0 ? (
@@ -205,6 +214,7 @@ const GestionMatricula = () => {
               className="border p-2 w-full"
               placeholder="Buscar estudiantes por nombre o carné"
             />
+            {/* Botón dropdown para estudiantes */}
             <button 
               type="button"
               className="absolute right-2 top-2 text-gray-500"
@@ -222,6 +232,7 @@ const GestionMatricula = () => {
                 return estudiante ? (
                   <div key={carne} className="bg-blue-100 px-2 py-1 rounded-full flex items-center">
                     <span>{estudiante.nombre} ({estudiante.carne})</span>
+                    {/* Botón para remover estudiante seleccionado */}
                     <button
                       type="button"
                       className="ml-2 text-blue-700 font-bold"
@@ -235,6 +246,7 @@ const GestionMatricula = () => {
             </div>
           )}
           
+          {/* Lista desplegable de estudiantes filtrados */}
           {estudianteDropdownOpen && (
             <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
               {estudiantesFiltrados.length > 0 ? (
@@ -247,6 +259,7 @@ const GestionMatricula = () => {
                         isSelected ? "bg-blue-50" : ""
                       }`}
                       onClick={() => {
+                        // Toggle selección del estudiante
                         if (isSelected) {
                           setSeleccionados(prev => 
                             prev.filter(c => c !== estudiante.carne)
@@ -254,12 +267,13 @@ const GestionMatricula = () => {
                         } else {
                           setSeleccionados(prev => [...prev, estudiante.carne]);
                         }
-                        setBusquedaEstudiante(""); 
+                        setBusquedaEstudiante(""); // Limpiar búsqueda después de seleccionar
                       }}
                     >
                       <div className="flex-grow">
                         {estudiante.nombre} ({estudiante.carne})
                       </div>
+                      {/* Indicador visual de estudiante seleccionado */}
                       {isSelected && <span className="text-blue-600">✓</span>}
                     </div>
                   );
@@ -275,6 +289,7 @@ const GestionMatricula = () => {
         {mensaje && <p className="text-red-600 font-semibold">{mensaje}</p>}
         {mensajeExito && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative flex items-center" role="alert">
+            {/* Icono de éxito */}
             <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -306,8 +321,11 @@ const GestionMatricula = () => {
         <tbody>
           {gruposResumen.map((grupo, index) => (
             <tr key={index}>
+              {/* Nombre del curso */}
               <td className="border p-2">{grupo.nombreCurso}</td>
+              {/* Número del grupo */}
               <td className="border p-2">{grupo.numeroGrupo}</td>
+              {/* Cantidad de estudiantes matriculados */}
               <td className="border p-2 text-center">
                 {grupo.cantidadEstudiantes}
               </td>

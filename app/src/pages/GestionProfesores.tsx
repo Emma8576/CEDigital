@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { crearProfesor, obtenerProfesores } from "../services/profesorService";
 
+// Tipo de datos para la entidad Profesor
 export type Profesor = {
   cedula: number;
   nombre: string;
@@ -10,6 +11,7 @@ export type Profesor = {
 };
 
 const GestionProfesores = () => {
+  // Estados para manejo de datos y UI
   const [profesores, setProfesores] = useState<Profesor[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [nuevoProfesor, setNuevoProfesor] = useState<Profesor>({
@@ -19,12 +21,14 @@ const GestionProfesores = () => {
     password: "",
   });
 
+  // Carga inicial de profesores desde el backend
   useEffect(() => {
     obtenerProfesores()
       .then((response) => setProfesores(response.data))
       .catch((error) => console.error("Error al obtener profesores:", error));
   }, []);
 
+  // Función para encriptar contraseña usando SHA-256
   const hashPassword = async (password: string) => {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
@@ -34,16 +38,20 @@ const GestionProfesores = () => {
       .join("");
   };
 
+  // Maneja la creación de un nuevo profesor
   const handleAgregarProfesor = async () => {
     try {
+      // Encripta la contraseña antes de enviarla
       const hashedPassword = await hashPassword(nuevoProfesor.password);
       const profesorConPasswordEncriptado = {
         ...nuevoProfesor,
         password: hashedPassword,
       };
 
+      // Envía datos al backend y actualiza la lista local
       const response = await crearProfesor(profesorConPasswordEncriptado);
       setProfesores([...profesores, response.data]);
+      // Resetea el formulario
       setNuevoProfesor({ cedula: 0, nombre: "", correo: "", password: "" });
       setMostrarFormulario(false);
     } catch (error: any) {
@@ -53,6 +61,7 @@ const GestionProfesores = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header con título y botón de agregar */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-blue-900">Gestión de Profesores</h1>
         <button
@@ -67,10 +76,12 @@ const GestionProfesores = () => {
       <div className="text-gray-700">
         En esta sección puede agregar nuevos profesores al sistema.
       </div>
+      {/* Formulario de registro - aparece condicionalmente */}
       {mostrarFormulario && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-md space-y-4">
           <h2 className="text-lg font-bold text-gray-800">Nuevo Profesor</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Campo Cédula - solo números */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Cédula</label>
               <input
@@ -87,6 +98,7 @@ const GestionProfesores = () => {
                 }
               />
             </div>
+            {/* Campo Nombre */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Nombre</label>
               <input
@@ -98,6 +110,7 @@ const GestionProfesores = () => {
                 }
               />
             </div>
+            {/* Campo Correo */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Correo</label>
               <input
@@ -109,6 +122,7 @@ const GestionProfesores = () => {
                 }
               />
             </div>
+            {/* Campo Contraseña */}
             <div className="flex flex-col">
               <label className="mb-1 text-sm text-gray-600">Contraseña</label>
               <input
@@ -121,6 +135,7 @@ const GestionProfesores = () => {
               />
             </div>
           </div>
+          {/* Botones de acción del formulario */}
           <div className="flex gap-3">
             <button
               onClick={handleAgregarProfesor}
@@ -138,6 +153,7 @@ const GestionProfesores = () => {
         </div>
       )}
 
+      {/* Tabla de profesores registrados */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-xl">
           <thead>
@@ -148,6 +164,7 @@ const GestionProfesores = () => {
             </tr>
           </thead>
           <tbody>
+            {/* Renderiza cada profesor */}
             {profesores.map((prof) => (
               <tr key={prof.cedula} className="border-t">
                 <td className="p-3">{prof.cedula}</td>
@@ -155,6 +172,7 @@ const GestionProfesores = () => {
                 <td className="p-3">{prof.correo}</td>
               </tr>
             ))}
+            {/* Mensaje cuando no hay profesores */}
             {profesores.length === 0 && (
               <tr>
                 <td colSpan={3} className="p-3 text-center text-gray-500">
