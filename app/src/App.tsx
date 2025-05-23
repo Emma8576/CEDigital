@@ -7,7 +7,7 @@ import CargaGrupos from "./pages/GestionGrupos";
 import CargaSemestre from "./pages/CargarSemestre";
 import GestionProfesores from "./pages/GestionProfesores";
 import GestionMatricula from "./pages/GestionMatricula";
-
+import GestionEstudiantes from "./pages/GestionEstudiantes";
 function App() {
   return (
     <Router>
@@ -23,6 +23,8 @@ function App() {
               <Route path="/grupos" element={<CargaGrupos />} />
               <Route path="/matricula" element={<GestionMatricula />} />
               <Route path="/contenido" element={<CargaSemestre />} />
+              <Route path="/estudiantes" element={<GestionEstudiantes />} />
+
               
             </Routes>
           </div>

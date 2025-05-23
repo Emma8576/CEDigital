@@ -28,6 +28,7 @@ const Navbar: FC = () => {
     { path: "/semestres", name: "Semestres", icon: <CalendarIcon className="w-5 h-5" /> },
     { path: "/cursos", name: "Cursos", icon: <BookOpenIcon className="w-5 h-5" /> },
     { path: "/profesores", name: "Profesores", icon: <UserGroupIcon className="w-5 h-5" /> },
+    { path: "/estudiantes", name: "Estudiantes", icon: <UserGroupIcon className="w-5 h-5" /> },
     { path: "/grupos", name: "Grupos", icon: <UsersIcon className="w-5 h-5" /> },
     { path: "/matricula", name: "Matrícula", icon: <AcademicCapIcon className="w-5 h-5" /> },
     { path: "/contenido", name: "Cargar Semestre", icon: <ArrowUpTrayIcon className="w-5 h-5" /> },

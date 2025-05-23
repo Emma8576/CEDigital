@@ -10,6 +10,7 @@ import {
 import { obtenerCursos } from "../services/cursoService";
 import { obtenerSemestres } from "../services/semestreService";
 import { getGrupos } from "../services/grupoService";
+import { obtenerEstudiantes } from "../services/estudianteService";
 
 
 const Dashboard = () => {
@@ -17,6 +18,8 @@ const Dashboard = () => {
   const [cantidadCursos, setCantidadCursos] = useState(0);
   const [cantidadSemestres, setCantidadSemestres] = useState(0);
   const [cantidadGrupos, setCantidadGrupos] = useState(0);
+  const [cantidadEstudiantes, setCantidadEstudiantes] = useState(0);
+
 
 
 useEffect(() => {
@@ -30,6 +33,10 @@ useEffect(() => {
 
   getGrupos()
     .then((data) => setCantidadGrupos(data.length))
+    .catch(console.error);
+
+  obtenerEstudiantes()
+    .then((res) => setCantidadEstudiantes(res.data.length))
     .catch(console.error);
 }, []);
 
@@ -56,8 +63,8 @@ useEffect(() => {
           <p className="text-2xl font-bold text-purple-700">{cantidadGrupos}</p>
         </div>
         <div className="bg-white shadow-md rounded-xl p-4 border-l-4 border-yellow-600">
-          <h2 className="text-lg font-semibold">Usuarios Registrados</h2>
-          <p className="text-2xl font-bold text-yellow-700">{}</p>
+          <h2 className="text-lg font-semibold">Estudiantes Registrados</h2>
+          <p className="text-2xl font-bold text-yellow-700">{cantidadEstudiantes}</p>
         </div>
       </div>
 
@@ -86,11 +93,11 @@ useEffect(() => {
             <span>Gestión de Grupos</span>
           </button>
           <button
-            onClick={() => navigate("/usuarios")}
+            onClick={() => navigate("/estudiantes")}
             className="flex flex-col items-center justify-center bg-yellow-600 text-white py-6 px-4 rounded-xl shadow hover:bg-yellow-700 transition"
           >
             <UsersIcon className="w-8 h-8 mb-2" />
-            <span>Gestión de Usuarios</span>
+            <span>Gestión de Estudiantes</span>
           </button>
         </div>
       </div>
