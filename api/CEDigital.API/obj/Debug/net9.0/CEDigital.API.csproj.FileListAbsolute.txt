@@ -359,9 +359,6 @@ C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\n
 C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
-C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
-C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
-C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
@@ -564,3 +561,11 @@ C:\Users\jrami\Desktop\CEDigital\api\CEDigital.API\obj\Debug\net9.0\refint\CEDig
 C:\Users\jrami\Desktop\CEDigital\api\CEDigital.API\obj\Debug\net9.0\CEDigital.API.pdb
 C:\Users\jrami\Desktop\CEDigital\api\CEDigital.API\obj\Debug\net9.0\CEDigital.API.genruntimeconfig.cache
 C:\Users\jrami\Desktop\CEDigital\api\CEDigital.API\obj\Debug\net9.0\ref\CEDigital.API.dll
+C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\EPPlus.dll
+C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\EPPlus.Interfaces.dll
+C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\EPPlus.System.Drawing.dll
+C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\ExcelDataReader.dll
+C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\ExcelDataReader.DataSet.dll
+C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\Microsoft.IO.RecyclableMemoryStream.dll
+C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win\lib\net7.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Emmanuel Calvo\Documents\GitHub\CEDigital\api\CEDigital.API\bin\Debug\net9.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll

@@ -4,7 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import GestionCursos from "./pages/GestionCursos";
 import GestionSemestres from "./pages/GestionSemestres";
 import CargaGrupos from "./pages/GestionGrupos";
-import CargaSemestre from "./pages/CargaSemestre";
+import CargaSemestre from "./pages/CargarSemestre";
 import GestionProfesores from "./pages/GestionProfesores";
 import GestionMatricula from "./pages/GestionMatricula";
 
