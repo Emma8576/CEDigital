@@ -135,6 +135,16 @@ const ProfessorCourseView: React.FC<ProfessorCourseViewProps> = ({ user }) => {
                 Evaluaciones
               </button>
             </li>
+            {/* Lista Estudiantes Tab */}
+            <li className="me-2" role="presentation">
+               <button
+                className={`inline-block p-4 border-b-2 rounded-t-lg ${activeTab === 'listaEstudiantes' ? 'border-blue-600 text-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'}`}
+                onClick={() => setActiveTab('listaEstudiantes')}
+                type="button" role="tab" aria-controls="listaEstudiantes" aria-selected={activeTab === 'listaEstudiantes'}
+              >
+                Lista de Estudiantes
+              </button>
+            </li>
           </ul>
         </div>
 
@@ -153,6 +163,15 @@ const ProfessorCourseView: React.FC<ProfessorCourseViewProps> = ({ user }) => {
             )}
             {activeTab === 'evaluaciones' && (
                 <div className="p-4 rounded-lg bg-gray-50" role="tabpanel" aria-labelledby="evaluaciones-tab">
+                    {user ? (
+                        <ProfessorEvaluations idGrupo={idGrupo} user={user} />
+                    ) : (
+                        <div className="text-center text-red-600">Error: Usuario no autenticado</div>
+                    )}
+                </div>
+            )}
+            {activeTab === 'listaEstudiantes' && (
+                <div className="p-4 rounded-lg bg-gray-50" role="tabpanel" aria-labelledby="listaEstudiantes-tab">
                     {user ? (
                         <ProfessorStudentList idGrupo={idGrupo} user={user} />
                     ) : (

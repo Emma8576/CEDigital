@@ -28,7 +28,7 @@ namespace CEDigital.API.Controllers
             var entrega = await _context.Entregas
                 .FirstOrDefaultAsync(e => e.IdEvaluacion == idEvaluacion &&
                                          (e.CarnetEstudiante == carnetEstudiante || 
-                                          (_context.GrupoTrabajo.Any(gt => gt.IdGrupoTrabajo == e.IdGrupoTrabajo && gt.CarnetEstudiante == carnetEstudiante) && e.IdGrupoTrabajo != null)));
+                                          (_context.GrupoTrabajos.Any(gt => gt.IdGrupoTrabajo == e.IdGrupoTrabajo && gt.CarnetEstudiante == carnetEstudiante) && e.IdGrupoTrabajo != null)));
 
             if (entrega == null)
             {
@@ -58,7 +58,7 @@ namespace CEDigital.API.Controllers
             // Validar si el estudiante pertenece al grupo de trabajo si es grupal (esto s se puede hacer si GrupoTrabajo funciona)
             if (evaluacion.EsGrupal && dto.IdGrupoTrabajo != null)
             {
-                 var perteneceGrupo = await _context.GrupoTrabajo.AnyAsync(gt => gt.IdGrupoTrabajo == dto.IdGrupoTrabajo && gt.CarnetEstudiante == dto.CarnetEstudiante);
+                 var perteneceGrupo = await _context.GrupoTrabajos.AnyAsync(gt => gt.IdGrupoTrabajo == dto.IdGrupoTrabajo && gt.CarnetEstudiante == dto.CarnetEstudiante);
                  if (!perteneceGrupo)
                       return Unauthorized("El estudiante no pertenece a este grupo de trabajo.");
             }

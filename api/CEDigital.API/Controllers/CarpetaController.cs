@@ -124,6 +124,9 @@ namespace CEDigital.API.Controllers
         public async Task<IActionResult> DownloadArchivo(int idArchivo)
         {
             var archivo = await _context.Archivos.FindAsync(idArchivo);
+
+             
+
             if (archivo == null)
             {
                 return NotFound("Archivo no encontrado.");

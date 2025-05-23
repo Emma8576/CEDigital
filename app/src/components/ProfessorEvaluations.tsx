@@ -77,6 +77,8 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
     const [expandedEvaluationIds, setExpandedEvaluationIds] = useState<Set<number>>(new Set());
     const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: GrupoTrabajoMiembroDto[] }>({}); // Updated state type
 
+    const [newEvaluationName, setNewEvaluationName] = useState("");
+
     // Function to toggle the expanded state of an evaluation
     const toggleExpand = (evaluationId: number) => {
         setExpandedEvaluationIds(prevIds => {
@@ -90,120 +92,120 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
         });
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
+    const fetchData = async () => {
+        try {
+            setLoading(true);
 
-                // Fetch evaluations (now returning a projected object structure)
-                const evaluationsResponse = await axios.get<any[]>(`http://localhost:${port}/api/Evaluacion/grupo/${idGrupo}`);
-                // Process the data to group by rubro and adapt to the frontend interfaces
-                const processedEvaluations: Evaluacion[] = evaluationsResponse.data.map((item: any) => ({
-                    idEvaluacion: item.idEvaluacion,
-                    idRubro: item.idRubro,
-                    nombreEvaluacion: item.nombreEvaluacion,
-                    fechaHoraLimite: item.fechaHoraLimite,
-                    valorPorcentual: item.valorPorcentual, // Now decimal due to backend config
-                    esGrupal: item.esGrupal,
-                    tieneEntregable: item.tieneEntregable,
-                    cantEstudiantesGrupo: item.cantEstudiantesGrupo,
-                    rutaEspecificacion: item.rutaEspecificacion,
-                    idRubroNavigation: {
-                         idRubro: item.idRubro, // Assuming idRubro is also in the projection
-                         nombreRubro: item.rubro.nombreRubro, // Use the nested Rubro object
-                         porcentaje: item.rubro.porcentaje // Assuming porcentaje is in the projection
-                    }
-                }));
+            // Fetch evaluations (now returning a projected object structure)
+            const evaluationsResponse = await axios.get<any[]>(`http://localhost:${port}/api/Evaluacion/grupo/${idGrupo}`);
+            // Process the data to group by rubro and adapt to the frontend interfaces
+            const processedEvaluations: Evaluacion[] = evaluationsResponse.data.map((item: any) => ({
+                idEvaluacion: item.idEvaluacion,
+                idRubro: item.idRubro,
+                nombreEvaluacion: item.nombreEvaluacion,
+                fechaHoraLimite: item.fechaHoraLimite,
+                valorPorcentual: item.valorPorcentual, // Now decimal due to backend config
+                esGrupal: item.esGrupal,
+                tieneEntregable: item.tieneEntregable,
+                cantEstudiantesGrupo: item.cantEstudiantesGrupo,
+                rutaEspecificacion: item.rutaEspecificacion,
+                idRubroNavigation: {
+                        idRubro: item.idRubro, // Assuming idRubro is also in the projection
+                        nombreRubro: item.rubro.nombreRubro, // Use the nested Rubro object
+                        porcentaje: item.rubro.porcentaje // Assuming porcentaje is in the projection
+                }
+            }));
 
-                // Group evaluations by rubro name
-                const grouped = processedEvaluations.reduce((acc, evaluation) => {
-                    const rubroNombre = evaluation.idRubroNavigation?.nombreRubro || 'Sin Rubro';
-                    if (!acc[rubroNombre]) {
-                        acc[rubroNombre] = {
-                            rubroId: evaluation.idRubro,
-                            rubroNombre: rubroNombre,
-                            rubroPorcentaje: evaluation.idRubroNavigation?.porcentaje, // Store rubro's total percentage
-                            evaluaciones: [],
-                        };
-                    }
-                    acc[rubroNombre].evaluaciones.push(evaluation);
-                    return acc;
-                }, {} as EvaluacionesPorRubro);
+            // Group evaluations by rubro name
+            const grouped = processedEvaluations.reduce((acc, evaluation) => {
+                const rubroNombre = evaluation.idRubroNavigation?.nombreRubro || 'Sin Rubro';
+                if (!acc[rubroNombre]) {
+                    acc[rubroNombre] = {
+                        rubroId: evaluation.idRubro,
+                        rubroNombre: rubroNombre,
+                        rubroPorcentaje: evaluation.idRubroNavigation?.porcentaje, // Store rubro's total percentage
+                        evaluaciones: [],
+                    };
+                }
+                acc[rubroNombre].evaluaciones.push(evaluation);
+                return acc;
+            }, {} as EvaluacionesPorRubro);
 
-                console.log("Grouped Evaluations:", grouped);
-                console.log("Processed Evaluations:", processedEvaluations);
+            console.log("Grouped Evaluations:", grouped);
+            console.log("Processed Evaluations:", processedEvaluations);
 
-                setEvaluationsByRubro(grouped);
-                setEvaluations(processedEvaluations); // Keep flat list for easier iteration if needed
+            setEvaluationsByRubro(grouped);
+            setEvaluations(processedEvaluations); // Keep flat list for easier iteration if needed
 
-                // Fetch deliveries and grades for each evaluation
-                const entregasMap: { [key: number]: Entrega } = {};
-                const notasMap: { [key: number]: NotaEvaluacion } = {};
+            // Fetch deliveries and grades for each evaluation
+            const entregasMap: { [key: number]: Entrega } = {};
+            const notasMap: { [key: number]: NotaEvaluacion } = {};
 
-                for (const evaluation of processedEvaluations) {
-                    try {
-                        // Fetch delivery status
-                        const entregaResponse = await axios.get<Entrega>(`http://localhost:${port}/api/Entrega/estado/${evaluation.idEvaluacion}/${user.carnet}`);
-                        entregasMap[evaluation.idEvaluacion] = entregaResponse.data;
-                    } catch (err) {
-                        // No delivery found, that's okay
-                    }
-
-                    try {
-                        // Fetch grade
-                        const notaResponse = await axios.get<NotaEvaluacion[]>(`http://localhost:${port}/api/NotaEvaluacion/estudiante/${user.carnet}/grupo/${idGrupo}`);
-                        const nota = notaResponse.data.find(n => n.idEvaluacion === evaluation.idEvaluacion);
-                        if (nota) {
-                            notasMap[evaluation.idEvaluacion] = nota;
-                        }
-                    } catch (err) {
-                        // No grade found, that's okay
-                    }
+            for (const evaluation of processedEvaluations) {
+                try {
+                    // Fetch delivery status
+                    const entregaResponse = await axios.get<Entrega>(`http://localhost:${port}/api/Entrega/estado/${evaluation.idEvaluacion}/${user.carnet}`);
+                    entregasMap[evaluation.idEvaluacion] = entregaResponse.data;
+                } catch (err) {
+                    // No delivery found, that's okay
                 }
 
-                setEntregas(entregasMap);
-                setNotas(notasMap);
-                setLoading(false);
-            } catch (err) {
-                console.error("Error fetching data:", err);
-                if (axios.isAxiosError(err) && err.response?.status === 404) {
-                    setError("No hay evaluaciones o notas disponibles para este grupo.");
-                } else {
-                    setError("Error al cargar las evaluaciones.");
+                try {
+                    // Fetch grade
+                    const notaResponse = await axios.get<NotaEvaluacion[]>(`http://localhost:${port}/api/NotaEvaluacion/estudiante/${user.carnet}/grupo/${idGrupo}`);
+                    const nota = notaResponse.data.find(n => n.idEvaluacion === evaluation.idEvaluacion);
+                    if (nota) {
+                        notasMap[evaluation.idEvaluacion] = nota;
+                    }
+                } catch (err) {
+                    // No grade found, that's okay
                 }
-                setLoading(false);
             }
-        };
 
+            setEntregas(entregasMap);
+            setNotas(notasMap);
+            setLoading(false);
+        } catch (err) {
+            console.error("Error fetching data:", err);
+            if (axios.isAxiosError(err) && err.response?.status === 404) {
+                setError("No hay evaluaciones o notas disponibles para este grupo.");
+            } else {
+                setError("Error al cargar las evaluaciones.");
+            }
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchData();
     }, [idGrupo, user.carnet]);
 
-    // New useEffect to fetch group members when evaluations are expanded
-    useEffect(() => {
-        const fetchGroupMembers = async () => {
-            if (!user.carnet) return; // Ensure carnet is available
+    const fetchGroupMembers = async () => {
+        if (!user.carnet) return; // Ensure carnet is available
 
-            const evaluationsToFetchMembersFor = evaluations.filter(
-                evaluation => evaluation.esGrupal && expandedEvaluationIds.has(evaluation.idEvaluacion)
-            );
+        const evaluationsToFetchMembersFor = evaluations.filter(
+            evaluation => evaluation.esGrupal && expandedEvaluationIds.has(evaluation.idEvaluacion)
+        );
 
-            for (const evaluation of evaluationsToFetchMembersFor) {
-                // Only fetch if members haven't been fetched for this evaluation yet
-                if (!groupMembers[evaluation.idEvaluacion]) {
-                    try {
-                        const membersResponse = await axios.get<GrupoTrabajoMiembroDto[]>(`http://localhost:${port}/api/EstudianteGrupo/grupo-trabajo-miembros/${user.carnet}/${evaluation.idEvaluacion}`); // Updated return type
-                        setGroupMembers(prev => ({
-                            ...prev,
-                            [evaluation.idEvaluacion]: membersResponse.data
-                        }));
-                    } catch (err) {
-                        console.error(`Error fetching group members for evaluation ${evaluation.idEvaluacion}:`, err);
-                        // Optionally, set an error state for this specific evaluation's members
-                    }
+        for (const evaluation of evaluationsToFetchMembersFor) {
+            // Only fetch if members haven't been fetched for this evaluation yet
+            if (!groupMembers[evaluation.idEvaluacion]) {
+                try {
+                    const membersResponse = await axios.get<GrupoTrabajoMiembroDto[]>(`http://localhost:${port}/api/EstudianteGrupo/grupo-trabajo-miembros/${user.carnet}/${evaluation.idEvaluacion}`); // Updated return type
+                    setGroupMembers(prev => ({
+                        ...prev,
+                        [evaluation.idEvaluacion]: membersResponse.data
+                    }));
+                } catch (err) {
+                    console.error(`Error fetching group members for evaluation ${evaluation.idEvaluacion}:`, err);
+                    // Optionally, set an error state for this specific evaluation's members
                 }
             }
-        };
+        }
+    };
 
+    // New useEffect to fetch group members when evaluations are expanded
+    useEffect(() => {
         fetchGroupMembers();
     }, [expandedEvaluationIds, evaluations, user.carnet, groupMembers]); // Depend on expandedEvaluationIds and evaluations
 
@@ -275,6 +277,14 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
         }
     };
 
+    const openNewEvaluationDialog = () =>{
+        (document.getElementById('dialogCreate') as HTMLDialogElement)?.showModal();
+    }
+
+    const closeNewEvaluationDialog = () =>{
+        (document.getElementById('dialogCreate') as HTMLDialogElement)?.close();
+    }
+
     if (loading) {
         return <div className="text-center mt-4 text-gray-600">Cargando evaluaciones...</div>;
     }
@@ -309,7 +319,12 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                 <div key={rubroNombre} className="bg-white rounded-lg shadow overflow-hidden">
                     {/* Rubro Header */}
                     <div className="flex items-center justify-between bg-gray-200 px-4 py-3">
-                        <h4 className="text-lg font-semibold text-gray-700">{rubroNombre}</h4>
+                        <div style={{flexDirection:'row', display: 'flex'}}>
+                            <h4 className="text-lg font-semibold text-gray-700">{rubroNombre}</h4>
+                            <div className='delete-button' style={{marginTop:'-2px'}} onClick={openNewEvaluationDialog}>
+                                +
+                            </div>
+                        </div>
                         {/* Display Rubro's total percentage/points */}
                         <div className="text-gray-700">-- / {rubroData.rubroPorcentaje}%</div>
                          {/* Placeholder for Add/Remove Rubro if needed - Use the existing icon styles */}
@@ -527,7 +542,31 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                     <span>-- / 100</span>
                 </div>
             </div>
+            <dialog className='dialog-box' id='dialogCreate'>
+                <div>
+                <input
+                    id="newEvaNameInput"
+                    name="newEvaNameInput"
+                    type="email"
+                    style={{maxWidth:'200px', marginBottom:'5px', justifyContent:'center'}}
+                    required
+                    className="custom-input"
+                    placeholder="Nombre de la evaluación"
+                    value={newEvaluationName}
+                    onChange={e => setNewEvaluationName(e.target.value)}
+                />
+                <div className='button-rows' style={{marginTop:'25px'}}>
+                    <div className='delete-button' onClick={closeNewEvaluationDialog}>
+                        Cancelar
+                    </div>
+                    <div className='delete-button' onClick={closeNewEvaluationDialog}>
+                        Crear
+                    </div>
+                </div>
+                </div>
+            </dialog>
         </div>
+        
     );
 };
 

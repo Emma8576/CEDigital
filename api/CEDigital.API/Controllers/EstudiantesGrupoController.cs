@@ -84,7 +84,7 @@ namespace CEDigital.API.Controllers
             _logger.LogInformation("Fetching group members for student {CarnetEstudiante} and evaluation {IdEvaluacion}", carnetEstudiante, idEvaluacion);
 
             // Find the IdGrupoTrabajo for the given student and evaluation
-            var grupoTrabajo = await _context.GrupoTrabajo
+            var grupoTrabajo = await _context.GrupoTrabajos
                 .FirstOrDefaultAsync(gt => gt.CarnetEstudiante == carnetEstudiante && gt.IdEvaluacion == idEvaluacion);
 
             if (grupoTrabajo == null)
@@ -96,7 +96,7 @@ namespace CEDigital.API.Controllers
             _logger.LogInformation("Found group trabajo ID: {IdGrupoTrabajo}", grupoTrabajo.IdGrupoTrabajo);
 
             // Find all students in the same GrupoTrabajo
-            var miembrosGrupoCarnets = await _context.GrupoTrabajo
+            var miembrosGrupoCarnets = await _context.GrupoTrabajos
                 .Where(gt => gt.IdGrupoTrabajo == grupoTrabajo.IdGrupoTrabajo)
                 .Select(gt => gt.CarnetEstudiante)
                 .ToListAsync();

@@ -2,207 +2,248 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Data;
 using CEDigital.API.Models;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using CEDigital.API.Services; // Assuming a service for MongoDB access
 
 namespace CEDigital.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class NotaEvaluacionController : ControllerBase
     {
         private readonly CEDigitalContext _context;
-        private readonly MongoDBService _mongoDBService; // Assuming MongoDB service is available
 
-        public NotaEvaluacionController(CEDigitalContext context, MongoDBService mongoDBService)
+        public NotaEvaluacionController(CEDigitalContext context)
         {
             _context = context;
-            _mongoDBService = mongoDBService;
         }
 
-        // GET: api/NotaEvaluacion/estudiante/2023298134/grupo/5
-        [HttpGet("estudiante/{carnetEstudiante}/grupo/{idGrupo}")]
-        public async Task<ActionResult<IEnumerable<NotaEvaluacion>>> GetNotasEstudiantePorGrupo(string carnetEstudiante, int idGrupo)
+        [HttpGet] //obtiene TODAS las notas de TODAS las evaluaciones
+        public async Task<ActionResult<IEnumerable<NotaEvaluacionDto>>> GetAll()
         {
-            // Obtener las evaluaciones para el grupo especfico
-            var evaluacionesGrupo = await _context.Evaluaciones
-                .Where(e => e.IdRubroNavigation.IdGrupo == idGrupo) // Asumiendo navegacin de Evaluacion -> Rubro -> Grupo
-                .ToListAsync();
-
-            if (!evaluacionesGrupo.Any())
-            {
-                 // Podra ser que no haya evaluaciones an, o el grupo no existe
-                 return Ok(new List<NotaEvaluacion>()); // Devolver lista vaca si no hay evaluaciones en el grupo
-            }
-
-            var evaluacionIds = evaluacionesGrupo.Select(e => e.IdEvaluacion).ToList();
-
-            // Obtener las notas de las evaluaciones del grupo para el estudiante o su grupo de trabajo
             var notas = await _context.NotaEvaluaciones
-                .Include(ne => ne.IdEvaluacionNavigation)
-                .Where(ne => evaluacionIds.Contains(ne.IdEvaluacion) && 
-                             (ne.IdGrupoTrabajoNavigation.EstudianteGrupoTrabajo.Any(gt => gt.CarnetEstudiante == carnetEstudiante) || // Si es grupal
-                              (ne.IdEvaluacionNavigation.EsGrupal == false && _context.Entregas.Any(e => e.IdEvaluacion == ne.IdEvaluacion && e.CarnetEstudiante == carnetEstudiante)))) // Si es individual y tiene una entrega
+                .Select(n => new NotaEvaluacionDto
+                {
+                    IdNotaEvaluacion = n.IdNotaEvaluacion,
+                    PorcentajeObtenido = n.PorcentajeObtenido,
+                    Observaciones = n.Observaciones,
+                    RutaArchivoDetalles = n.RutaArchivoDetalles,
+                    Publicada = n.Publicada,
+                    IdEvaluacion = n.IdEvaluacion,
+                    CarnetEstudiante = n.CarnetEstudiante,
+                    IdGrupoTrabajo = n.IdGrupoTrabajo
+                })
                 .ToListAsync();
 
-             // Opcional: Filtrar ms si un estudiante individual no tiene entrega pero existe la evaluacin individual (si quieres mostrar 0)
-             // Esto puede volverse complejo dependiendo de la lgica exacta de tu negocio para notas individuales sin entrega
-
-            return notas;
+            return Ok(notas);
         }
 
-        // GET: api/NotaEvaluacion/estudiante/{carnetEstudiante}/grupo/{idGrupo}/consolidado
-        [HttpGet("estudiante/{carnetEstudiante}/grupo/{idGrupo}/consolidado")]
-        public async Task<ActionResult<StudentEvaluationsGradesDto>> GetStudentEvaluationsAndGrades(string carnetEstudiante, int idGrupo)
+        [HttpGet("{id}")] //obtiene una nota especifica (usa IdNotaEvaluacion)
+        public async Task<ActionResult<NotaEvaluacionDto>> GetById(int id)
         {
-            // 1. Obtener informacin del estudiante de MongoDB
-            var estudiante = await _mongoDBService.GetStudentByCarnetAsync(carnetEstudiante);
-            if (estudiante == null)
+            var nota = await _context.NotaEvaluaciones.FindAsync(id);
+
+            if (nota == null)
+                return NotFound();
+
+            return Ok(new NotaEvaluacionDto
             {
-                return NotFound("Estudiante no encontrado.");
-            }
-
-            // 2. Obtener rubros y evaluaciones para el grupo, incluyendo notas del estudiante/grupo de trabajo
-            var rubrosWithEvaluations = await _context.Rubros
-                .Where(r => r.IdGrupo == idGrupo)
-                .Include(r => r.Evaluaciones)
-                    .ThenInclude(e => e.NotaEvaluaciones.Where(ne =>
-                        // Filtrar notas que pertenecen al estudiante individual (si es evaluacin individual)
-                        (e.EsGrupal == false && _context.Entregas.Any(ent => ent.IdEvaluacion == ne.IdEvaluacion && ent.CarnetEstudiante == carnetEstudiante)) ||
-                        // O filtrar notas que pertenecen a un grupo de trabajo del estudiante (si es evaluacin grupal)
-                        (e.EsGrupal == true && ne.IdGrupoTrabajoNavigation.EstudianteGrupoTrabajo.Any(egt => egt.CarnetEstudiante == carnetEstudiante))
-                    ))
-                .OrderBy(r => r.NombreRubro) // Ognizar rubros si es necesario
-                .ToListAsync();
-
-            if (!rubrosWithEvaluations.Any())
-            {
-                 // Podra ser que no haya rubros/evaluaciones an
-                 // Devolver un DTO bsico con informacin del estudiante pero sin rubros/evaluaciones
-                 return Ok(new StudentEvaluationsGradesDto
-                 {
-                     NombreEstudiante = estudiante.Nombre, // Asumiendo que el modelo de estudiante de MongoDB tiene una propiedad Nombre
-                     NotaTotal = 0, // O algn valor por defecto
-                     Rubros = new List<RubricWithEvaluationsDto>()
-                 });
-            }
-
-            // 3. Construir el DTO consolidado
-            var studentEvaluationsGradesDto = new StudentEvaluationsGradesDto
-            {
-                NombreEstudiante = estudiante.Nombre, // Asumiendo propiedad Nombre en modelo MongoDB
-                Rubros = rubrosWithEvaluations.Select(r => new RubricWithEvaluationsDto
-                {
-                    IdRubro = r.IdRubro,
-                    NombreRubro = r.NombreRubro,
-                    PorcentajeRubro = (int)r.Porcentaje, // Convertir decimal a int si PorcentajeRubro es int en DTO
-                    Evaluaciones = r.Evaluaciones.Select(e => new EvaluationWithGradeDto
-                    {
-                        IdEvaluacion = e.IdEvaluacion,
-                        NombreEvaluacion = e.NombreEvaluacion,
-                        FechaHoraLimite = e.FechaHoraLimite,
-                        ValorPorcentualEvaluacion = e.ValorPorcentual,
-                        EsGrupal = e.EsGrupal,
-                        TieneEntregable = e.TieneEntregable,
-                        CantEstudiantesGrupo = e.CantEstudiantesGrupo,
-                        RutaEspecificacion = e.RutaEspecificacion,
-                        // Asignar detalles de la nota si existen (tomar la primera nota encontrada, ya que esperamos solo una por estudiante/grupo)
-                        PorcentajeObtenido = e.NotaEvaluaciones.FirstOrDefault()?.PorcentajeObtenido,
-                        Observaciones = e.NotaEvaluaciones.FirstOrDefault()?.Observaciones,
-                        RutaArchivoDetalles = e.NotaEvaluaciones.FirstOrDefault()?.RutaArchivoDetalles,
-                        Publicada = e.NotaEvaluaciones.FirstOrDefault()?.Publicada ?? false // Asumir false si no hay nota
-
-                        // TODO: Add deliverable details if needed later
-                    }).ToList()
-                }).ToList()
-            };
-
-            // 4. Calcular Nota Total (sumatoria ponderada de notas publicadas)
-            decimal notaTotal = 0;
-            foreach (var rubro in studentEvaluationsGradesDto.Rubros)
-            {
-                decimal totalRubro = 0;
-                foreach (var evaluacion in rubro.Evaluaciones)
-                {
-                    // Solo considerar notas publicadas
-                    if (evaluacion.Publicada && evaluacion.PorcentajeObtenido.HasValue)
-                    {
-                        // Calcular contribucin de la evaluacin al rubro: (NotaObtenida / 100) * ValorPorcentualEvaluacion
-                         // Asegurarse de que ValorPorcentualEvaluacion sea interpretado correctamente (como porcentaje del rubro)
-                         // Y que el PorcentajeObtenido es el porcentaje de la evaluacin
-
-                        // Asumiendo que ValorPorcentualEvaluacion es el peso dentro del rubro (ej: 15 para un quiz)
-                        // y que PorcentajeObtenido es la nota del estudiante en esa evaluacin (ej: 85.50)
-
-                        // Contribucin al rubro = (PorcentajeObtenido / 100) * ValorPorcentualEvaluacion
-                         totalRubro += (evaluacion.PorcentajeObtenido.Value / 100m) * evaluacion.ValorPorcentualEvaluacion;
-                    }
-                }
-                 // Contribucin del rubro a la nota total: (TotalRubro / SumaTotalValorPorcentualEvaluacionesEnRubro) * PorcentajeRubro
-                 // Necesitamos la suma total de ValorPorcentualEvaluacion para este rubro
-                 decimal sumaTotalValorPorcentualEvaluacionesEnRubro = rubro.Evaluaciones.Sum(e => e.ValorPorcentualEvaluacion);
-
-                 if(sumaTotalValorPorcentualEvaluacionesEnRubro > 0) // Evitar divisin por cero
-                 {
-                     notaTotal += (totalRubro / sumaTotalValorPorcentualEvaluacionesEnRubro) * rubro.PorcentajeRubro;
-                 }
-
-
-                // // Asumiendo que PorcentajeRubro es el peso del rubro en el curso (ej: 30 para quices)
-                // // y totalRubro ya es la suma de las notas ponderadas dentro del rubro
-
-                // // Contribucin al curso = (TotalRubro / Suma de pesos de evaluaciones en Rubro?) * PorcentajeRubro
-                // // Esto depende de cmo se calcula exactamente la nota del rubro y luego la nota final
-                // // Si totalRubro es la nota final del rubro sobre 100, entonces:
-                // // notaTotal += (totalRubro / 100m) * rubro.PorcentajeRubro;
-
-                // // Si totalRubro es la suma de las contribuciones (PorcentajeObtenido * ValorPorcentualEvaluacion) como se calcul arriba:
-                // // Y PorcentajeRubro es el peso del rubro en el curso sobre 100
-                // // Entonces la contribucin del rubro al curso es simplemente totalRubro * (rubro.PorcentajeRubro / 100m)
-                // // Pero esto no cuadra con la imagen que muestra 0.00/10, 2.00/10 etc.
-
-                // // Intentemos otra interpretacin: totalRubro es la suma de los puntos obtenidos en las evaluaciones publicadas del rubro.
-                // // ValorPorcentualEvaluacion es la cantidad de puntos que da cada evaluacin.
-                // // PorcentajeRubro es el total de puntos que da el rubro en el curso.
-                // // Nota del Rubro = (Puntos obtenidos en Rubro / Total de puntos posibles en Rubro) * Total de puntos del Rubro en el curso
-
-
-                // Recalcular totalRubro asumiendo ValorPorcentualEvaluacion es puntos y PorcentajeObtenido es % de esos puntos
-                 totalRubro = 0;
-                 decimal maxPuntosRubro = 0; // Suma de ValorPorcentualEvaluacion para todas las evaluaciones en el rubro
-
-                 foreach(var evaluacion in rubro.Evaluaciones)
-                 {
-                     if(evaluacion.TieneEntregable)
-                     {
-                         maxPuntosRubro += evaluacion.ValorPorcentualEvaluacion; // Sumar los puntos mximos posibles de evaluaciones con entregable
-                         if(evaluacion.Publicada && evaluacion.PorcentajeObtenido.HasValue)
-                         {
-                            // Si PorcentajeObtenido es 85.50, significa 85.50% de ValorPorcentualEvaluacion
-                            totalRubro += (evaluacion.PorcentajeObtenido.Value / 100m) * evaluacion.ValorPorcentualEvaluacion;
-                         }
-                     }
-                     // Si la evaluacin no tiene entregable, su valor podra ser solo informativo o 0 puntos en el rubro?
-                 }
-
-                 // Calcular contribucin del rubro a la nota total del curso
-                 if (maxPuntosRubro > 0) // Evitar divisin por cero
-                 {
-                     // Contribucin = (Puntos obtenidos en Rubro / Mximos puntos posibles en Rubro) * Peso del Rubro en el curso
-                     notaTotal += (totalRubro / maxPuntosRubro) * rubro.PorcentajeRubro; // Aqu PorcentajeRubro es el peso sobre 100 del curso
-                 }
-
-
-
-            }
-
-            studentEvaluationsGradesDto.NotaTotal = notaTotal;
-
-            return studentEvaluationsGradesDto;
+                IdNotaEvaluacion = nota.IdNotaEvaluacion,
+                PorcentajeObtenido = nota.PorcentajeObtenido,
+                Observaciones = nota.Observaciones,
+                RutaArchivoDetalles = nota.RutaArchivoDetalles,
+                Publicada = nota.Publicada,
+                IdEvaluacion = nota.IdEvaluacion,
+                CarnetEstudiante = nota.CarnetEstudiante,
+                IdGrupoTrabajo = nota.IdGrupoTrabajo
+            });
         }
 
-        // TODO: Add other NotaEvaluacion endpoints if needed
+        [HttpPost] //Permite guardar una nueva nota  
+        public async Task<ActionResult> Create([FromBody] NotaEvaluacionCreateDto dto)
+        {
+            // Obtener la evaluación y su rubro
+            var evaluacion = await _context.Evaluaciones
+                .Include(e => e.Rubro)
+                .FirstOrDefaultAsync(e => e.IdEvaluacion == dto.IdEvaluacion);
+
+            if (evaluacion == null)
+                return BadRequest("Evaluación no encontrada.");
+
+            // Validar que el porcentaje no exceda el máximo permitido
+            if (dto.PorcentajeObtenido > evaluacion.ValorPorcentual)
+                return BadRequest($"El porcentaje obtenido ({dto.PorcentajeObtenido}) excede el valor porcentual máximo de la evaluación ({evaluacion.ValorPorcentual}).");
+
+
+            if (evaluacion.EsGrupal)
+            {
+                // Validar que el grupo de trabajo pertenezca a esa evaluación
+                var grupoTrabajoValido = await _context.GrupoTrabajos
+                    .AnyAsync(gt => gt.IdGrupoTrabajo == dto.IdGrupoTrabajo && gt.IdEvaluacion == dto.IdEvaluacion);
+
+                if (!grupoTrabajoValido)
+                    return BadRequest("El grupo de trabajo no pertenece a esta evaluación.");
+
+                // Verificar duplicado
+                var notaExistente = await _context.NotaEvaluaciones
+                    .AnyAsync(n => n.IdEvaluacion == dto.IdEvaluacion && n.IdGrupoTrabajo == dto.IdGrupoTrabajo);
+
+                if (notaExistente)
+                    return Conflict("Ya existe una nota registrada para este grupo de trabajo en esta evaluación.");
+
+                // Crear nota grupal
+                var nota = new NotaEvaluacion
+                {
+                    PorcentajeObtenido = dto.PorcentajeObtenido,
+                    Observaciones = dto.Observaciones,
+                    RutaArchivoDetalles = dto.RutaArchivoDetalles,
+                    Publicada = dto.Publicada,
+                    IdEvaluacion = dto.IdEvaluacion,
+                    IdGrupoTrabajo = dto.IdGrupoTrabajo,
+                    CarnetEstudiante = null
+                };
+
+                _context.NotaEvaluaciones.Add(nota);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetById), new { id = nota.IdNotaEvaluacion }, nota);
+            }
+            else
+            {
+                // Obtener el grupo de la evaluación
+                var idGrupo = evaluacion.Rubro.IdGrupo;
+
+                // Verificar que el estudiante pertenezca al grupo
+                var estudianteValido = await _context.EstudianteGrupos
+                    .AnyAsync(eg => eg.CarnetEstudiante == dto.CarnetEstudiante && eg.IdGrupo == idGrupo);
+
+                if (!estudianteValido)
+                    return BadRequest("El estudiante no pertenece al grupo asociado a esta evaluación.");
+
+                // Verificar duplicado
+                var notaExistente = await _context.NotaEvaluaciones
+                    .AnyAsync(n => n.IdEvaluacion == dto.IdEvaluacion && n.CarnetEstudiante == dto.CarnetEstudiante);
+
+                if (notaExistente)
+                    return Conflict("Ya existe una nota registrada para este estudiante en esta evaluación.");
+
+                // Crear nota individual
+                var nota = new NotaEvaluacion
+                {
+                    PorcentajeObtenido = dto.PorcentajeObtenido,
+                    Observaciones = dto.Observaciones,
+                    RutaArchivoDetalles = dto.RutaArchivoDetalles,
+                    Publicada = dto.Publicada,
+                    IdEvaluacion = dto.IdEvaluacion,
+                    CarnetEstudiante = dto.CarnetEstudiante,
+                    IdGrupoTrabajo = null
+                };
+
+                _context.NotaEvaluaciones.Add(nota);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetById), new { id = nota.IdNotaEvaluacion }, nota);
+            }
+        }
+
+
+
+        [HttpPut("{id}")] //Permite modificar algunas de una nota especifica (usa IdNotaEvaluacion)
+        public async Task<ActionResult> Update(int id, [FromBody] NotaEvaluacionUpdateDto dto)
+        {
+            var nota = await _context.NotaEvaluaciones.FindAsync(id);
+            if (nota == null)
+                return NotFound();
+
+            nota.PorcentajeObtenido = dto.PorcentajeObtenido;
+            nota.Observaciones = dto.Observaciones;
+            nota.RutaArchivoDetalles = dto.RutaArchivoDetalles;
+            nota.Publicada = dto.Publicada;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")] //elimina una nota especifica (usa IdNotaEvaluacion)
+        public async Task<ActionResult> Delete(int id)
+        {
+            var nota = await _context.NotaEvaluaciones.FindAsync(id);
+            if (nota == null)
+                return NotFound();
+
+            _context.NotaEvaluaciones.Remove(nota);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // GET: api/NotaEvaluacion/evaluacion/5
+        [HttpGet("evaluacion/{idEvaluacion}")] // obtiene todas las notas asociadas a un IdEvaluacion
+        public async Task<ActionResult<IEnumerable<NotaEvaluacionDto>>> GetByEvaluacion(int idEvaluacion)
+        {
+            var notas = await _context.NotaEvaluaciones
+                .Where(n => n.IdEvaluacion == idEvaluacion)
+                .Select(n => new NotaEvaluacionDto
+                {
+                    IdNotaEvaluacion = n.IdNotaEvaluacion,
+                    PorcentajeObtenido = n.PorcentajeObtenido,
+                    Observaciones = n.Observaciones,
+                    RutaArchivoDetalles = n.RutaArchivoDetalles,
+                    Publicada = n.Publicada,
+                    IdEvaluacion = n.IdEvaluacion,
+                    CarnetEstudiante = n.CarnetEstudiante,
+                    IdGrupoTrabajo = n.IdGrupoTrabajo
+                })
+                .ToListAsync();
+
+            return Ok(notas);
+        }
+
+        // GET: api/NotaEvaluacion/estudiante/{carnetEstudiante}/grupo/{idGrupo}
+        [HttpGet("estudiante/{carnetEstudiante}/grupo/{idGrupo}")] // Obtiene las notas de un estudiante para las evaluaciones dentro de un grupo específico
+        public async Task<ActionResult<IEnumerable<NotaEvaluacionDto>>> GetNotasPorEstudianteYGrupo(string carnetEstudiante, int idGrupo)
+        {
+            // Primero, encontrar los Rubros asociados a este grupo
+            var rubrosIds = await _context.Rubros
+                .Where(r => r.IdGrupo == idGrupo)
+                .Select(r => r.IdRubro)
+                .ToListAsync();
+
+            if (!rubrosIds.Any())
+            {
+                return Ok(new List<NotaEvaluacionDto>()); // No hay rubros para este grupo, por lo tanto no hay evaluaciones/notas
+            }
+
+            // Luego, encontrar las Evaluaciones asociadas a esos Rubros
+            var evaluacionesIds = await _context.Evaluaciones
+                .Where(e => rubrosIds.Contains(e.IdRubro))
+                .Select(e => e.IdEvaluacion)
+                .ToListAsync();
+
+            if (!evaluacionesIds.Any())
+            {
+                return Ok(new List<NotaEvaluacionDto>()); // No hay evaluaciones para estos rubros, por lo tanto no hay notas
+            }
+
+            // Finalmente, buscar las Notas para estas Evaluaciones y el estudiante (o su grupo de trabajo si es grupal)
+            var notas = await _context.NotaEvaluaciones
+                .Where(n => evaluacionesIds.Contains(n.IdEvaluacion) &&
+                           (n.CarnetEstudiante == carnetEstudiante || // Para evaluaciones individuales
+                            (_context.GrupoTrabajos.Any(gt => gt.IdEvaluacion == n.IdEvaluacion && gt.CarnetEstudiante == carnetEstudiante && gt.IdGrupoTrabajo == n.IdGrupoTrabajo)))) // Para evaluaciones grupales
+                .Select(n => new NotaEvaluacionDto
+                {
+                    IdNotaEvaluacion = n.IdNotaEvaluacion,
+                    PorcentajeObtenido = n.PorcentajeObtenido,
+                    Observaciones = n.Observaciones,
+                    RutaArchivoDetalles = n.RutaArchivoDetalles,
+                    Publicada = n.Publicada,
+                    IdEvaluacion = n.IdEvaluacion,
+                    CarnetEstudiante = n.CarnetEstudiante,
+                    IdGrupoTrabajo = n.IdGrupoTrabajo
+                })
+                .ToListAsync();
+
+            return Ok(notas); // Retorna la lista de notas encontradas (puede estar vacía)
+        }
     }
-} 
+}
+

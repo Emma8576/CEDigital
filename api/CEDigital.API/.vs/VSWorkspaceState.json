@@ -4,10 +4,9 @@
     "\\Configuration",
     "\\Controllers",
     "\\Data",
-    "\\Models",
     "\\Properties",
     "\\Services"
   ],
-  "SelectedNode": "\\Controllers\\EstudiantesGrupoController.cs",
+  "SelectedNode": "\\Data\\CEDigitalContext.cs",
   "PreviewInSolutionExplorer": false
 }
