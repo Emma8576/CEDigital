@@ -75,45 +75,56 @@ const Navbar: FC<NavbarProps> = ({ user }) => {
 
           {/* Menú de escritorio */}
           <div className="hidden md:flex space-x-4 items-center">
-            {mainLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  location.pathname === link.path
-                    ? "bg-blue-700 text-white"
-                    : "text-gray-200 hover:bg-blue-700 hover:text-white"
-                }`}
-              >
-                {link.icon}
-                <span>{link.name}</span>
-              </Link>
-            ))}
+            {mainLinks.map((link) => {
+              const shouldRender = (user.tipo === 'administrador') || 
+                                 (link.path === '/' && (user.tipo === 'estudiante' || user.tipo === 'profesor'));
+
+              return shouldRender ? (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === link.path
+                      ? "bg-blue-700 text-white"
+                      : "text-gray-200 hover:bg-blue-700 hover:text-white"
+                  }`}
+                >
+                  {link.icon}
+                  <span>{link.name}</span>
+                </Link>
+              ) : null;
+            })}
 
             {/* Submenú Más */}
             <div className="relative">
-              <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:bg-blue-700 hover:text-white"
-              >
-                Más ▾
-              </button>
+              {extraLinks.some(link => user.tipo === 'administrador') && (
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:bg-blue-700 hover:text-white"
+                >
+                  Más ▾
+                </button>
+              )}
               {showDropdown && (
                 <div
                   className="absolute right-0 z-50 bg-blue-800 rounded-md shadow-md mt-2 py-2 w-48"
                   onMouseLeave={() => setShowDropdown(false)}
                 >
-                  {extraLinks.map((link) => (
-                    <Link
-                      key={link.path}
-                      to={link.path}
-                      onClick={() => setShowDropdown(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-200 hover:bg-blue-700 hover:text-white"
-                    >
-                      {link.icon}
-                      {link.name}
-                    </Link>
-                  ))}
+                  {extraLinks.map((link) => {
+                    const shouldRender = user.tipo === 'administrador';
+
+                    return shouldRender ? (
+                      <Link
+                        key={link.path}
+                        to={link.path}
+                        onClick={() => setShowDropdown(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-200 hover:bg-blue-700 hover:text-white"
+                      >
+                        {link.icon}
+                        {link.name}
+                      </Link>
+                    ) : null;
+                  })}
                 </div>
               )}
             </div>
@@ -145,21 +156,26 @@ const Navbar: FC<NavbarProps> = ({ user }) => {
         isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
       }`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-blue-900">
-          {[...mainLinks, ...extraLinks].map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium ${
-                location.pathname === link.path
-                  ? "bg-blue-700 text-white"
-                  : "text-gray-200 hover:bg-blue-700 hover:text-white"
-              }`}
-            >
-              {link.icon}
-              {link.name}
-            </Link>
-          ))}
+          {[...mainLinks, ...extraLinks].map((link) => {
+            const shouldRender = (user.tipo === 'administrador') || 
+                                 (link.path === '/' && (user.tipo === 'estudiante' || user.tipo === 'profesor'));
+
+            return shouldRender ? (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium ${
+                  location.pathname === link.path
+                    ? "bg-blue-700 text-white"
+                    : "text-gray-200 hover:bg-blue-700 hover:text-white"
+                }`}
+              >
+                {link.icon}
+                {link.name}
+              </Link>
+            ) : null;
+          })}
           {/* Usuario en móvil */}
           <div className="px-3 py-2 text-gray-200">
             <span className="text-sm">{user.nombre}</span>
