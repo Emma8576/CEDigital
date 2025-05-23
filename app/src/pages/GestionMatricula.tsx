@@ -254,8 +254,7 @@ const GestionMatricula = () => {
                         } else {
                           setSeleccionados(prev => [...prev, estudiante.carne]);
                         }
-                        // No cerramos el dropdown para permitir seleccionar múltiples estudiantes
-                        setBusquedaEstudiante(""); // Limpiar búsqueda después de seleccionar
+                        setBusquedaEstudiante(""); 
                       }}
                     >
                       <div className="flex-grow">

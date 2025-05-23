@@ -5,13 +5,15 @@ import {
   CalendarIcon,
   UsersIcon,
   Squares2X2Icon,
+  ArrowUpTrayIcon,
+  UserGroupIcon,
+  AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 
 import { obtenerCursos } from "../services/cursoService";
 import { obtenerSemestres } from "../services/semestreService";
 import { getGrupos } from "../services/grupoService";
 import { obtenerEstudiantes } from "../services/estudianteService";
-
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,25 +22,23 @@ const Dashboard = () => {
   const [cantidadGrupos, setCantidadGrupos] = useState(0);
   const [cantidadEstudiantes, setCantidadEstudiantes] = useState(0);
 
+  useEffect(() => {
+    obtenerCursos()
+      .then((res) => setCantidadCursos(res.data.length))
+      .catch(console.error);
 
+    obtenerSemestres()
+      .then((res) => setCantidadSemestres(res.data.length))
+      .catch(console.error);
 
-useEffect(() => {
-  obtenerCursos()
-    .then((res) => setCantidadCursos(res.data.length))
-    .catch(console.error);
+    getGrupos()
+      .then((data) => setCantidadGrupos(data.length))
+      .catch(console.error);
 
-  obtenerSemestres()
-    .then((res) => setCantidadSemestres(res.data.length))
-    .catch(console.error);
-
-  getGrupos()
-    .then((data) => setCantidadGrupos(data.length))
-    .catch(console.error);
-
-  obtenerEstudiantes()
-    .then((res) => setCantidadEstudiantes(res.data.length))
-    .catch(console.error);
-}, []);
+    obtenerEstudiantes()
+      .then((res) => setCantidadEstudiantes(res.data.length))
+      .catch(console.error);
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -70,14 +70,7 @@ useEffect(() => {
 
       <div className="flex flex-col items-center">
         <h2 className="text-xl font-semibold text-blue-900 mb-4">Acceso Rápido</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 w-full max-w-4xl mx-auto">
-          <button
-            onClick={() => navigate("/cursos")}
-            className="flex flex-col items-center justify-center bg-blue-600 text-white py-6 px-4 rounded-xl shadow hover:bg-blue-700 transition"
-          >
-            <BookOpenIcon className="w-8 h-8 mb-2" />
-            <span>Gestión de Cursos</span>
-          </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl mx-auto">
           <button
             onClick={() => navigate("/semestres")}
             className="flex flex-col items-center justify-center bg-green-600 text-white py-6 px-4 rounded-xl shadow hover:bg-green-700 transition"
@@ -85,6 +78,15 @@ useEffect(() => {
             <CalendarIcon className="w-8 h-8 mb-2" />
             <span>Gestión de Semestres</span>
           </button>
+
+          <button
+            onClick={() => navigate("/cursos")}
+            className="flex flex-col items-center justify-center bg-blue-600 text-white py-6 px-4 rounded-xl shadow hover:bg-blue-700 transition"
+          >
+            <BookOpenIcon className="w-8 h-8 mb-2" />
+            <span>Gestión de Cursos</span>
+          </button>
+
           <button
             onClick={() => navigate("/grupos")}
             className="flex flex-col items-center justify-center bg-purple-600 text-white py-6 px-4 rounded-xl shadow hover:bg-purple-700 transition"
@@ -92,13 +94,40 @@ useEffect(() => {
             <Squares2X2Icon className="w-8 h-8 mb-2" />
             <span>Gestión de Grupos</span>
           </button>
+
           <button
-            onClick={() => navigate("/estudiantes")}
-            className="flex flex-col items-center justify-center bg-yellow-600 text-white py-6 px-4 rounded-xl shadow hover:bg-yellow-700 transition"
+            onClick={() => navigate("/matricula")}
+            className="flex flex-col items-center justify-center bg-red-600 text-white py-6 px-4 rounded-xl shadow hover:bg-red-700 transition"
           >
-            <UsersIcon className="w-8 h-8 mb-2" />
-            <span>Gestión de Estudiantes</span>
+            <AcademicCapIcon className="w-8 h-8 mb-2" />
+            <span>Gestión de Matrícula</span>
           </button>
+
+          <button
+            onClick={() => navigate("/contenido")}
+            className="flex flex-col items-center justify-center bg-indigo-600 text-white py-6 px-4 rounded-xl shadow hover:bg-indigo-700 transition"
+          >
+            <ArrowUpTrayIcon className="w-8 h-8 mb-2" />
+            <span>Cargar Semestre</span>
+          </button>
+
+          <button
+            onClick={() => navigate("/profesores")}
+            className="flex flex-col items-center justify-center bg-pink-600 text-white py-6 px-4 rounded-xl shadow hover:bg-pink-700 transition"
+          >
+            <UserGroupIcon className="w-8 h-8 mb-2" />
+            <span>Gestión de Profesores</span>
+          </button>
+
+          <div className="col-span-full flex justify-center">
+            <button
+              onClick={() => navigate("/estudiantes")}
+              className="flex flex-col items-center justify-center bg-yellow-600 text-white py-6 px-4 rounded-xl shadow hover:bg-yellow-700 transition w-full max-w-xs"
+            >
+              <UsersIcon className="w-8 h-8 mb-2" />
+              <span>Gestión de Estudiantes</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

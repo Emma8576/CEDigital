@@ -9,6 +9,7 @@ import {
   XMarkIcon,
   UserGroupIcon,
   AcademicCapIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import { useState, useEffect, FC } from "react";
 
@@ -21,25 +22,27 @@ interface NavLinkProps {
 const Navbar: FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const location = useLocation();
 
-  const links: NavLinkProps[] = [
+  const mainLinks: NavLinkProps[] = [
     { path: "/", name: "Inicio", icon: <HomeIcon className="w-5 h-5" /> },
     { path: "/semestres", name: "Semestres", icon: <CalendarIcon className="w-5 h-5" /> },
     { path: "/cursos", name: "Cursos", icon: <BookOpenIcon className="w-5 h-5" /> },
-    { path: "/profesores", name: "Profesores", icon: <UserGroupIcon className="w-5 h-5" /> },
-    { path: "/estudiantes", name: "Estudiantes", icon: <UserGroupIcon className="w-5 h-5" /> },
     { path: "/grupos", name: "Grupos", icon: <UsersIcon className="w-5 h-5" /> },
     { path: "/matricula", name: "Matrícula", icon: <AcademicCapIcon className="w-5 h-5" /> },
     { path: "/contenido", name: "Cargar Semestre", icon: <ArrowUpTrayIcon className="w-5 h-5" /> },
-    
+  ];
+
+  const extraLinks: NavLinkProps[] = [
+    { path: "/profesores", name: "Profesores", icon: <UserGroupIcon className="w-5 h-5" /> },
+    { path: "/estudiantes", name: "Estudiantes", icon: <UserIcon className="w-5 h-5" /> },
   ];
 
   useEffect(() => {
     const handleScroll = (): void => {
       setScrolled(window.scrollY > 10);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -55,16 +58,16 @@ const Navbar: FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
-          {/* Logo completamente alineado a la izquierda */}
+          {/* Logo */}
           <div className="flex items-center flex-grow">
             <Link to="/" className="text-white text-xl font-bold">
               CEDigital
             </Link>
           </div>
 
-          {/* Navegación en escritorio */}
-          <div className="hidden md:flex space-x-4">
-            {links.map((link) => (
+          {/* Menú de escritorio */}
+          <div className="hidden md:flex space-x-4 items-center">
+            {mainLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -78,9 +81,37 @@ const Navbar: FC = () => {
                 <span>{link.name}</span>
               </Link>
             ))}
+
+            {/* Submenú Más */}
+            <div className="relative">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:bg-blue-700 hover:text-white"
+              >
+                Más ▾
+              </button>
+              {showDropdown && (
+                <div
+                  className="absolute right-0 z-50 bg-blue-800 rounded-md shadow-md mt-2 py-2 w-48"
+                  onMouseLeave={() => setShowDropdown(false)}
+                >
+                  {extraLinks.map((link) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setShowDropdown(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-200 hover:bg-blue-700 hover:text-white"
+                    >
+                      {link.icon}
+                      {link.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Botón de menú móvil */}
+          {/* Botón menú móvil */}
           <div className="md:hidden ml-4">
             <button
               onClick={toggleMobileMenu}
@@ -96,12 +127,12 @@ const Navbar: FC = () => {
         </div>
       </div>
 
-      {/* Menú móvil desplegable */}
+      {/* Menú móvil */}
       <div className={`md:hidden transition-all duration-300 ease-in-out ${
-        isMobileMenuOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
+        isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
       }`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-blue-900">
-          {links.map((link) => (
+          {[...mainLinks, ...extraLinks].map((link) => (
             <Link
               key={link.path}
               to={link.path}

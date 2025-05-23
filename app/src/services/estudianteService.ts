@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Estudiante } from "../pages/GestionEstudiantes";
 
-const API_URL = "http://localhost:5261/api/estudiantes";
+const API_URL = "http://localhost:5261/api/Estudiante";
 
 // Función para obtener la lista de estudiantes desde el backend
 export const obtenerEstudiantes = () => {
