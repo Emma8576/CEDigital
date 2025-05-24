@@ -119,6 +119,55 @@ namespace CEDigital.API.Controllers
             return Ok(archivos); // Devolver la lista de archivos, que puede estar vaca
         }
 
+        [HttpPut("subir-archivo")] // Sube un archivo a la carpeta
+        public async Task<IActionResult> SubirArchivoACarpeta([FromForm] UploadArchivoDto dto)
+        {
+            if (dto.File == null || dto.File.Length == 0)
+                return BadRequest("Debe subir un archivo.");
+
+            var carpeta = await _context.Carpetas.FindAsync(dto.IdCarpeta);
+            if (carpeta == null)
+                return NotFound("Carpeta no encontrada");
+
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/files");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + dto.File.FileName;
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            try
+            {
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.File.CopyToAsync(fileStream);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error al guardar el archivo en el servidor.");
+            }
+
+            DateTime currDate = DateTime.Now;
+
+            var newFile = new Archivo
+            {
+                NombreArchivo = dto.File.FileName,
+                FechaPublicacion = currDate,
+                TamañoArchivo = (int)dto.File.Length,
+                IdCarpeta = dto.IdCarpeta,
+                Carpeta = carpeta,
+                Ruta = "uploads/files/"+uniqueFileName
+            };
+
+            _context.Archivos.Add(newFile);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         // GET: api/Carpeta/descargar/5 - Endpoint para descargar un archivo
         [HttpGet("descargar/{idArchivo}")]
         public async Task<IActionResult> DownloadArchivo(int idArchivo)

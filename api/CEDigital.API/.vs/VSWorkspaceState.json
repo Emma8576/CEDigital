@@ -1,13 +1,13 @@
 {
   "ExpandedNodes": [
     "",
-    "\\bin\\Debug",
     "\\Configuration",
     "\\Controllers",
     "\\Data",
+    "\\Models",
     "\\Properties",
     "\\Services"
   ],
-  "SelectedNode": "\\Controllers\\CarpetaController.cs",
+  "SelectedNode": "\\Models\\UploadEntregableDto.cs",
   "PreviewInSolutionExplorer": false
 }

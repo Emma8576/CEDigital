@@ -54,6 +54,9 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
   const [error, setError] = useState<string | null>(null);
   const [createFileInputs, setCreateFileInputs] = useState(0);
   const [folderName, setFolderName] = useState("");
+  const [idCurrentFolder, setIdCurrentFolder] = useState(-1);
+  const [uploadingFile, setUploadingFile] = useState<number | null>(null);
+  const [uploadSuccessMessage, setUploadSuccessMessage] = useState<{ [evaluationId: number]: string | null }>({}); // New state for success messages
 
   const primeFilesNames = ['Exámenes', 'Presentaciones', 'Proyectos', 'Quices'];
 
@@ -93,6 +96,41 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
     fetchDocuments();
   }, [idGrupo, currentPath]); // Dependency on idGrupo and currentPath
 
+  const handleFileUpload = async (currentFolderId: number, file: File) => {
+    try {
+
+      setUploadingFile(currentFolderId);
+      setUploadSuccessMessage(prev => ({ ...prev, [currentFolderId]: null }));
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('idCarpeta', currentFolderId.toString());
+      const localLink = 'http://localhost:' + path + '/api/Carpeta/subir-archivo';
+
+      const response = await axios.put<{ message: string, filePath: string }>(localLink, formData, {
+          headers: {
+              'Content-Type': 'multipart/form-data',
+          },
+      });
+      alert("Se ha creado el archivo exitosamente");
+      setCreateFileInputs(0);
+      closeDialog();
+      fetchDocuments();
+      setUploadSuccessMessage(prev => ({ ...prev, [currentFolderId]: response.data.message }));
+      
+      setUploadingFile(null);
+      
+      // You might want to refetch deliveries here after a successful upload
+      // to reflect the new state if the backend were fully functional.
+      // For now, we just show a success message.
+
+    } catch (err) {
+      console.error("Error uploading file:", err);
+      setUploadingFile(null);
+      // You might want to show an error message to the user here
+    }
+  };
+
   const handleItemClick = (item: FileExplorerItem) => {
     // Use type guard to check if it's a folder
     if (item.type === 'folder') {
@@ -125,14 +163,16 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
           Inicio
         </button>
         {currentPath.map((folderId, index) => (
+              
              <React.Fragment key={folderId}>
                 <span>/</span>
                  {/* Ideally, fetch and display the actual folder name */}
                 <button
-                    onClick={() => setCurrentPath(currentPath.slice(0, index + 1))}
+                    onClick={() => {setCurrentPath(currentPath.slice(0, index + 1));}}
                     className="hover:text-blue-500"
                 >
                     Carpeta ID: {folderId} {/* Placeholder */}
+                    
                 </button>
             </React.Fragment>
         ))}
@@ -185,7 +225,7 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
         const confirmDelete = window.confirm("¿Borrar la carpeta " + nombreCarpeta + " permanentemente?");
         if(confirmDelete){
           try{
-            const response = await axios.delete(`http://localhost:${path}/api/Carpeta/${id}`);
+            await axios.delete(`http://localhost:${path}/api/Carpeta/${id}`);
             alert("La carpeta " + nombreCarpeta + " se ha borrado exitosamente.");
             fetchDocuments();
           }catch(err){
@@ -235,7 +275,7 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
               // Use appropriate ID for selected item comparison based on type
               selectedItem && ((item.type === 'folder' && selectedItem.type === 'folder' && selectedItem.idCarpeta === item.idCarpeta) || (item.type === 'file' && selectedItem.type === 'file' && selectedItem.idArchivo === item.idArchivo)) ? 'bg-blue-50' : 'hover:bg-gray-50'
             }`}
-            onClick={() => handleItemClick(item)}
+            onClick={() => {handleItemClick(item); setIdCurrentFolder(item.idCarpeta);}}
           >
             <svg
               className={`w-5 h-5 mr-3 ${
@@ -335,6 +375,28 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
           </div>
         </div>
         <div style={{display:showBlock(createFileInputs, 2)}}>
+          <div className="space-y-2">                                                  
+            <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <svg className="w-8 h-8 mb-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                  <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click para subir</span> o arrastra y suelta</p>
+                  <p className="text-xs text-gray-500">(MAX: 80MB - Tipos de archivo permitidos...)</p> {/* TODO: Add allowed file types */}                                                                                </div>
+              <input
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(idCurrentFolder, file);
+                  }}
+              />
+            </label>
+            {uploadingFile === idCurrentFolder && (
+                <span className="ml-2 text-gray-600 text-sm">Subiendo...</span>
+            )}
+            {/* Display success message */}                                                                             {uploadSuccessMessage[idCurrentFolder] && (
+                <span className="ml-2 text-green-600 text-sm">{uploadSuccessMessage[idCurrentFolder]}</span>
+              )}
+          </div>
           <div className='delete-button' onClick={closeDialog}>
             Cancelar
           </div>

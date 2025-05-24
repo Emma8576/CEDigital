@@ -26,4 +26,14 @@ namespace CEDigital.API.Models
         [Required]
         public required string Ruta { get; set; }
     }
+
+    public class UploadArchivoDto
+    {
+        [Required]
+        public required IFormFile File { get; set; }
+
+        [Required]
+        public required int IdCarpeta { get; set; }
+
+    }
 } 
