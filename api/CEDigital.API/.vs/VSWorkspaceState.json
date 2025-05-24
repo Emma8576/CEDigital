@@ -4,9 +4,10 @@
     "\\Configuration",
     "\\Controllers",
     "\\Data",
+    "\\Models",
     "\\Properties",
     "\\Services"
   ],
-  "SelectedNode": "\\Data\\CEDigitalContext.cs",
+  "SelectedNode": "\\Models\\EvaluacionDto.cs",
   "PreviewInSolutionExplorer": false
 }

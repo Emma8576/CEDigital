@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './ProfessorEvaluations.css';
 
 // Definir un tipo para agrupar las evaluaciones por rubro
 interface EvaluacionesPorRubro {
@@ -64,6 +65,15 @@ interface ProfessorEvaluationsProps {
     };
 }
 
+function askAmountOfStudents(esGrupal:boolean){
+    if(esGrupal){
+        return 'block';
+    }
+    else{
+        return 'None';
+    }
+}
+
 const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, user }) => {
     const port = '5000';
     const [evaluations, setEvaluations] = useState<Evaluacion[]>([]);
@@ -78,6 +88,15 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
     const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: GrupoTrabajoMiembroDto[] }>({}); // Updated state type
 
     const [newEvaluationName, setNewEvaluationName] = useState("");
+    const [newEvaluationRubroName, setNewEvaluationRubroName] = useState("");
+    const [newEvaluationDate, setNewEvaluationDate] = useState('');
+    const [newEvaluationRubro, setNewEvaluationRubro] = useState(-1);
+    const [newEvaluationPercentage, setNewEvaluationPercentage] = useState(0);
+    const [newEvaluationWithGroups, setNewEvaluationsWithGroups] = useState(false);
+    const [newEvaluationGroupSize, setNewEvaluationsGroupSize] = useState(1);
+    const [newEvaluationhasEntregable, setNewEvaluationsHasEntregable] = useState(false);
+    const [newEvaluationTime, setNewEvaluationTime] = useState('23:59');
+
 
     // Function to toggle the expanded state of an evaluation
     const toggleExpand = (evaluationId: number) => {
@@ -111,8 +130,8 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                 rutaEspecificacion: item.rutaEspecificacion,
                 idRubroNavigation: {
                         idRubro: item.idRubro, // Assuming idRubro is also in the projection
-                        nombreRubro: item.rubro.nombreRubro, // Use the nested Rubro object
-                        porcentaje: item.rubro.porcentaje // Assuming porcentaje is in the projection
+                        nombreRubro: item.idRubroNavigation.nombreRubro, // Use the nested Rubro object
+                        porcentaje: item.idRubroNavigation.porcentaje // Assuming porcentaje is in the projection
                 }
             }));
 
@@ -277,12 +296,53 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
         }
     };
 
-    const openNewEvaluationDialog = () =>{
-        (document.getElementById('dialogCreate') as HTMLDialogElement)?.showModal();
+    const openNewEvaluationDialog = (rubroId: number | undefined, rubroNombre: string) =>{
+        if(rubroId != undefined){
+            (document.getElementById('dialogCreate') as HTMLDialogElement)?.showModal();
+            setNewEvaluationRubroName(rubroNombre);
+            setNewEvaluationRubro(rubroId);
+        }
     }
+
+    
 
     const closeNewEvaluationDialog = () =>{
         (document.getElementById('dialogCreate') as HTMLDialogElement)?.close();
+    }
+
+    const crearEvaluacion = async() =>{
+        if(newEvaluationName.length > 0){
+            if(newEvaluationDate.length > 0){
+                var groupSize = 1;
+                if(!newEvaluationWithGroups){
+                    groupSize = newEvaluationGroupSize;
+                }
+                const newEvaluation = {
+                    idRubro: newEvaluationRubro,
+                    nombreEvaluacion: newEvaluationName,
+                    fechaHoraLimite: newEvaluationDate+ "T" + newEvaluationTime,
+                    valorPorcentual: newEvaluationPercentage,
+                    esGrupal: newEvaluationWithGroups,
+                    tieneEntregable: newEvaluationhasEntregable,
+                    cantEstudiantesGrupo: groupSize,
+                    rutaEspecificacion: '/especificaciones/' + newEvaluationName.replaceAll(" ","_").replaceAll("/", "_") + '.pdf'
+                }
+                console.log(newEvaluation);
+                const url = 'http://localhost:' + port + '/api/Evaluacion';
+                try{
+                    await axios.post(url, newEvaluation);
+                    alert("Se ha publicado la evaluación exitosamente.");
+                    closeNewEvaluationDialog();
+                    fetchData();
+                }catch(error){
+                    console.log("Ha fallado la publicación de la evaluación ", error);
+                }
+            }else{
+                alert("Debe colocar una fecha para la evaluación");
+            }
+        }else{
+            alert("Debe colocar un nombre para la evaluación");
+        }
     }
 
     if (loading) {
@@ -321,7 +381,7 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                     <div className="flex items-center justify-between bg-gray-200 px-4 py-3">
                         <div style={{flexDirection:'row', display: 'flex'}}>
                             <h4 className="text-lg font-semibold text-gray-700">{rubroNombre}</h4>
-                            <div className='delete-button' style={{marginTop:'-2px'}} onClick={openNewEvaluationDialog}>
+                            <div className='delete-button' style={{marginTop:'-2px'}} onClick={() => openNewEvaluationDialog(rubroData.rubroId, rubroNombre)}>
                                 +
                             </div>
                         </div>
@@ -529,7 +589,7 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                 </div>
             ))}
 
-            {/* Nota Total and Nota Final - Placeholder */}
+            {/* Diálogo para crear una nueva evaluación*/}
             <div className="space-y-2 border-t pt-4">
                 <div className="flex justify-between items-center text-lg font-semibold text-gray-800">
                     <span>Nota Total (sin redondear)</span>
@@ -542,27 +602,124 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                     <span>-- / 100</span>
                 </div>
             </div>
-            <dialog className='dialog-box' id='dialogCreate'>
+            {/** Dialogo para crear nueva asignación */}
+            <dialog className='dialog-box' id='dialogCreate' style={{position:'fixed', top:'25%', minWidth:'450px'}}>
                 <div>
-                <input
-                    id="newEvaNameInput"
-                    name="newEvaNameInput"
-                    type="email"
-                    style={{maxWidth:'200px', marginBottom:'5px', justifyContent:'center'}}
-                    required
-                    className="custom-input"
-                    placeholder="Nombre de la evaluación"
-                    value={newEvaluationName}
-                    onChange={e => setNewEvaluationName(e.target.value)}
-                />
-                <div className='button-rows' style={{marginTop:'25px'}}>
-                    <div className='delete-button' onClick={closeNewEvaluationDialog}>
-                        Cancelar
+                    <div className='dialog-main-title'>
+                        Crear asignación
                     </div>
-                    <div className='delete-button' onClick={closeNewEvaluationDialog}>
-                        Crear
+                    <div className='dialog-rows'>
+                        <div className='input-tag'>
+                            Nombre:
+                        </div>
+                        <input
+                            id="newEvaNameInput"
+                            name="newEvaNameInput"
+                            type="email"
+                            style={{maxWidth:'200px', marginBottom:'5px', justifyContent:'center'}}
+                            required
+                            className="custom-input"
+                            placeholder="Nombre de la evaluación"
+                            value={newEvaluationName}
+                            onChange={e => setNewEvaluationName(e.target.value)}
+                        />
                     </div>
-                </div>
+                    <div className='dialog-rows'>
+                        <div className='input-tag'>
+                            Porcentaje:
+                        </div>
+                        <input
+                            id="newEvaPercInput"
+                            name="newEvaPercInput"
+                            type="number"
+                            style={{maxWidth:'200px', marginBottom:'5px', justifyContent:'center'}}
+                            required
+                            className="custom-input"
+                            placeholder="Porcentaje"
+                            value={newEvaluationPercentage}
+                            onChange={e => setNewEvaluationPercentage(parseFloat(e.target.value))}
+                        />
+                    </div>
+                    <div className='dialog-rows'>
+                        <div className='input-tag'>
+                            Es grupal:
+                        </div>
+                        <form className='button-rows'>
+                            <input type="radio" id="siGrupal" name="isGrupal" value={1} onClick={() => {setNewEvaluationsWithGroups(true)}}/>
+                            <label htmlFor="siGrupal" style={{marginRight:'10px'}}>Sí</label><br></br>
+                            <input type="radio" id="noGrupal" name="isGrupal" value={0} onClick={() =>{setNewEvaluationsWithGroups(false)}}/>
+                            <label htmlFor="noGrupal">No</label><br></br>
+                        </form>
+                    </div>
+                    <div style={{display:askAmountOfStudents(newEvaluationWithGroups)}}>
+                        <div className='dialog-rows' >
+                            <div className='input-tag'>
+                                Estudiantes por grupo: 
+                            </div>
+                            <input
+                                id="newEvaTeamSizeInput"
+                                name="newEvaTeamSizeInput"
+                                type="number"
+                                style={{maxWidth:'50px', marginBottom:'5px', justifyContent:'center'}}
+                                required
+                                className="custom-input"
+                                placeholder="Tamaño del grupo"
+                                value={newEvaluationGroupSize}
+                                onChange={e => setNewEvaluationsGroupSize(parseInt(e.target.value))}
+                            />
+                        </div>
+                    </div>
+                    <div className='dialog-rows'>
+                        <div className='input-tag'>
+                            Fecha de Entrega:
+                        </div>
+                        <input
+                            id="newEvaTeamSizeInput"
+                            name="newEvaTeamSizeInput"
+                            type="date"
+                            style={{maxWidth:'200px', marginBottom:'5px', justifyContent:'center'}}
+                            required
+                            className="custom-input"
+                            placeholder="Fecha de entrega"
+                            value={newEvaluationDate}
+                            onChange={e=>setNewEvaluationDate(e.target.value)}
+                        />
+                    </div>
+                    <div className='dialog-rows'>
+                        <div className='input-tag'>
+                            Hora de Entrega:
+                        </div>
+                        <input
+                            id="newEvaTeamSizeInput"
+                            name="newEvaTeamSizeInput"
+                            type="time"
+                            style={{maxWidth:'200px', marginBottom:'5px', justifyContent:'center'}}
+                            required
+                            className="custom-input"
+                            placeholder="Hora de entrega"
+                            value={newEvaluationTime}
+                            onChange={e => setNewEvaluationTime(e.target.value)}
+                        />
+                    </div>
+                    <div className='dialog-rows'>
+                        <div className='input-tag'>
+                            Tiene entregable:
+                        </div>
+                        <form className='button-rows'>
+                            <input type="radio" id="siEntrega" name="hasEntrega" value={1} onClick={() => {setNewEvaluationsHasEntregable(true)}}/>
+                            <label htmlFor="siEntrega" style={{marginRight:'10px'}}>Sí</label><br></br>
+                            <input type="radio" id="noEntrega" name="hasEntrega" value={0} onClick={() =>{setNewEvaluationsHasEntregable(false)}}/>
+                            <label htmlFor="noEntrega">No</label><br></br>
+                        </form>
+                    </div>
+                    <div className='button-rows' style={{marginTop:'25px'}}>
+                        <div className='delete-button' onClick={closeNewEvaluationDialog}>
+                            Cancelar
+                        </div>
+                        <div className='delete-button' onClick={crearEvaluacion}>
+                            Crear
+                        </div>
+                    </div>
                 </div>
             </dialog>
         </div>

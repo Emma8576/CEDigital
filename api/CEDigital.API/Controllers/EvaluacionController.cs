@@ -17,13 +17,13 @@ namespace CEDigital.API.Controllers
 
         // POST: api/Evaluacion
         [HttpPost]
-        public async Task<ActionResult<Evaluacion>> PostEvaluacion(EvaluacionCreateDto dto)
+        public async Task<ActionResult<Evaluacion>> PostEvaluacion( [FromBody]EvaluacionCreateDto dto)
         {
             // Obtener el rubro correspondiente
             var rubro = await _context.Rubros.FindAsync(dto.IdRubro);
 
             if (rubro == null)
-                return NotFound("El rubro especificado no existe.");
+                return NotFound("El rubro especificado no existe. Id: " + dto.IdRubro.ToString());
 
             // Calcular suma actual de valores porcentuales de evaluaciones en este rubro
             int sumaActual = await _context.Evaluaciones
