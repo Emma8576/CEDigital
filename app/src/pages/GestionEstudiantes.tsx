@@ -264,12 +264,12 @@ const GestionEstudiantes = () => {
             {
               Array.isArray(estudiantes) && estudiantes.map((est) => (
                 <tr key={est.id} className="border-b">
-                  <td className="p-3">{est.carne}</td>
-                  <td className="p-3">{est.cedula}</td>
-                  <td className="p-3">{est.nombre}</td>
-                  <td className="p-3">{est.correo}</td>
-                  <td className="p-3">{est.telefono}</td>
-                </tr>
+                <td className="p-3">{est.carne}</td>
+                <td className="p-3">{est.cedula}</td>
+                <td className="p-3">{est.nombre}</td>
+                <td className="p-3">{est.correo}</td>
+                <td className="p-3">{est.telefono}</td>
+              </tr>
               ))
             }
             

@@ -80,30 +80,30 @@ const Navbar: FC<NavbarProps> = ({ user }) => {
                                  (link.path === '/' && (user.tipo === 'estudiante' || user.tipo === 'profesor'));
 
               return shouldRender ? (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    location.pathname === link.path
-                      ? "bg-blue-700 text-white"
-                      : "text-gray-200 hover:bg-blue-700 hover:text-white"
-                  }`}
-                >
-                  {link.icon}
-                  <span>{link.name}</span>
-                </Link>
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === link.path
+                    ? "bg-blue-700 text-white"
+                    : "text-gray-200 hover:bg-blue-700 hover:text-white"
+                }`}
+              >
+                {link.icon}
+                <span>{link.name}</span>
+              </Link>
               ) : null;
             })}
 
             {/* Submenú Más */}
             <div className="relative">
               {extraLinks.some(link => user.tipo === 'administrador') && (
-                <button
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:bg-blue-700 hover:text-white"
-                >
-                  Más ▾
-                </button>
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:bg-blue-700 hover:text-white"
+              >
+                Más ▾
+              </button>
               )}
               {showDropdown && (
                 <div
@@ -114,15 +114,15 @@ const Navbar: FC<NavbarProps> = ({ user }) => {
                     const shouldRender = user.tipo === 'administrador';
 
                     return shouldRender ? (
-                      <Link
-                        key={link.path}
-                        to={link.path}
-                        onClick={() => setShowDropdown(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-200 hover:bg-blue-700 hover:text-white"
-                      >
-                        {link.icon}
-                        {link.name}
-                      </Link>
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setShowDropdown(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-200 hover:bg-blue-700 hover:text-white"
+                    >
+                      {link.icon}
+                      {link.name}
+                    </Link>
                     ) : null;
                   })}
                 </div>
@@ -161,19 +161,19 @@ const Navbar: FC<NavbarProps> = ({ user }) => {
                                  (link.path === '/' && (user.tipo === 'estudiante' || user.tipo === 'profesor'));
 
             return shouldRender ? (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium ${
-                  location.pathname === link.path
-                    ? "bg-blue-700 text-white"
-                    : "text-gray-200 hover:bg-blue-700 hover:text-white"
-                }`}
-              >
-                {link.icon}
-                {link.name}
-              </Link>
+            <Link
+              key={link.path}
+              to={link.path}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium ${
+                location.pathname === link.path
+                  ? "bg-blue-700 text-white"
+                  : "text-gray-200 hover:bg-blue-700 hover:text-white"
+              }`}
+            >
+              {link.icon}
+              {link.name}
+            </Link>
             ) : null;
           })}
           {/* Usuario en móvil */}

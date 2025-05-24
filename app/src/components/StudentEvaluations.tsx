@@ -80,6 +80,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
     const [uploadingFile, setUploadingFile] = useState<number | null>(null);
     const [uploadSuccessMessage, setUploadSuccessMessage] = useState<{ [evaluationId: number]: string | null }>({}); // New state for success messages
     const [expandedEvaluationIds, setExpandedEvaluationIds] = useState<Set<number>>(new Set());
+    const [expandedRubroIds, setExpandedRubroIds] = useState<Set<number>>(new Set()); // New state for expanded rubros
     // State can be undefined (not fetched), null (fetched, no group), or array of members
     const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: GrupoTrabajoMiembroDto[] | null | undefined }>({});
     const [rubrosWithEvaluations, setRubrosWithEvaluations] = useState<RubroWithEvaluations[]>([]);
@@ -104,6 +105,19 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                 newIds.delete(evaluationId);
             } else {
                 newIds.add(evaluationId);
+            }
+            return newIds;
+        });
+    };
+
+    // Function to toggle the expanded state of a rubro
+    const toggleRubroExpand = (rubroId: number) => {
+        setExpandedRubroIds(prevIds => {
+            const newIds = new Set(prevIds);
+            if (newIds.has(rubroId)) {
+                newIds.delete(rubroId);
+            } else {
+                newIds.add(rubroId);
             }
             return newIds;
         });
@@ -387,21 +401,21 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
             {rubrosWithEvaluations.map((rubro) => (
                 <div key={rubro.idRubro} className="bg-white rounded-lg shadow overflow-hidden">
                     {/* Rubro Header */}
-                    <div className="flex items-center justify-between bg-gray-200 px-4 py-3 cursor-pointer" onClick={() => toggleExpand(rubro.idRubro)}>
+                    <div className="flex items-center justify-between bg-gray-200 px-4 py-3 cursor-pointer" onClick={() => toggleRubroExpand(rubro.idRubro)}>
                         <h4 className="text-lg font-semibold text-gray-700">{rubro.nombreRubro}</h4>
                         {/* Display Rubro's total percentage/points */}
                         <div className="text-gray-700">{rubro.porcentaje}%</div>
                          {/* Expand/Collapse Icon for Rubro */} {/* Use toggleExpand on header */} 
                          <button
-                           onClick={(e) => { e.stopPropagation(); toggleExpand(rubro.idRubro); }}
+                           onClick={(e) => { e.stopPropagation(); toggleRubroExpand(rubro.idRubro); }}
                            className="text-gray-500 hover:text-gray-700 transform transition-transform"
                          >
-                             <svg className={`w-5 h-5 ${expandedEvaluationIds.has(rubro.idRubro) ? 'rotate-180' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                             <svg className={`w-5 h-5 ${expandedRubroIds.has(rubro.idRubro) ? 'rotate-180' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                          </button>
                     </div>
 
                     {/* Evaluaciones List for this Rubro - Show if Rubro is expanded */} {/* Use rubro.idRubro for expanded check */} 
-                    {expandedEvaluationIds.has(rubro.idRubro) && (
+                    {expandedRubroIds.has(rubro.idRubro) && (
                         <ul className="divide-y divide-gray-200">
                             {rubro.evaluaciones.length === 0 ? (
                                 // Message if no evaluations for this rubro
