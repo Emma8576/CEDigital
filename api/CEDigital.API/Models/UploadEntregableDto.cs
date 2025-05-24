@@ -16,4 +16,14 @@ namespace CEDigital.API.Models
 
         public int? IdGrupoTrabajo { get; set; }
     }
+
+    public class UploadEspecificacionDto
+    {
+        [Required]
+        public required IFormFile File { get; set; }
+
+        [Required]
+        public required int IdEvaluacion { get; set; }
+
+    }
 } 

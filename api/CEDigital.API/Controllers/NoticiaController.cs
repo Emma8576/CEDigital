@@ -96,7 +96,7 @@ namespace CEDigital.API.Controllers
             }
             catch (DbUpdateException)
             {
-                return Conflict("Error al actualizar el grupo. Verifica que los datos sean válidos.");
+                return Conflict("Error al actualizar la noticia. Verifica que los datos sean válidos.");
             }
 
             return NoContent();

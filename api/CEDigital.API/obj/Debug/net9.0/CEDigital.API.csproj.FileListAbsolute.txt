@@ -516,3 +516,4 @@ D:\Alexis\A_TEC\Semestre_7\Bases_Datos\CEDigital\api\CEDigital.API\obj\Debug\net
 D:\Alexis\A_TEC\Semestre_7\Bases_Datos\CEDigital\api\CEDigital.API\obj\Debug\net9.0\CEDigital.API.genruntimeconfig.cache
 D:\Alexis\A_TEC\Semestre_7\Bases_Datos\CEDigital\api\CEDigital.API\obj\Debug\net9.0\ref\CEDigital.API.dll
 D:\Alexis\A_TEC\Semestre_7\Bases_Datos\CEDigital\api\CEDigital.API\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+D:\Alexis\A_TEC\Semestre_7\Bases_Datos\CEDigital\api\CEDigital.API\bin\Debug\net9.0\CEDigital.API.staticwebassets.runtime.json

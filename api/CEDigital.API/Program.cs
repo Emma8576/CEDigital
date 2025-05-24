@@ -4,7 +4,11 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Data;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = "wwwroot"
+});
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -21,6 +25,8 @@ builder.Services.AddSingleton<MongoDBService>();
 // Configure SQL Server
 builder.Services.AddDbContext<CEDigitalContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
+
+
 
 var app = builder.Build();
 

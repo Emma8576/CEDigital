@@ -230,11 +230,6 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
 
     const handleFileUpload = async (evaluationId: number, file: File) => {
         try {
-            if (!user.carnet) {
-                console.error("Error: Student carnet is not available for file upload.");
-                // Optionally, show a user-friendly message in the UI
-                return; // Stop the upload process
-            }
 
             setUploadingFile(evaluationId);
             // Clear previous success message for this evaluation
@@ -243,15 +238,8 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
             const formData = new FormData();
             formData.append('file', file);
             formData.append('idEvaluacion', evaluationId.toString());
-            // Add idGrupoTrabajo if it's a group evaluation and available
-            const evaluation = evaluations.find(e => e.idEvaluacion === evaluationId);
-            if (evaluation?.esGrupal && idGrupo) { // Assuming idGrupo from props is the group ID
-                formData.append('idGrupoTrabajo', idGrupo.toString());
-            } else if (!evaluation?.esGrupal) {
-                 formData.append('carnetEstudiante', user.carnet); // Only for individual uploads
-            }
-            const localLink = 'http://localhost:' + port + '/api/Entrega';
-            const response = await axios.post<{ message: string, filePath: string }>(localLink, formData, {
+            const localLink = 'http://localhost:' + port + '/api/Entrega/especificacion';
+            const response = await axios.put<{ message: string, filePath: string }>(localLink, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -304,7 +292,16 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
         }
     }
 
-    
+    const downloadEspecificacion = async(idEvaluacion: number | undefined) =>{
+        if(idEvaluacion !== undefined){
+            try{
+                const downloadUrl = `http://localhost:${port}/api/Entrega/descargar-especificacion/${idEvaluacion}`;
+                window.open(downloadUrl, '_blank');
+            }catch(error){
+                console.log("No se logró descargar la especificación correctamente. Error: ", error);
+            }
+        }
+    }
 
     const closeNewEvaluationDialog = () =>{
         (document.getElementById('dialogCreate') as HTMLDialogElement)?.close();
@@ -325,7 +322,7 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                     esGrupal: newEvaluationWithGroups,
                     tieneEntregable: newEvaluationhasEntregable,
                     cantEstudiantesGrupo: groupSize,
-                    rutaEspecificacion: '/especificaciones/' + newEvaluationName.replaceAll(" ","_").replaceAll("/", "_") + '.pdf'
+                    rutaEspecificacion: ''
                 }
                 console.log(newEvaluation);
                 const url = 'http://localhost:' + port + '/api/Evaluacion';
@@ -490,10 +487,9 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                                         {/* Especificación - Moved here */}                                                         {evaluation.rutaEspecificacion && (
                                                             <div className="mt-2">
                                                                 <a
-                                                                    href={evaluation.rutaEspecificacion}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
                                                                     className="text-blue-600 hover:underline"
+                                                                    style={{cursor:'pointer'}}
+                                                                    onClick={()=>downloadEspecificacion(evaluation.idEvaluacion)}
                                                                 >
                                                                     Ver Especificación
                                                                 </a>
@@ -502,9 +498,9 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                                     </div>
                                                 </div>
 
-                                                {/* Mis entregas Column */}
+                                                {/* Especificación Columna */}
                                                 <div>
-                                                    <p className="font-semibold text-gray-700">Mis entregas:</p>
+                                                    <p className="font-semibold text-gray-700">Especificación:</p>
                                                     <div className="ml-2 mt-2 space-y-2 text-sm">
                                                         {/* Upload/Download area */}
                                                         {evaluation.tieneEntregable && ( /* Only show if deliverable is required */
@@ -533,11 +529,11 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                                                     // Check if the evaluation date limit has passed
                                                                     new Date() > new Date(evaluation.fechaHoraLimite) ? (
                                                                         // If no delivery and past due
-                                                                        <p className="text-red-600">Entrega no realizada. La fecha límite ha pasado.</p>
+                                                                        <p className="text-red-600">La fecha límite ha pasado.</p>
                                                                     ) : (
                                                                         // If no delivery and not past due
                                                                         <div className="space-y-2">
-                                                                             <p className="text-yellow-700 font-medium">Estado: Pendiente de entrega.</p>
+                                                                             <p className="text-yellow-700 font-medium">Estado: En plazo de entrega.</p>
                                                                             {/* File Upload Area - Simplified for now */}                                                                             <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                                                                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                                                                     <svg className="w-8 h-8 mb-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
@@ -567,10 +563,6 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                                             </div>
                                                         )}
 
-                                                        {/* Nota obtenida */}                                                         <div className="mt-4">
-                                                            <span className="font-medium text-gray-700">Nota obtenida:</span>
-                                                             {/* Show obtained grade if available, otherwise -- */}
-                                                            <span className="text-gray-800 ml-1">{nota && nota.publicada ? nota.porcentajeObtenido : '--'} / {evaluation.valorPorcentual}%</span> {/* Using ValorPorcentual as total here too */}                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>

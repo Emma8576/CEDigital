@@ -119,6 +119,64 @@ namespace CEDigital.API.Controllers
             return Ok(new { message = "Archivo subido exitosamente (guardado localmente).", filePath = filePath });
         }
 
+        // Put: api/Entrega/especificacion/ - Endpoint para subir una especificacion
+        [HttpPut("especificacion")]
+        public async Task<IActionResult> UploadEspecificacionFile([FromForm] UploadEspecificacionDto dto)
+        {
+            if (dto.File == null || dto.File.Length == 0)
+                return BadRequest("Debe subir un archivo.");
+
+            // Validar si la evaluacin existe (esto s se puede hacer si Evaluaciones funciona)
+            var evaluacion = await _context.Evaluaciones.FindAsync(dto.IdEvaluacion);
+            if (evaluacion == null)
+                return NotFound("Evaluacin no encontrada.");
+
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/especificaciones"); // Asegura que esta ruta exista
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + dto.File.FileName;
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            try
+            {
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.File.CopyToAsync(fileStream);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error al guardar el archivo en el servidor.");
+            }
+
+            var oldSpecPath = evaluacion.RutaEspecificacion;
+
+            if(!string.IsNullOrEmpty(oldSpecPath))
+            {
+                oldSpecPath = Path.Combine(_env.WebRootPath, oldSpecPath);
+                if (System.IO.File.Exists(oldSpecPath))
+                {
+                    System.IO.File.Delete(oldSpecPath);
+                }
+            }
+
+            evaluacion.RutaEspecificacion = "uploads/especificaciones/" + uniqueFileName;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict("Error al actualizar la ruta de la especificacion. Verifica que los datos sean válidos.");
+            }
+
+            return Ok(new { message = "Archivo subido exitosamente (guardado localmente).", filePath = filePath });
+        }
+
         // GET: api/Entrega/descargar/5 - Endpoint para descargar un entregable
         [HttpGet("descargar/{idEntrega}")]
         public async Task<IActionResult> DownloadEntregable(int idEntrega)
@@ -150,6 +208,45 @@ namespace CEDigital.API.Controllers
 
             return File(memoryStream, "application/octet-stream", fileName); // application/octet-stream es un tipo genrico para descargar archivos
         }
+
+        [HttpGet("descargar-especificacion/{idEvaluacion}")]
+        public async Task<IActionResult> DownloadEspecificacion(int idEvaluacion)
+        {
+            var evaluacion = await _context.Evaluaciones.FindAsync(idEvaluacion);
+
+            if(evaluacion == null)
+            {
+                return NotFound("Evaluación no encontrada");
+            }
+
+            if (string.IsNullOrEmpty(evaluacion.RutaEspecificacion))
+            {
+                return NotFound("No hay evaluaciones subidas hasta el momento. ¡Exíjale a su profesor, no a nosotros!");
+            }
+
+            var filePath = Path.Combine(_env.WebRootPath, evaluacion.RutaEspecificacion.Trim('/')); // Usa TrimStart para quitar la barra inicial si existe
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Archivo de especificación no encontrado en el servidor. Esto sí es nuestra culpa :P");
+            }
+
+            var memoryStream = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memoryStream);
+            }
+            memoryStream.Position = 0;
+
+            // Obtener el nombre del archivo original si es posible, o usar el nombre de la ruta
+            var fileName = Path.GetFileName(filePath);
+            // Si guardaste el nombre original en la base de datos, saca de all
+            // var fileName = entrega.NombreOriginalArchivo; // Si tuvieras este campo
+
+            return File(memoryStream, "application/octet-stream", fileName); // application/octet-stream es un tipo genrico para descargar archivos
+        }
+
+
 
         // TODO: Add other entrega endpoints if needed
     }
