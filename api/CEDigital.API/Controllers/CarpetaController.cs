@@ -200,5 +200,28 @@ namespace CEDigital.API.Controllers
 
             return File(memoryStream, "application/octet-stream", fileName); // application/octet-stream for generic download
         }
+
+        // DELETE: api/Carpeta/archivo/1
+        [HttpDelete("archivo/{id}")] // Elimina un archivo a partir del ArchivoId
+        public async Task<IActionResult> EliminarArchivo(int id)
+        {
+            var archivo = await _context.Archivos.FindAsync(id);
+            if (archivo == null)
+                return NotFound();
+
+            var killPath = Path.Combine(_env.WebRootPath, archivo.Ruta);
+
+            if (System.IO.File.Exists(killPath))
+            {
+                System.IO.File.Delete(killPath);
+            }
+            
+
+            _context.Archivos.Remove(archivo);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
     }
 }

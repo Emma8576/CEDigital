@@ -168,7 +168,7 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
                 <span>/</span>
                  {/* Ideally, fetch and display the actual folder name */}
                 <button
-                    onClick={() => {setCurrentPath(currentPath.slice(0, index + 1));}}
+                    onClick={() => {setCurrentPath(currentPath.slice(0, index + 1)); setSelectedItem(null);}}
                     className="hover:text-blue-500"
                 >
                     Carpeta ID: {folderId} {/* Placeholder */}
@@ -234,6 +234,18 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
 
         }
       }
+    }else{
+      const confirmKill = window.confirm("¿Está segur@ de borrar permanentemente este archivo?");
+      if(confirmKill){
+        try{
+          await axios.delete(`http://localhost:${path}/api/Carpeta/archivo/${id}`);
+          alert("El archivo '" + nombreCarpeta + "' se ha borrado correctamente.");
+          fetchDocuments();
+        }catch(err){
+          console.log("Error al eliminar el archivo.");
+        }
+      }
+
     }
   }
 
@@ -305,7 +317,7 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
             </svg>
             {/* Use appropriate name property from backend data based on type */}
             <span className="text-gray-700">{item.type === 'folder' ? item.nombreCarpeta : item.nombreArchivo}</span>
-            <div className='delete-button' style={{fontSize:'25px', marginTop: '-3px'}} onClick={(e) => deleteFolder(item.idCarpeta,item.type === 'folder' ? item.nombreCarpeta : item.nombreArchivo, item.type)}>
+            <div className='delete-button' style={{fontSize:'25px', marginTop: '-3px'}} onClick={(e) => deleteFolder(item.type === 'folder' ? item.idCarpeta : item.idArchivo,item.type === 'folder' ? item.nombreCarpeta : item.nombreArchivo, item.type)}>
               -
             </div>
           </div>
