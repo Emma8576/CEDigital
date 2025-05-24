@@ -80,7 +80,8 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
     const [uploadingFile, setUploadingFile] = useState<number | null>(null);
     const [uploadSuccessMessage, setUploadSuccessMessage] = useState<{ [evaluationId: number]: string | null }>({}); // New state for success messages
     const [expandedEvaluationIds, setExpandedEvaluationIds] = useState<Set<number>>(new Set());
-    const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: GrupoTrabajoMiembroDto[] }>({}); // Updated state type
+    // State can be undefined (not fetched), null (fetched, no group), or array of members
+    const [groupMembers, setGroupMembers] = useState<{ [evaluationId: number]: GrupoTrabajoMiembroDto[] | null | undefined }>({});
     const [rubrosWithEvaluations, setRubrosWithEvaluations] = useState<RubroWithEvaluations[]>([]);
 
     // Calculate total obtained percentage
@@ -219,17 +220,29 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
 
             for (const evaluation of evaluationsToFetchMembersFor) {
                 // Only fetch if members haven't been fetched for this evaluation yet
-                if (!groupMembers[evaluation.idEvaluacion]) {
+                // Only fetch if the state is undefined (not yet attempted)
+                if (groupMembers[evaluation.idEvaluacion] === undefined) {
                     try {
+                        console.log(`Fetching group members for evaluation ${evaluation.idEvaluacion} and user ${user.carne}`);
                         const membersResponse = await axios.get<GrupoTrabajoMiembroDto[]>(`http://localhost:5261/api/EstudianteGrupo/grupo-trabajo-miembros/${user.carne}/${evaluation.idEvaluacion}`); // Updated return type
+                        
+                        // Set the state to the array of members. If the array is empty, the render logic will handle it.
                         setGroupMembers(prev => ({
                             ...prev,
-                            [evaluation.idEvaluacion]: membersResponse.data
+                            [evaluation.idEvaluacion]: membersResponse.data.length > 0 ? membersResponse.data : null // Set to null if no members returned
                         }));
                     } catch (err) {
                         console.error(`Error fetching group members for evaluation ${evaluation.idEvaluacion}:`, err);
                         // Optionally, set an error state for this specific evaluation's members
+                        // Set to null on error as well, indicating no members could be loaded
+                        setGroupMembers(prev => ({
+                            ...prev,
+                            [evaluation.idEvaluacion]: null
+                        }));
                     }
+                } else {
+                    // If state is not undefined (already fetched or explicitly null), do nothing
+                    console.log(`Group members for evaluation ${evaluation.idEvaluacion} already fetched or determined: ${groupMembers[evaluation.idEvaluacion] === null ? 'No group' : 'Group found'}`);
                 }
             }
         };
@@ -470,12 +483,19 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                             <p className="font-medium">Miembros del grupo:</p>
                                                                             <ul className="list-disc list-inside ml-4">
                                                                                 {/* Map group members here */} 
-                                                                                {groupMembers[evaluation.idEvaluacion]?.length > 0 ? (
-                                                                                    groupMembers[evaluation.idEvaluacion].map(member => (
-                                                                                        <li key={member.carne}>{member.nombre}</li>
-                                                                                    ))
+                                                                                {/* Conditional rendering based on groupMembers state */} 
+                                                                                {groupMembers[evaluation.idEvaluacion] === undefined ? (
+                                                                                    <li>Cargando miembros...</li> // Still loading
+                                                                                ) : groupMembers[evaluation.idEvaluacion] === null ? (
+                                                                                    <li>Usted no se encuentra en un grupo de trabajo para esta evaluación.</li> // No group found
+                                                                                ) : (groupMembers[evaluation.idEvaluacion]?.length ?? 0) > 0 ? (
+                                                                                    // Display members if the array is not null and has elements
+                                                                                    (groupMembers[evaluation.idEvaluacion] as GrupoTrabajoMiembroDto[]).map(member => (
+                                                                                         <li key={member.carne}>{member.nombre}</li>
+                                                                                     ))
                                                                                 ) : (
-                                                                                    <li>Cargando miembros...</li>
+                                                                                    // Fallback, theoretically should not happen with the null check, but good practice
+                                                                                    <li>No hay información de miembros disponible.</li>
                                                                                 )}
                                                                             </ul>
                                                                         </div>
