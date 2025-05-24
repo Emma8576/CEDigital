@@ -168,7 +168,7 @@ const ProfessorDocumentExplorer: React.FC<ProfessorDocumentExplorerProps> = ({ i
                 <span>/</span>
                  {/* Ideally, fetch and display the actual folder name */}
                 <button
-                    onClick={() => {setCurrentPath(currentPath.slice(0, index + 1)); setSelectedItem(null);}}
+                    onClick={() => {setCurrentPath(currentPath.slice(0, index + 1));}}
                     className="hover:text-blue-500"
                 >
                     Carpeta ID: {folderId} {/* Placeholder */}

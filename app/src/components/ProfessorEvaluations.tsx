@@ -303,6 +303,17 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
         }
     }
 
+    const downloadEntregas = async(idEvaluacion: number | undefined) =>{
+        if(idEvaluacion !== undefined){
+            try{
+                const downloadUrl = `http://localhost:${port}/api/Entrega/descargar-entregas-evaluacion/${idEvaluacion}`;
+                window.open(downloadUrl, '_blank');
+            }catch(error){
+                console.log("No se lograron descargar los entregables: ", error);
+            }
+        }
+    }
+
     const closeNewEvaluationDialog = () =>{
         (document.getElementById('dialogCreate') as HTMLDialogElement)?.close();
     }
@@ -428,7 +439,7 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                     </div>
                                     {/* Expandable Content for Deliverables and Assignment Details */}
                                     {expandedEvaluationIds.has(evaluation.idEvaluacion) && (
-                                        <div className="px-4 py-3 bg-gray-100 border-t border-gray-200">
+                                        <div className="px-4 py-3 bg-gray-100 border-t border-gray-200" >
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {/* Detalles de la asignación Column */}
                                                 <div>
@@ -486,14 +497,24 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
 
                                                         {/* Especificación - Moved here */}                                                         {evaluation.rutaEspecificacion && (
                                                             <div className="mt-2">
-                                                                <a
-                                                                    className="text-blue-600 hover:underline"
-                                                                    style={{cursor:'pointer'}}
-                                                                    onClick={()=>downloadEspecificacion(evaluation.idEvaluacion)}
-                                                                >
-                                                                    Ver Especificación
-                                                                </a>
+                                                                <div style={{display: 'flex',flexDirection: 'column'}}>
+                                                                    <a
+                                                                        className="text-blue-600 hover:underline"
+                                                                        style={{cursor:'pointer'}}
+                                                                        onClick={()=>downloadEspecificacion(evaluation.idEvaluacion)}
+                                                                    >
+                                                                        Ver Especificación
+                                                                    </a>
+                                                                    <a
+                                                                        className="text-blue-600 hover:underline"
+                                                                        style={{cursor:'pointer'}}
+                                                                        onClick={()=>downloadEntregas(evaluation.idEvaluacion)}
+                                                                    >
+                                                                        Descargar Entregables
+                                                                    </a>
+                                                                </div>
                                                             </div>
+                                                            
                                                         )}
                                                     </div>
                                                 </div>

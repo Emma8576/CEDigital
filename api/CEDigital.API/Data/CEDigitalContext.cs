@@ -62,7 +62,7 @@ namespace CEDigital.API.Data
                 .HasKey(gt => gt.IdGrupoTrabajo);
 
             modelBuilder.Entity<Entrega>()
-                .HasOne<GrupoTrabajo>()
+                .HasOne(e => e.GrupoTrabajo)
                 .WithMany(gt => gt.Entregas)
                 .HasForeignKey(e => e.IdGrupoTrabajo);
 

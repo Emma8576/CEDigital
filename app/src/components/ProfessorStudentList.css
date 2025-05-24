@@ -4,14 +4,10 @@
 
 .columna-header{
     background-color: rgb(137, 208, 255);
-    border-color: black;
-    border-width: 2px; 
 }
 
 .columna-content{
     display: flex;
     justify-content: center;
-    border-color: black;
-    border-width: 1px;
 }
 

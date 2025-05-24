@@ -16,7 +16,7 @@ namespace CEDigital.API.Models
 
         [ForeignKey("GrupoTrabajo")]
         public int? IdGrupoTrabajo { get; set; }
-        public required GrupoTrabajo GrupoTrabajo { get; set; }
+        public GrupoTrabajo GrupoTrabajo { get; set; }
 
         public string? CarnetEstudiante { get; set; }
 

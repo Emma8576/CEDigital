@@ -30,10 +30,7 @@ namespace CEDigital.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdArchivo"));
 
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("FechaSubida")
+                    b.Property<DateTime>("FechaPublicacion")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("IdCarpeta")
@@ -47,14 +44,14 @@ namespace CEDigital.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("TamañoArchivo")
-                        .HasColumnType("bigint");
+                    b.Property<int>("TamañoArchivo")
+                        .HasColumnType("int");
 
                     b.HasKey("IdArchivo");
 
                     b.HasIndex("IdCarpeta");
 
-                    b.ToTable("Archivos");
+                    b.ToTable("Archivo", (string)null);
                 });
 
             modelBuilder.Entity("CEDigital.API.Models.Carpeta", b =>
@@ -148,7 +145,7 @@ namespace CEDigital.API.Migrations
 
                     b.HasIndex("IdGrupoTrabajo");
 
-                    b.ToTable("Entregas");
+                    b.ToTable("Entrega", (string)null);
                 });
 
             modelBuilder.Entity("CEDigital.API.Models.EstudianteGrupo", b =>
@@ -166,18 +163,24 @@ namespace CEDigital.API.Migrations
 
             modelBuilder.Entity("CEDigital.API.Models.EstudianteGrupoTrabajo", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CarnetEstudiante")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("IdGrupoTrabajo")
                         .HasColumnType("int");
 
-                    b.Property<string>("CarnetEstudiante")
-                        .HasColumnType("nvarchar(450)");
+                    b.HasKey("Id");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                    b.HasIndex("IdGrupoTrabajo");
 
-                    b.HasKey("IdGrupoTrabajo", "CarnetEstudiante");
-
-                    b.ToTable("EstudianteGrupoTrabajo", (string)null);
+                    b.ToTable("EstudianteGrupoTrabajo");
                 });
 
             modelBuilder.Entity("CEDigital.API.Models.Evaluacion", b =>
@@ -188,7 +191,7 @@ namespace CEDigital.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEvaluacion"));
 
-                    b.Property<int?>("CantEstudiantesGrupo")
+                    b.Property<int>("CantEstudiantesGrupo")
                         .HasColumnType("int");
 
                     b.Property<bool>("EsGrupal")
@@ -200,27 +203,27 @@ namespace CEDigital.API.Migrations
                     b.Property<int>("IdRubro")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdRubroNavigationIdRubro")
-                        .HasColumnType("int");
-
                     b.Property<string>("NombreEvaluacion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("RutaEspecificacion")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("TieneEntregable")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("ValorPorcentual")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("ValorPorcentual")
+                        .HasColumnType("int");
 
                     b.HasKey("IdEvaluacion");
 
-                    b.HasIndex("IdRubroNavigationIdRubro");
+                    b.HasIndex("IdRubro");
 
-                    b.ToTable("Evaluaciones");
+                    b.ToTable("Evaluacion", (string)null);
                 });
 
             modelBuilder.Entity("CEDigital.API.Models.Grupo", b =>
@@ -259,7 +262,6 @@ namespace CEDigital.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGrupoTrabajo"));
 
                     b.Property<string>("CarnetEstudiante")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IdEvaluacion")
@@ -280,37 +282,36 @@ namespace CEDigital.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdNotaEvaluacion"));
 
-                    b.Property<int>("IdEvaluacion")
-                        .HasColumnType("int");
+                    b.Property<string>("CarnetEstudiante")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IdEvaluacionNavigationIdEvaluacion")
+                    b.Property<int>("IdEvaluacion")
                         .HasColumnType("int");
 
                     b.Property<int?>("IdGrupoTrabajo")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdGrupoTrabajoNavigationIdGrupoTrabajo")
-                        .HasColumnType("int");
-
                     b.Property<string>("Observaciones")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<decimal>("PorcentajeObtenido")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<bool>("Publicada")
                         .HasColumnType("bit");
 
                     b.Property<string>("RutaArchivoDetalles")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.HasKey("IdNotaEvaluacion");
 
-                    b.HasIndex("IdEvaluacionNavigationIdEvaluacion");
+                    b.HasIndex("IdEvaluacion");
 
-                    b.HasIndex("IdGrupoTrabajoNavigationIdGrupoTrabajo");
+                    b.HasIndex("IdGrupoTrabajo");
 
-                    b.ToTable("NotaEvaluaciones");
+                    b.ToTable("NotaEvaluacion", (string)null);
                 });
 
             modelBuilder.Entity("CEDigital.API.Models.Noticia", b =>
@@ -372,16 +373,17 @@ namespace CEDigital.API.Migrations
 
                     b.Property<string>("NombreRubro")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<decimal>("Porcentaje")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Porcentaje")
+                        .HasColumnType("int");
 
                     b.HasKey("IdRubro");
 
                     b.HasIndex("IdGrupo");
 
-                    b.ToTable("Rubros");
+                    b.ToTable("Rubro", (string)null);
                 });
 
             modelBuilder.Entity("CEDigital.API.Models.Semestre", b =>
@@ -392,33 +394,14 @@ namespace CEDigital.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdSemestre"));
 
-                    b.Property<string>("Año")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CodigoCurso")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CodigoCursoNavigation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("IdSemestreNavigation")
+                    b.Property<int>("Año")
                         .HasColumnType("int");
 
                     b.Property<string>("Periodo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SemestreNavigationIdSemestre")
-                        .HasColumnType("int");
-
                     b.HasKey("IdSemestre");
-
-                    b.HasIndex("CodigoCursoNavigation");
-
-                    b.HasIndex("SemestreNavigationIdSemestre");
 
                     b.ToTable("Semestre", (string)null);
                 });
@@ -458,13 +441,19 @@ namespace CEDigital.API.Migrations
 
             modelBuilder.Entity("CEDigital.API.Models.Entrega", b =>
                 {
+                    b.HasOne("CEDigital.API.Models.GrupoTrabajo", "GrupoTrabajo")
+                        .WithMany()
+                        .HasForeignKey("GrupoTrabajoIdGrupoTrabajo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("CEDigital.API.Models.Evaluacion", "Evaluacion")
-                        .WithMany("Entregas")
+                        .WithMany()
                         .HasForeignKey("IdEvaluacion")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CEDigital.API.Models.GrupoTrabajo", "GrupoTrabajo")
+                    b.HasOne("CEDigital.API.Models.GrupoTrabajo", null)
                         .WithMany("Entregas")
                         .HasForeignKey("IdGrupoTrabajo");
 
@@ -497,13 +486,13 @@ namespace CEDigital.API.Migrations
 
             modelBuilder.Entity("CEDigital.API.Models.Evaluacion", b =>
                 {
-                    b.HasOne("CEDigital.API.Models.Rubro", "IdRubroNavigation")
-                        .WithMany("Evaluaciones")
-                        .HasForeignKey("IdRubroNavigationIdRubro")
+                    b.HasOne("CEDigital.API.Models.Rubro", "Rubro")
+                        .WithMany()
+                        .HasForeignKey("IdRubro")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("IdRubroNavigation");
+                    b.Navigation("Rubro");
                 });
 
             modelBuilder.Entity("CEDigital.API.Models.Grupo", b =>
@@ -538,21 +527,19 @@ namespace CEDigital.API.Migrations
 
             modelBuilder.Entity("CEDigital.API.Models.NotaEvaluacion", b =>
                 {
-                    b.HasOne("CEDigital.API.Models.Evaluacion", "IdEvaluacionNavigation")
-                        .WithMany("NotaEvaluaciones")
-                        .HasForeignKey("IdEvaluacionNavigationIdEvaluacion")
+                    b.HasOne("CEDigital.API.Models.Evaluacion", "Evaluacion")
+                        .WithMany()
+                        .HasForeignKey("IdEvaluacion")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CEDigital.API.Models.GrupoTrabajo", "IdGrupoTrabajoNavigation")
+                    b.HasOne("CEDigital.API.Models.GrupoTrabajo", "GrupoTrabajo")
                         .WithMany("NotaEvaluaciones")
-                        .HasForeignKey("IdGrupoTrabajoNavigationIdGrupoTrabajo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdGrupoTrabajo");
 
-                    b.Navigation("IdEvaluacionNavigation");
+                    b.Navigation("Evaluacion");
 
-                    b.Navigation("IdGrupoTrabajoNavigation");
+                    b.Navigation("GrupoTrabajo");
                 });
 
             modelBuilder.Entity("CEDigital.API.Models.Noticia", b =>
@@ -588,30 +575,6 @@ namespace CEDigital.API.Migrations
                     b.Navigation("Grupo");
                 });
 
-            modelBuilder.Entity("CEDigital.API.Models.Semestre", b =>
-                {
-                    b.HasOne("CEDigital.API.Models.Curso", "Curso")
-                        .WithMany()
-                        .HasForeignKey("CodigoCursoNavigation")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CEDigital.API.Models.Semestre", "SemestreNavigation")
-                        .WithMany("Semestres")
-                        .HasForeignKey("SemestreNavigationIdSemestre");
-
-                    b.Navigation("Curso");
-
-                    b.Navigation("SemestreNavigation");
-                });
-
-            modelBuilder.Entity("CEDigital.API.Models.Evaluacion", b =>
-                {
-                    b.Navigation("Entregas");
-
-                    b.Navigation("NotaEvaluaciones");
-                });
-
             modelBuilder.Entity("CEDigital.API.Models.Grupo", b =>
                 {
                     b.Navigation("Estudiantes");
@@ -624,16 +587,6 @@ namespace CEDigital.API.Migrations
                     b.Navigation("EstudianteGrupoTrabajo");
 
                     b.Navigation("NotaEvaluaciones");
-                });
-
-            modelBuilder.Entity("CEDigital.API.Models.Rubro", b =>
-                {
-                    b.Navigation("Evaluaciones");
-                });
-
-            modelBuilder.Entity("CEDigital.API.Models.Semestre", b =>
-                {
-                    b.Navigation("Semestres");
                 });
 #pragma warning restore 612, 618
         }

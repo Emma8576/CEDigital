@@ -4,6 +4,7 @@ using CEDigital.API.Data;
 using CEDigital.API.Models;
 using System.Threading.Tasks;
 using System.Linq;
+using System.IO.Compression;
 
 namespace CEDigital.API.Controllers
 {
@@ -63,17 +64,15 @@ namespace CEDigital.API.Controllers
                       return Unauthorized("El estudiante no pertenece a este grupo de trabajo.");
             }
 
-            // Validar si ya existe una entrega para esta evaluacin (individual o grupal)
-            // TEMPORARILY COMMENTING OUT DB INTERACTION FOR EXISTING DELIVERY CHECK
-            // var existingEntrega = await _context.Entregas
-            //      .FirstOrDefaultAsync(e => e.IdEvaluacion == dto.IdEvaluacion &&
-            //                               (evaluacion.EsGrupal ? e.IdGrupoTrabajo == dto.IdGrupoTrabajo : e.CarnetEstudiante == dto.CarnetEstudiante));
+            
+            var existingEntrega = await _context.Entregas
+                  .FirstOrDefaultAsync(e => e.IdEvaluacion == dto.IdEvaluacion &&
+                                           (evaluacion.EsGrupal ? e.IdGrupoTrabajo == dto.IdGrupoTrabajo : e.CarnetEstudiante == dto.CarnetEstudiante));
 
-            // if (existingEntrega != null)
-            // {
-            //     // Puedes decidir si permites actualizar o no. Por ahora, no permitiremos.
-            //     return Conflict("Ya existe una entrega para esta evaluacin.");
-            // }
+             if (existingEntrega != null)
+             {
+                 return Conflict("Ya existe una entrega para esta evaluacin.");
+             }
 
             // Guardar el archivo
             var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/entregables"); // Asegura que esta ruta exista
@@ -99,21 +98,19 @@ namespace CEDigital.API.Controllers
                  return StatusCode(500, "Error al guardar el archivo en el servidor.");
             }
 
-            // Crear registro en la base de datos
-            // TEMPORARILY COMMENTING OUT DB INTERACTION FOR SAVING DELIVERY INFO
-            // var newEntrega = new Entrega
-            // {
-            //     IdEvaluacion = dto.IdEvaluacion,
-            //     IdGrupoTrabajo = dto.IdGrupoTrabajo, // Ser null si es individual
-            //     CarnetEstudiante = evaluacion.EsGrupal ? null : dto.CarnetEstudiante, // Ser null si es grupal
-            //     FechaEntrega = DateTime.Now,
-            //     RutaEntregable = Path.Combine("/uploads/entregables", uniqueFileName), // Guardar la ruta relativa o base
-            //     Evaluacion = evaluacion,
-            //     GrupoTrabajo = dto.IdGrupoTrabajo != null ? await _context.GrupoTrabajo.FindAsync(dto.IdGrupoTrabajo) : null
-            // };
+            var newEntrega = new Entrega
+            {
+                 IdEvaluacion = dto.IdEvaluacion,
+                 IdGrupoTrabajo = evaluacion.EsGrupal ? dto.IdGrupoTrabajo : null, // Ser null si es individual
+                 CarnetEstudiante = evaluacion.EsGrupal ? null : dto.CarnetEstudiante, // Ser null si es grupal
+                 FechaEntrega = DateTime.Now,
+                 RutaEntregable = Path.Combine("/uploads/entregables", uniqueFileName), // Guardar la ruta relativa o base
+                 Evaluacion = evaluacion,
+                 GrupoTrabajo = evaluacion.EsGrupal ? await _context.GrupoTrabajos.FindAsync(dto.IdGrupoTrabajo) : null
+             };
 
-            // _context.Entregas.Add(newEntrega);
-            // await _context.SaveChangesAsync();
+            _context.Entregas.Add(newEntrega);
+            await _context.SaveChangesAsync();
 
             // Return a success response indicating the file was saved locally
             return Ok(new { message = "Archivo subido exitosamente (guardado localmente).", filePath = filePath });
@@ -209,6 +206,36 @@ namespace CEDigital.API.Controllers
             return File(memoryStream, "application/octet-stream", fileName); // application/octet-stream es un tipo genrico para descargar archivos
         }
 
+        [HttpGet("{idEntrega}")]
+        public async Task<ActionResult<Entrega>> GetEntregable(int idEntrega)
+        {
+            var entrega = await _context.Entregas.FindAsync(idEntrega);
+            if (entrega == null)
+            {
+                return NotFound("Entrega no encontrada.");
+            }
+
+
+
+            return entrega;
+        }
+
+        [HttpDelete("{idEntrega}")]
+        public async Task<ActionResult<Entrega>> DeleteEntregable(int idEntrega)
+        {
+            var entrega = await _context.Entregas.FindAsync(idEntrega);
+            if (entrega == null)
+            {
+                return NotFound("Entrega no encontrada.");
+            }
+
+            _context.Entregas.Remove(entrega);
+
+            await _context.SaveChangesAsync();
+
+            return entrega;
+        }
+
         [HttpGet("descargar-especificacion/{idEvaluacion}")]
         public async Task<IActionResult> DownloadEspecificacion(int idEvaluacion)
         {
@@ -246,8 +273,57 @@ namespace CEDigital.API.Controllers
             return File(memoryStream, "application/octet-stream", fileName); // application/octet-stream es un tipo genrico para descargar archivos
         }
 
+        [HttpGet("descargar-entregas-evaluacion/{idEvaluacion}")]
+        public async Task<IActionResult> DownloadEntregables(int idEvaluacion)
+        {
+            var evaluacion = await _context.Evaluaciones.FindAsync(idEvaluacion);
+
+            if (evaluacion == null)
+                return NotFound("No se pudo encontrar la evaluación.");
+            
+            var entregables = await _context.Entregas
+                .Where(en => en.IdEvaluacion == idEvaluacion)
+                .Select(rutaEntr => new EntregaMassDownloadDto
+                {
+                    IdEvaluacion = rutaEntr.IdEvaluacion,
+                    CarnetEstudiante = rutaEntr.CarnetEstudiante,
+                    IdGrupoTrabajo = rutaEntr.IdGrupoTrabajo,
+                    RutaEntregable = rutaEntr.RutaEntregable
+                }).ToListAsync();
+
+            if (!entregables.Any())
+                return NotFound("No hay entregas para esta evaluación todavía");
+
+            using var memoryStream = new MemoryStream();
+            using var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create, true);
+            foreach (var entrega in entregables)
+            {
+                var fullPath = Path.Combine(_env.WebRootPath, entrega.RutaEntregable.Trim('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                Console.WriteLine("Trying to add file: " + fullPath);
+                if (System.IO.File.Exists(fullPath))
+                {
+                    var entry = zip.CreateEntry(Path.GetFileName(fullPath));
+                    using var entryStream = entry.Open();
+                    using var fileStream = System.IO.File.OpenRead(fullPath);
+                    await fileStream.CopyToAsync(entryStream);
+                }
+            }
+            memoryStream.Position = 0;
+            return File(memoryStream.ToArray(), "application/zip", $"Entregas_Evaluacion_{idEvaluacion}.zip");
+        }
+
+
+
 
 
         // TODO: Add other entrega endpoints if needed
+    }
+
+    public class EntregaMassDownloadDto
+    {
+        public int IdEvaluacion { get; set; }
+        public string CarnetEstudiante { get; set; }
+        public int? IdGrupoTrabajo { get; set; }
+        public required string RutaEntregable { get; set; }
     }
 } 
