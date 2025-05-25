@@ -292,7 +292,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                   formData.append('carnetEstudiante', user.carne); // For individual uploads
              }
 
-            const response = await axios.post<EntregaDto>('http://localhost:5261/api/Entrega', formData, {
+            const response = await axios.post<EntregaDto>(`${API_BASE_URL}/Entrega`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -327,7 +327,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
             const confirmDelete = window.confirm("¿Estás seguro de que quieres eliminar esta entrega?");
             if (!confirmDelete) return;
 
-            await axios.delete(`http://localhost:5261/api/Entrega/${entregaId}`);
+            await axios.delete(`${API_BASE_URL}/Entrega/${entregaId}`);
 
             // Remove the deleted delivery from the state
             setEntregas(prevEntregas => {
@@ -350,7 +350,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
             const entregaActual = entregas[evaluationId];
             if (!entregaActual) return;
 
-            const response = await axios.get(`http://localhost:5261/api/Entrega/descargar/${entregaActual.idEntrega}`, {
+            const response = await axios.get(`${API_BASE_URL}/Entrega/descargar/${entregaActual.idEntrega}`, {
                 responseType: 'blob'
             });
 

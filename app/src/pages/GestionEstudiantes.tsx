@@ -263,6 +263,7 @@ const GestionEstudiantes = () => {
           <tbody>
             {
               Array.isArray(estudiantes) && estudiantes.map((est) => (
+                console.log("Rendering student row:", est),
                 <tr key={est.id} className="border-b">
                 <td className="p-3">{est.carne}</td>
                 <td className="p-3">{est.cedula}</td>

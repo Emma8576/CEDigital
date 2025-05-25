@@ -2,6 +2,7 @@ using MongoDB.Driver;
 using CEDigital.API.Configuration;
 using CEDigital.API.Models;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace CEDigital.API.Services
 {
@@ -9,10 +10,10 @@ namespace CEDigital.API.Services
     {
         private readonly IMongoDatabase _database;
 
-        public MongoDBService(MongoDbSettings settings)
+        public MongoDBService(IOptions<MongoDbSettings> settings)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            _database = client.GetDatabase(settings.DatabaseName);
+            var client = new MongoClient(settings.Value.ConnectionString);
+            _database = client.GetDatabase(settings.Value.DatabaseName);
         }
 
         public IMongoCollection<T> GetCollection<T>(string collectionName) where T : class

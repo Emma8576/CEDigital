@@ -21,7 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 // Configure MongoDB
 var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
-builder.Services.AddSingleton(mongoDbSettings);
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 builder.Services.AddSingleton<MongoDBService>();
 builder.Services.AddSingleton<ProfesorMongoService>();
 builder.Services.AddSingleton<EstudianteMongoService>();
