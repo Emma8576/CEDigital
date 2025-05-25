@@ -45,6 +45,7 @@ namespace CEDigital.API.Controllers
         [HttpGet("estudiante/{carnetEstudiante}/grupo/{idGrupo}/consolidado")]
         public async Task<ActionResult<StudentEvaluationsGradesDto>> GetStudentEvaluationsAndGrades(string carnetEstudiante, int idGrupo)
         {
+            Console.WriteLine($"Received request for GetStudentEvaluationsAndGrades - Carnet: {carnetEstudiante}, Grupo: {idGrupo}");
             var estudiante = await _mongoDBService.GetStudentByCarnetAsync(carnetEstudiante);
             if (estudiante == null)
             {

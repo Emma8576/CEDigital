@@ -3,6 +3,7 @@ using CEDigital.API.Services;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Data;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -59,6 +60,14 @@ app.UseSwaggerUI(c =>
 
 // app.UseHttpsRedirection(); // Commented out to allow HTTP requests
 app.UseStaticFiles();
+
+// Configure static files for Uploads folder
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
+    RequestPath = "/uploads"
+});
 
 // Configure CORS
 app.UseCors();
