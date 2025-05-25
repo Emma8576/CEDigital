@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from '../config';
 
 // URL base del endpoint para cargar semestres desde Excel
-const API_URL = "http://localhost:5261/api/CargarSemestre";
+const API_URL = `${API_BASE_URL}/CargarSemestre`;
 
 /**
  * Servicio para enviar un archivo Excel al backend y cargar un semestre completo.

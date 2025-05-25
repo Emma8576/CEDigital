@@ -52,7 +52,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
 
       try {
         setLoading(true);
-        const response = await axios.get<Course[]>(`http://localhost:5261/api/EstudianteGrupo/estudiante-cursos/${user.carne}`);
+        const response = await axios.get<Course[]>(`http://localhost:5000/api/EstudianteGrupo/estudiante-cursos/${user.carne}`);
         
         // Group courses by semester (AñoSemestre and PeriodoSemestre)
         const groupedBySemester: { [key: string]: Course[] } = response.data.reduce((acc, course) => {

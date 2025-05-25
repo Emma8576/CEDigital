@@ -56,19 +56,19 @@ namespace CEDigital.API.Controllers
 
             if (evaluacion.EsGrupal)
             {
-                var perteneceGrupo = await _context.GrupoTrabajos.AnyAsync(gt => gt.IdGrupoTrabajo == dto.IdGrupoTrabajo && gt.CarnetEstudiante == dto.CarnetEstudiante);
-                if (!perteneceGrupo)
-                    return Unauthorized("El estudiante no pertenece a este grupo de trabajo.");
+                 var perteneceGrupo = await _context.GrupoTrabajos.AnyAsync(gt => gt.IdGrupoTrabajo == dto.IdGrupoTrabajo && gt.CarnetEstudiante == dto.CarnetEstudiante);
+                 if (!perteneceGrupo)
+                      return Unauthorized("El estudiante no pertenece a este grupo de trabajo.");
             }
-
+            
             var existingEntrega = await _context.Entregas
-                .FirstOrDefaultAsync(e => e.IdEvaluacion == dto.IdEvaluacion &&
-                                        (evaluacion.EsGrupal ? e.IdGrupoTrabajo == dto.IdGrupoTrabajo : e.CarnetEstudiante == dto.CarnetEstudiante));
+                  .FirstOrDefaultAsync(e => e.IdEvaluacion == dto.IdEvaluacion &&
+                                           (evaluacion.EsGrupal ? e.IdGrupoTrabajo == dto.IdGrupoTrabajo : e.CarnetEstudiante == dto.CarnetEstudiante));
 
-            if (existingEntrega != null)
-            {
+             if (existingEntrega != null)
+             {
                 return Conflict("Ya existe una entrega para esta evaluación.");
-            }
+             }
 
             if (!evaluacion.EsGrupal)
             {
@@ -109,10 +109,10 @@ namespace CEDigital.API.Controllers
 
             try
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
 
                 var entregaToSave = new Entrega
                 {
@@ -124,17 +124,17 @@ namespace CEDigital.API.Controllers
                 };
 
                 _context.Entregas.Add(entregaToSave);
-                await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetEntrega), new { id = entregaToSave.IdEntrega }, new EntregaDto
-                {
-                    IdEntrega = entregaToSave.IdEntrega,
-                    IdEvaluacion = entregaToSave.IdEvaluacion,
-                    IdGrupoTrabajo = entregaToSave.IdGrupoTrabajo,
-                    CarnetEstudiante = entregaToSave.CarnetEstudiante,
-                    FechaEntrega = entregaToSave.FechaEntrega,
-                    RutaEntregable = entregaToSave.RutaEntregable
-                });
+            return CreatedAtAction(nameof(GetEntrega), new { id = entregaToSave.IdEntrega }, new EntregaDto
+            {
+                IdEntrega = entregaToSave.IdEntrega,
+                IdEvaluacion = entregaToSave.IdEvaluacion,
+                IdGrupoTrabajo = entregaToSave.IdGrupoTrabajo,
+                CarnetEstudiante = entregaToSave.CarnetEstudiante,
+                FechaEntrega = entregaToSave.FechaEntrega,
+                RutaEntregable = entregaToSave.RutaEntregable
+            });
             }
             catch (Exception)
             {

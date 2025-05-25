@@ -2,9 +2,10 @@
  * Obtiene los profesores asignados a un grupo específico
  */
 import axios from "axios";
+import { API_BASE_URL } from '../config';
 export const getProfesoresPorGrupo = async (idGrupo: number): Promise<Profesor[]> => {
   try {
-    const response = await axios.get(`${API_URL}/ProfesorGrupo/${idGrupo}`);
+    const response = await axios.get(`${API_BASE_URL}/ProfesorGrupo/${idGrupo}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener profesores para el grupo ${idGrupo}:`, error);
@@ -13,7 +14,7 @@ export const getProfesoresPorGrupo = async (idGrupo: number): Promise<Profesor[]
 };
 
 // URL base para todas las llamadas a la API
-const API_URL = "http://localhost:5261/api";
+const API_URL = `${API_BASE_URL}`;
 
 // Interfaces para tipar los datos
 export interface Grupo {

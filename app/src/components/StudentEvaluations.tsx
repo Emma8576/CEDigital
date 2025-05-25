@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 // Definir un tipo para agrupar las evaluaciones por rubro
 interface EvaluacionesPorRubro {
@@ -129,7 +130,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                 setLoading(true);
 
                 // Fetch all rubros for the group
-                const rubrosResponse = await axios.get<Rubro[]>(`http://localhost:5261/api/Rubro/grupo/${idGrupo}`);
+                const rubrosResponse = await axios.get<Rubro[]>(`${API_BASE_URL}/Rubro/grupo/${idGrupo}`);
                 const allRubros = rubrosResponse.data;
 
                 console.log("Rubros API response:", rubrosResponse);
@@ -138,7 +139,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                 // Fetch all evaluations for the group
                 try {
                     console.log("Attempting to fetch evaluations for group:", idGrupo);
-                    const evaluationsResponse = await axios.get<Evaluacion[]>(`http://localhost:5261/api/Evaluacion/grupo/${idGrupo}`);
+                    const evaluationsResponse = await axios.get<Evaluacion[]>(`${API_BASE_URL}/Evaluacion/grupo/${idGrupo}`);
                     const allEvaluations = evaluationsResponse.data;
 
                     console.log("Evaluations API response:", evaluationsResponse);
@@ -167,30 +168,30 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
 
                     // Only try to fetch deliveries and grades if there are evaluations
                     if (allEvaluations.length > 0) {
-                        const entregasMap: { [key: number]: EntregaDto } = {};
-                        const notasMap: { [key: number]: NotaEvaluacion } = {};
+                const entregasMap: { [key: number]: EntregaDto } = {};
+                const notasMap: { [key: number]: NotaEvaluacion } = {};
 
                         for (const evaluation of allEvaluations) {
-                            try {
-                                const entregaResponse = await axios.get<EntregaDto>(`http://localhost:5261/api/Entrega/estado/${evaluation.idEvaluacion}/${user.carne}`);
-                                entregasMap[evaluation.idEvaluacion] = entregaResponse.data;
-                            } catch (err) {
-                                // No delivery found, that's okay
-                            }
+                    try {
+                                const entregaResponse = await axios.get<EntregaDto>(`${API_BASE_URL}/Entrega/estado/${evaluation.idEvaluacion}/${user.carne}`);
+                        entregasMap[evaluation.idEvaluacion] = entregaResponse.data;
+                    } catch (err) {
+                        // No delivery found, that's okay
+                    }
 
-                            try {
-                                const notaResponse = await axios.get<NotaEvaluacion[]>(`http://localhost:5261/api/NotaEvaluacion/estudiante/${user.carne}/grupo/${idGrupo}`);
-                                const nota = notaResponse.data.find(n => n.idEvaluacion === evaluation.idEvaluacion);
-                                if (nota) {
-                                    notasMap[evaluation.idEvaluacion] = nota;
-                                }
-                            } catch (err) {
-                                // No grade found, that's okay
-                            }
+                    try {
+                                const notaResponse = await axios.get<NotaEvaluacion[]>(`${API_BASE_URL}/NotaEvaluacion/estudiante/${user.carne}/grupo/${idGrupo}`);
+                        const nota = notaResponse.data.find(n => n.idEvaluacion === evaluation.idEvaluacion);
+                        if (nota) {
+                            notasMap[evaluation.idEvaluacion] = nota;
                         }
+                    } catch (err) {
+                        // No grade found, that's okay
+                    }
+                }
 
-                        setEntregas(entregasMap);
-                        setNotas(notasMap);
+                setEntregas(entregasMap);
+                setNotas(notasMap);
                     }
                 } catch (err) {
                     console.error("Error fetching evaluations:", err);
@@ -238,7 +239,7 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                 if (groupMembers[evaluation.idEvaluacion] === undefined) {
                     try {
                         console.log(`Fetching group members for evaluation ${evaluation.idEvaluacion} and user ${user.carne}`);
-                        const membersResponse = await axios.get<GrupoTrabajoMiembroDto[]>(`http://localhost:5261/api/EstudianteGrupo/grupo-trabajo-miembros/${user.carne}/${evaluation.idEvaluacion}`); // Updated return type
+                        const membersResponse = await axios.get<GrupoTrabajoMiembroDto[]>(`${API_BASE_URL}/EstudianteGrupo/grupo-trabajo-miembros/${user.carne}/${evaluation.idEvaluacion}`); // Updated return type
                         
                         // Set the state to the array of members. If the array is empty, the render logic will handle it.
                         setGroupMembers(prev => ({
@@ -418,86 +419,86 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
 
                     {/* Evaluaciones List for this Rubro - Show if Rubro is expanded */} {/* Use rubro.idRubro for expanded check */} 
                     {expandedRubroIds.has(rubro.idRubro) && (
-                        <ul className="divide-y divide-gray-200">
+                    <ul className="divide-y divide-gray-200">
                             {rubro.evaluaciones.length === 0 ? (
                                 // Message if no evaluations for this rubro
                                 <li className="px-4 py-3 text-center text-gray-500">No hay evaluaciones para este rubro.</li>
                             ) : (
                                 // Map evaluations if they exist
                                 rubro.evaluaciones.map((evaluation) => {
-                                     const nota = notas[evaluation.idEvaluacion];
-                                      // Find the Entrega for this evaluation, considering both individual and group
-                                     const entregaActual = entregas[evaluation.idEvaluacion]; // Renamed to avoid conflict
+                            const nota = notas[evaluation.idEvaluacion];
+                             // Find the Entrega for this evaluation, considering both individual and group
+                             const entregaActual = entregas[evaluation.idEvaluacion]; // Renamed to avoid conflict
 
-                                    // Determine the grade display based on available data
-                                    const gradeDisplay = nota && nota.publicada
-                                        ? `${nota.porcentajeObtenido} / ${evaluation.valorPorcentual}%`
-                                        : `-- / ${evaluation.valorPorcentual}%`;
+                            // Determine the grade display based on available data
+                            const gradeDisplay = nota && nota.publicada
+                                ? `${nota.porcentajeObtenido} / ${evaluation.valorPorcentual}%`
+                                : `-- / ${evaluation.valorPorcentual}%`;
 
-                                    // Check if the deadline has passed
-                                    const deadlinePassed = new Date() > new Date(evaluation.fechaHoraLimite);
+                            // Check if the deadline has passed
+                            const deadlinePassed = new Date() > new Date(evaluation.fechaHoraLimite);
 
-                                    return (
-                                        <li key={evaluation.idEvaluacion} className="border-b border-gray-200 last:border-b-0">
-                                            <div className="px-4 py-3 flex items-center justify-between">
-                                                <div>
-                                                    <p className="font-medium text-gray-700">{evaluation.nombreEvaluacion}</p>
-                                                     <p className="text-gray-600 text-sm">Fecha Límite: {new Date(evaluation.fechaHoraLimite).toLocaleDateString()}</p>
-                                                </div>
-                                                <div className="flex items-center space-x-3">
-                                                     <span className="text-gray-800 font-semibold">{gradeDisplay}</span>
-                                                     {evaluation.tieneEntregable && (
-                                                          <button
-                                                              onClick={() => toggleExpand(evaluation.idEvaluacion)}
-                                                               className="text-gray-500 hover:text-gray-700 transform transition-transform"
-                                                          >
-                                                               <svg className={`w-5 h-5 ${expandedEvaluationIds.has(evaluation.idEvaluacion) ? 'rotate-180' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                                                          </button>
-                                                     )}
-                                                </div>
-                                            </div>
+                            return (
+                                <li key={evaluation.idEvaluacion} className="border-b border-gray-200 last:border-b-0">
+                                    <div className="px-4 py-3 flex items-center justify-between">
+                                        <div>
+                                            <p className="font-medium text-gray-700">{evaluation.nombreEvaluacion}</p>
+                                             <p className="text-gray-600 text-sm">Fecha Límite: {new Date(evaluation.fechaHoraLimite).toLocaleDateString()}</p>
+                                        </div>
+                                        <div className="flex items-center space-x-3">
+                                             <span className="text-gray-800 font-semibold">{gradeDisplay}</span>
+                                             {evaluation.tieneEntregable && (
+                                                  <button
+                                                      onClick={() => toggleExpand(evaluation.idEvaluacion)}
+                                                       className="text-gray-500 hover:text-gray-700 transform transition-transform"
+                                                  >
+                                                       <svg className={`w-5 h-5 ${expandedEvaluationIds.has(evaluation.idEvaluacion) ? 'rotate-180' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                                  </button>
+                                             )}
+                                        </div>
+                                    </div>
                                             {/* Expandable Content for Deliverables and Assignment Details */} {/* Use evaluation.idEvaluacion for expanded check */} 
-                                            {expandedEvaluationIds.has(evaluation.idEvaluacion) && (
-                                                <div className="px-4 py-3 bg-gray-100 border-t border-gray-200">
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        {/* Detalles de la asignación Column */}
+                                    {expandedEvaluationIds.has(evaluation.idEvaluacion) && (
+                                        <div className="px-4 py-3 bg-gray-100 border-t border-gray-200">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {/* Detalles de la asignación Column */}
+                                                <div>
+                                                    <p className="font-semibold text-gray-700">Detalles de la asignación:</p>
+                                                    <div className="ml-2 mt-2 space-y-1 text-sm text-gray-600">
+                                                        {/* Descripción - Placeholder as not in model */}
                                                         <div>
-                                                            <p className="font-semibold text-gray-700">Detalles de la asignación:</p>
-                                                            <div className="ml-2 mt-2 space-y-1 text-sm text-gray-600">
-                                                                {/* Descripción - Placeholder as not in model */}
-                                                                <div>
-                                                                    <span className="font-medium">Descripción:</span>
-                                                                    <span> {/* Placeholder for description text */} N/A</span>
-                                                                </div>
+                                                            <span className="font-medium">Descripción:</span>
+                                                            <span> {/* Placeholder for description text */} N/A</span>
+                                                        </div>
 
                                                                 {/* Valor de la Asignación */}                                                                 <div>
-                                                                    <span className="font-medium">Valor de la Asignación:</span>
+                                                            <span className="font-medium">Valor de la Asignación:</span>
                                                                     <span> {evaluation.valorPorcentual}%</span>
                                                                 </div>
 
                                                                 {/* Rúbrica - Placeholder */}                                                                 <div>
-                                                                    <span className="font-medium">Rúbrica:</span>
-                                                                    <span> {/* Placeholder for rubric status (Si/No) */} N/A</span>
-                                                                </div>
+                                                            <span className="font-medium">Rúbrica:</span>
+                                                            <span> {/* Placeholder for rubric status (Si/No) */} N/A</span>
+                                                        </div>
 
                                                                 {/* Fecha de Entrega */}                                                                 <div>
-                                                                    <span className="font-medium">Fecha de Entrega:</span>
-                                                                    <span> {new Date(evaluation.fechaHoraLimite).toLocaleString()}</span>
-                                                                </div>
+                                                            <span className="font-medium">Fecha de Entrega:</span>
+                                                            <span> {new Date(evaluation.fechaHoraLimite).toLocaleString()}</span>
+                                                        </div>
 
                                                                 {/* Posibilidad de entregar después de fecha límite - Placeholder */}                                                                 <div>
-                                                                    <span className="font-medium">Posibilidad de entregar después de fecha límite:</span>
-                                                                    <span> {/* Placeholder for status (Si/No) */} N/A</span>
-                                                                </div>
+                                                            <span className="font-medium">Posibilidad de entregar después de fecha límite:</span>
+                                                            <span> {/* Placeholder for status (Si/No) */} N/A</span>
+                                                        </div>
 
                                                                 {/* Información de Grupo si es Grupal */}                                                                 {evaluation.esGrupal && (
-                                                                    <div>
-                                                                        <span className="font-medium">Cantidad de personas por grupo:</span>
-                                                                        <span> {evaluation.cantEstudiantesGrupo}</span>
+                                                            <div>
+                                                                <span className="font-medium">Cantidad de personas por grupo:</span>
+                                                                <span> {evaluation.cantEstudiantesGrupo}</span>
                                                                         {/* Miembros del grupo */} {/* Use groupMembers state */} 
-                                                                        <div className="mt-2">
-                                                                            <p className="font-medium">Miembros del grupo:</p>
-                                                                            <ul className="list-disc list-inside ml-4">
+                                                                <div className="mt-2">
+                                                                    <p className="font-medium">Miembros del grupo:</p>
+                                                                    <ul className="list-disc list-inside ml-4">
                                                                                 {/* Map group members here */} 
                                                                                 {/* Conditional rendering based on groupMembers state */} 
                                                                                 {groupMembers[evaluation.idEvaluacion] === undefined ? (
@@ -508,117 +509,117 @@ const StudentEvaluations: React.FC<StudentEvaluationsProps> = ({ idGrupo, user }
                                                                                     // Display members if the array is not null and has elements
                                                                                     (groupMembers[evaluation.idEvaluacion] as GrupoTrabajoMiembroDto[]).map(member => (
                                                                                          <li key={member.carne}>{member.nombre}</li>
-                                                                                     ))
-                                                                                ) : (
+                                                                            ))
+                                                                        ) : (
                                                                                     // Fallback, theoretically should not happen with the null check, but good practice
                                                                                     <li>No hay información de miembros disponible.</li>
-                                                                                )}
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-
-                                                                {/* Especificación - Moved here */}                                                                 {evaluation.rutaEspecificacion && (
-                                                                    <div className="mt-2">
-                                                                        <a
-                                                                            href={evaluation.rutaEspecificacion}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="text-blue-600 hover:underline"
-                                                                        >
-                                                                            Ver Especificación
-                                                                        </a>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Mis entregas Column */}                                                         <div>
-                                                            <p className="font-semibold text-gray-700">Mis entregas:</p>
-                                                            <div className="ml-2 mt-2 space-y-2 text-sm">
-                                                                {/* Upload/Download area */}                                                                 {evaluation.tieneEntregable && (
-                                                                    <div>
-                                                                         {entregaActual ? (
-                                                                            // If there is a delivery
-                                                                            <div className="space-y-2">
-                                                                                <div>
-                                                                                    <span className="font-medium text-green-600">Estado:</span>
-                                                                                    <span className="text-gray-700 ml-1">Entregado</span>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <span className="font-medium text-gray-700">Fecha de Entrega:</span>
-                                                                                    <span className="text-gray-700 ml-1">{new Date(entregaActual.fechaEntrega).toLocaleString()}</span>
-                                                                                </div>
-                                                                                <button
-                                                                                    onClick={() => handleFileDownload(evaluation.idEvaluacion)}
-                                                                                    className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
-                                                                                >
-                                                                                    Descargar Entregable
-                                                                                </button>
-                                                                            </div>
-                                                                        ) : ( /* No delivery */
-                                                                            // Check if the evaluation date limit has passed
-                                                                            deadlinePassed ? (
-                                                                                // If no delivery and past due
-                                                                                <p className="text-red-600">Entrega no realizada. La fecha límite ha pasado.</p>
-                                                                            ) : (
-                                                                                <div className="space-y-2">
-                                                                                     <p className="text-yellow-700 font-medium">Estado: Pendiente de entrega.</p>
-                                                                                    {/* File Upload Area */} 
-                                                                                     <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                                                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                                                            <svg className="w-8 h-8 mb-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                                                                            <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click para subir</span> o arrastra y suelta</p>
-                                                                                            <p className="text-xs text-gray-500">(MAX: 80MB - Tipos de archivo permitidos...)</p>
-                                                                                        </div>
-                                                                                        <input
-                                                                                            type="file"
-                                                                                            className="hidden"
-                                                                                            onChange={(e) => {
-                                                                                                const file = e.target.files?.[0];
-                                                                                                if (file) handleFileUpload(evaluation.idEvaluacion, file);
-                                                                                            }}
-                                                                                            disabled={uploadingFile === evaluation.idEvaluacion}
-                                                                                        />
-                                                                                    </label>
-                                                                                    {uploadingFile === evaluation.idEvaluacion && (
-                                                                                        <span className="ml-2 text-gray-600 text-sm">Subiendo...</span>
-                                                                                    )}
-                                                                                </div>
-                                                                            )
                                                                         )}
-
-                                                                         {/* Eliminar Entrega button - Show only if delivery exists and deadline has not passed */}                                                                         {entregaActual && !deadlinePassed && (
-                                                                             <button
-                                                                                 onClick={() => handleDeleteDelivery(evaluation.idEvaluacion, entregaActual.idEntrega)}
-                                                                                 className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 mt-2"
-                                                                             >
-                                                                                 Eliminar Entrega
-                                                                             </button>
-                                                                         )}
-                                                                    </div>
-                                                                )}
-
-                                                         {/* Nota obtenida */}                                                              <div className="mt-4">
-                                                                    <span className="font-medium text-gray-700">Nota obtenida:</span>
-                                                                    {/* Show obtained grade if available, otherwise -- */}                                                                    <span className="text-gray-800 ml-1">{nota && nota.publicada ? nota.porcentajeObtenido : '--'} / {evaluation.valorPorcentual}%</span>
+                                                                    </ul>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        )}
+
+                                                                {/* Especificación - Moved here */}                                                                 {evaluation.rutaEspecificacion && (
+                                                            <div className="mt-2">
+                                                                <a
+                                                                    href={evaluation.rutaEspecificacion}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="text-blue-600 hover:underline"
+                                                                >
+                                                                    Ver Especificación
+                                                                </a>
+                                                            </div>
+                                                        )}
                                                     </div>
+                                                </div>
+
+                                                        {/* Mis entregas Column */}                                                         <div>
+                                                    <p className="font-semibold text-gray-700">Mis entregas:</p>
+                                                    <div className="ml-2 mt-2 space-y-2 text-sm">
+                                                                {/* Upload/Download area */}                                                                 {evaluation.tieneEntregable && (
+                                                            <div>
+                                                                 {entregaActual ? (
+                                                                    // If there is a delivery
+                                                                    <div className="space-y-2">
+                                                                        <div>
+                                                                            <span className="font-medium text-green-600">Estado:</span>
+                                                                            <span className="text-gray-700 ml-1">Entregado</span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span className="font-medium text-gray-700">Fecha de Entrega:</span>
+                                                                            <span className="text-gray-700 ml-1">{new Date(entregaActual.fechaEntrega).toLocaleString()}</span>
+                                                                        </div>
+                                                                        <button
+                                                                            onClick={() => handleFileDownload(evaluation.idEvaluacion)}
+                                                                            className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
+                                                                        >
+                                                                            Descargar Entregable
+                                                                        </button>
+                                                                    </div>
+                                                                ) : ( /* No delivery */
+                                                                    // Check if the evaluation date limit has passed
+                                                                    deadlinePassed ? (
+                                                                        // If no delivery and past due
+                                                                        <p className="text-red-600">Entrega no realizada. La fecha límite ha pasado.</p>
+                                                                            ) : (
+                                                                        <div className="space-y-2">
+                                                                             <p className="text-yellow-700 font-medium">Estado: Pendiente de entrega.</p>
+                                                                                    {/* File Upload Area */} 
+                                                                             <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                                    <svg className="w-8 h-8 mb-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                                                                    <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click para subir</span> o arrastra y suelta</p>
+                                                                                            <p className="text-xs text-gray-500">(MAX: 80MB - Tipos de archivo permitidos...)</p>
+                                                                                        </div>
+                                                                                <input
+                                                                                    type="file"
+                                                                                    className="hidden"
+                                                                                    onChange={(e) => {
+                                                                                        const file = e.target.files?.[0];
+                                                                                        if (file) handleFileUpload(evaluation.idEvaluacion, file);
+                                                                                    }}
+                                                                                    disabled={uploadingFile === evaluation.idEvaluacion}
+                                                                                />
+                                                                            </label>
+                                                                            {uploadingFile === evaluation.idEvaluacion && (
+                                                                                <span className="ml-2 text-gray-600 text-sm">Subiendo...</span>
+                                                                            )}
+                                                                        </div>
+                                                                    )
+                                                                )}
+
+                                                                         {/* Eliminar Entrega button - Show only if delivery exists and deadline has not passed */}                                                                         {entregaActual && !deadlinePassed && (
+                                                                     <button
+                                                                         onClick={() => handleDeleteDelivery(evaluation.idEvaluacion, entregaActual.idEntrega)}
+                                                                         className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 mt-2"
+                                                                     >
+                                                                         Eliminar Entrega
+                                                                     </button>
+                                                                 )}
+                                                            </div>
+                                                        )}
+
+                                                         {/* Nota obtenida */}                                                              <div className="mt-4">
+                                                            <span className="font-medium text-gray-700">Nota obtenida:</span>
+                                                                    {/* Show obtained grade if available, otherwise -- */}                                                                    <span className="text-gray-800 ml-1">{nota && nota.publicada ? nota.porcentajeObtenido : '--'} / {evaluation.valorPorcentual}%</span>
+                                                                </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                                     {/* Optional: Add Observations here if they are linked to the grade */}                                                     {nota && nota.observaciones && (
-                                                        <div className="mt-4 text-sm text-gray-600">
-                                                            <p className="font-medium">Observaciones:</p>
-                                                            <p>{nota.observaciones}</p>
-                                                        </div>
-                                                    )}
+                                                <div className="mt-4 text-sm text-gray-600">
+                                                    <p className="font-medium">Observaciones:</p>
+                                                    <p>{nota.observaciones}</p>
                                                 </div>
                                             )}
-                                        </li>
-                                    );
+                                        </div>
+                                    )}
+                                </li>
+                            );
                                 })
                             )}
-                        </ul>
+                    </ul>
                     )}
                 </div>
             ))}

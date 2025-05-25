@@ -1,4 +1,5 @@
 import axios from "axios";
+import { API_BASE_URL } from '../config';
 
 // Interfaz que define la estructura de una carrera
 export interface Carrera {
@@ -8,5 +9,5 @@ export interface Carrera {
 
 // Solicita al backend la lista de carreras registradas
 export const obtenerCarreras = () => {
-  return axios.get<Carrera[]>("http://localhost:5261/api/carrera"); 
+  return axios.get<Carrera[]>(`${API_BASE_URL}/carrera`); 
 };

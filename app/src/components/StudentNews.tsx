@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 interface NewsItem {
   idNoticia: number;
@@ -23,7 +24,7 @@ const StudentNews: React.FC<StudentNewsProps> = ({ idGrupo }) => {
       try {
         setLoading(true);
         // Use the correct backend endpoint
-        const response = await axios.get<NewsItem[]>(`http://localhost:5261/api/Noticia/grupo/${idGrupo}`);
+        const response = await axios.get<NewsItem[]>(`${API_BASE_URL}/Noticia/grupo/${idGrupo}`);
         setNews(response.data);
         setLoading(false);
       } catch (err) {

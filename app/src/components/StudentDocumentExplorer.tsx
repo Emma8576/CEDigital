@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 interface User {
   id: string;
@@ -50,7 +51,7 @@ const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ idGru
       try {
         if (currentPath.length === 0) {
           // Fetch root folders for the group
-          const response = await axios.get<Omit<Folder, 'type'>[]>(`http://localhost:5261/api/Carpeta/grupo/${idGrupo}`);
+          const response = await axios.get<Omit<Folder, 'type'>[]>(`${API_BASE_URL}/Carpeta/grupo/${idGrupo}`);
           // Map backend folders to FileExplorerItem, add type 'folder'
           const rootFolders: FileExplorerItem[] = response.data.map(folder => ({
               ...folder,
@@ -60,7 +61,7 @@ const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ idGru
         } else {
           // Fetch files within the current folder
           const currentFolderId = currentPath[currentPath.length - 1];
-          const response = await axios.get<Omit<FileItem, 'type'>[]>(`http://localhost:5261/api/Carpeta/${currentFolderId}/archivos`);
+          const response = await axios.get<Omit<FileItem, 'type'>[]>(`${API_BASE_URL}/Carpeta/${currentFolderId}/archivos`);
            // Map backend files to FileExplorerItem, add type 'file'
           const files: FileExplorerItem[] = response.data.map(file => ({
               ...file,
@@ -211,7 +212,7 @@ const StudentDocumentExplorer: React.FC<StudentDocumentExplorerProps> = ({ idGru
             onClick={() => {
               // Implement download logic using the backend download endpoint
                const fileId = selectedItem.idArchivo;
-               const downloadUrl = `http://localhost:5261/api/Carpeta/descargar/${fileId}`;
+               const downloadUrl = `${API_BASE_URL}/Carpeta/descargar/${fileId}`;
                window.open(downloadUrl, '_blank'); // Open in new tab to trigger download
             }}
           >

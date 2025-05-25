@@ -54,7 +54,7 @@ const StudentCourseView: React.FC<StudentCourseViewProps> = ({ user }) => {
               return;
           }
           try {
-              const response = await axios.get<GroupDetail>(`http://localhost:5261/api/Grupo/${idGrupo}`);
+              const response = await axios.get<GroupDetail>(`http://localhost:5000/api/Grupo/${idGrupo}`);
               setGroupDetail(response.data);
               setLoadingGroup(false);
           } catch (error) {

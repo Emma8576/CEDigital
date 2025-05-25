@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from '../config';
 
 // URL base para todas las llamadas a la API
-const API_URL = "http://localhost:5261/api";
+const API_URL = `${API_BASE_URL}`;
 
 // Interfaces para tipar los datos
 export interface Grupo {
@@ -28,12 +29,12 @@ export interface GrupoResumen {
   cantidadEstudiantes: number;
 }
 export const getGruposConCurso = async (): Promise<GrupoConCurso[]> => {
-  const response = await axios.get("http://localhost:5261/api/Grupo/conCursos");
+  const response = await axios.get(`${API_BASE_URL}/Grupo/conCursos`);
   return response.data;
 };
 
 export const obtenerGruposConCantidadEstudiantes = async (): Promise<GrupoResumen[]> => {
-  const response = await axios.get("http://localhost:5261/api/EstudianteGrupo/grupos-con-cantidad");
+  const response = await axios.get(`${API_BASE_URL}/EstudianteGrupo/grupos-con-cantidad`);
   return response.data;
 };
 

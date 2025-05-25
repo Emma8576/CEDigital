@@ -1,6 +1,7 @@
 import axios from "axios";
+import { API_BASE_URL } from '../config';
 
-const API_URL = "http://localhost:5261/api/Semestre";
+const API_URL = `${API_BASE_URL}/Semestre`;
 
 // Obtiene la lista de todos los semestres
 export const obtenerSemestres = () => {
