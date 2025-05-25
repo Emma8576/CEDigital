@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Data;
 using CEDigital.API.Models;
+using System.Collections.Generic;
+using System.IO.Ports;
 
 namespace CEDigital.API.Controllers
 {

@@ -1,7 +1,6 @@
 {
   "ExpandedNodes": [
     "",
-    "\\bin\\Debug",
     "\\Configuration",
     "\\Controllers",
     "\\Data",
@@ -10,6 +9,6 @@
     "\\Properties",
     "\\Services"
   ],
-  "SelectedNode": "\\Controllers\\ProfesorGrupoController.cs",
+  "SelectedNode": "\\Controllers\\EntregaController.cs",
   "PreviewInSolutionExplorer": false
 }

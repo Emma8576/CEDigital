@@ -215,6 +215,8 @@ namespace CEDigital.API.Controllers
             {
                 System.IO.File.Delete(killPath);
             }
+
+
             
 
             _context.Archivos.Remove(archivo);

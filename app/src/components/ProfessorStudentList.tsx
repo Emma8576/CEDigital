@@ -20,10 +20,19 @@ interface Student{
     telefono: string
 }
 
+function showSection(currentShowing: number, thisDivId: number){
+    if(currentShowing === thisDivId){
+        return 'block';
+    }else{
+        return 'none';
+    }
+}
+
 const ProfessorStudentList: React.FC<ProfessorStudentListProps> = ({ idGrupo, user }) => {
     const port = '5000';
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [viewType, setViewType] = useState(0); /*0 para información, 1 para notas colocadas, 2 para colocar notas*/
     
     const [students, setStudents] = useState<Student[]>([]);
 
@@ -85,41 +94,59 @@ const ProfessorStudentList: React.FC<ProfessorStudentListProps> = ({ idGrupo, us
     return(
         <div className="space-y-4">
             <div style={{display:'grid'}}>
-                <div style={{justifyContent:'center', display:'flex'}}>
-                <table style={{width:'100%'}}>
-                    <tr>
-                        <th className='columna-header'>Carnet</th>
-                        <th className='columna-header'>Nombre Completo</th>
-                        <th className='columna-header'>Correo</th>
-                        <th className='columna-header'>Telefono</th>
-                    </tr>
-                    {
-                        students.map((student) => (
-                            <tr key={student.id} style={{justifyContent:'space-between'}}>
-                                <td>
-                                    <div className='columna-content'>
-                                        {student.carnet}
-                                    </div>
-                                </td>
-                                <td >
-                                    <div className='columna-content'>
-                                        {student.nombre}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className='columna-content'>
-                                        {student.correo}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className='columna-content'>
-                                        {student.telefono}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))
-                    }
-                </table>
+                <div style={{justifyContent:'center', display:showSection(viewType, 0)}}>
+                    <table style={{width:'100%'}}>
+                        <tr>
+                            <th className='columna-header'>Carnet</th>
+                            <th className='columna-header' >Nombre Completo</th>
+                            <th className='columna-header'>Correo</th>
+                            <th className='columna-header'>Telefono</th>
+                        </tr>
+                        {
+                            students.map((student) => (
+                                <tr key={student.id} style={{justifyContent:'space-between'}}>
+                                    <td>
+                                        <div className='columna-content'>
+                                            {student.carnet}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className='columna-content' >
+                                            {student.nombre}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className='columna-content'>
+                                            {student.correo}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className='columna-content'>
+                                            {student.telefono}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        }
+                    </table>
+                </div>
+                <div style={{justifyContent:'center', display:showSection(viewType, 1)}}>
+                    <table style={{width:'100%'}}>
+                        <tr>
+                            <th className='columna-header'>Carnet</th>
+                        </tr>
+                        {
+                            students.map((student) => (
+                                <tr key={student.id} style={{justifyContent:'space-between'}}>
+                                    <td>
+                                        <div className='columna-content'>
+                                            {student.carnet}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        }
+                    </table>
                 </div>
                 <div  style={{marginTop:'15px', width:'100%'}}>
                     <div className='publish-button' style={{float:'right'}} onClick={downloadList}>
