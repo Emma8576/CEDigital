@@ -21,7 +21,7 @@ public async Task<ActionResult<IEnumerable<Carrera>>> GetCarreras()
 {
     var carreras = await _context.Carreras.ToListAsync();
 
-    // ✅ Imprime en la consola del backend cuántas carreras se leyeron
+    // Imprime en la consola del backend cuántas carreras se leyeron
     Console.WriteLine($"Cantidad de carreras encontradas: {carreras.Count}");
     Console.WriteLine("Conectando a base: " + _context.Database.GetDbConnection().Database);
     Console.WriteLine("Cantidad de carreras: " + _context.Carreras.Count());
