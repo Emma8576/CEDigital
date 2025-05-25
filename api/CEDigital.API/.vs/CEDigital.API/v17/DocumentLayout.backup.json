@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\EstudiantesGrupoController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Controllers\\EstudiantesGrupoController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\NotaEvaluacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Models\\NotaEvaluacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\EntregaController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -78,13 +78,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "EstudiantesGrupoController.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\EstudiantesGrupoController.cs",
               "RelativeDocumentMoniker": "Controllers\\EstudiantesGrupoController.cs",
               "ToolTip": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Controllers\\EstudiantesGrupoController.cs",
               "RelativeToolTip": "Controllers\\EstudiantesGrupoController.cs",
-              "ViewState": "AgIAACABAAAAAAAAAAAAAEABAAAqAAAAAAAAAA==",
+              "ViewState": "AgIAACABAAAAAAAAAAAowEABAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-24T22:26:36.674Z",
               "EditorCaption": ""
@@ -111,14 +111,13 @@
               "RelativeToolTip": "Controllers\\NotaEvaluacionController.cs",
               "ViewState": "AgIAAIgAAAAAAAAAAAAYwI8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-24T22:20:05.946Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-24T22:20:05.946Z"
             }
           ]
         },
         {
           "DockedWidth": 222,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -126,7 +125,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "NotaEvaluacion.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Models\\NotaEvaluacion.cs",
               "RelativeDocumentMoniker": "Models\\NotaEvaluacion.cs",
@@ -147,12 +146,11 @@
               "RelativeToolTip": "Controllers\\EntregaController.cs",
               "ViewState": "AgIAAIYAAAAAAAAAAAAswCgBAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-24T04:02:57.029Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-24T04:02:57.029Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Alexis\\A_TEC\\Semestre_7\\Bases_Datos\\CEDigital\\api\\CEDigital.API\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",

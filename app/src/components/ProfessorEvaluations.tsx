@@ -75,6 +75,23 @@ function askAmountOfStudents(esGrupal:boolean){
     }
 }
 
+function showThisBlock(shownDiv: number, thisDiv: number, isEdit: boolean){
+    if (shownDiv === thisDiv){
+        if(isEdit){
+            return 'block';   
+        }else{
+            return 'None';
+        }
+        
+    }else{
+        if(isEdit){
+            return 'None';   
+        }else{
+            return 'Block';
+        }
+    }
+}
+
 const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, user }) => {
     const port = '5000';
     const [evaluations, setEvaluations] = useState<Evaluacion[]>([]);
@@ -98,6 +115,11 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
     const [newEvaluationTime, setNewEvaluationTime] = useState('23:59');
 
     const [listaNotasEvaluacion, setListaNotasEvaluacion] = useState<NotaEvaluacion[]>([]);
+
+    const [notaActualizarPublicada, setNotaActualizarPublicada] = useState(false);
+    const [notaActualizarValor, setNotaActualizarValor] = useState(0);
+    const [notaActualizarObservaciones, setNotaActualizarObservaciones] = useState("");
+    const [notaIdIsActualizando, setNotaIdIsActualizando] = useState(-1);
 
 
     // Function to toggle the expanded state of an evaluation
@@ -354,6 +376,44 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
         }
     }
 
+    const empezarActualización = (IdNotaEvaluacion: number | null) =>{
+        if(IdNotaEvaluacion != null){
+            if(IdNotaEvaluacion === notaIdIsActualizando){
+                setNotaIdIsActualizando(-1);
+            }else{
+                setNotaIdIsActualizando(IdNotaEvaluacion);
+                let changed = listaNotasEvaluacion.find((nota) => nota.idNotaEvaluacion == IdNotaEvaluacion);
+                if(changed != null){
+                    setNotaActualizarValor(changed.porcentajeObtenido);
+                    setNotaActualizarPublicada(changed.publicada);
+                    setNotaActualizarObservaciones(changed.observaciones);
+                }
+            }
+        }
+    }
+
+    const actualizarEstadoNotaEvaluacion = async(IdNotaEvaluacion:number|null) =>{
+        if(IdNotaEvaluacion != null){
+            let changed = listaNotasEvaluacion.find((nota) => nota.idNotaEvaluacion == IdNotaEvaluacion);
+            if(changed != null){
+                try{
+                    let sendThis = {
+                        porcentajeObtenido: notaActualizarValor,
+                        observaciones: notaActualizarObservaciones,
+                        rutaArchivoDetalles: "", 
+                        publicada: notaActualizarPublicada
+                    }
+                    const url = 'http://localhost:' + port + '/api/NotaEvaluacion/' + IdNotaEvaluacion;
+                    await axios.put(url, sendThis);
+                    setListaNotas(changed.idEvaluacion);
+                    setNotaIdIsActualizando(-1);
+                }catch(error){
+                    console.log("Error al tratar de actualizar la nota ", error);
+                }
+            }
+        }
+    }
+
     const setListaNotas = async(idEvaluacion: number|null) =>{
         if(idEvaluacion != null){
             try{
@@ -582,12 +642,14 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                             <div >
                                                 
                                                 <div style={{display: 'flex', justifyContent:'center', alignContent: 'center'}}>
-                                                    <table style={{width:'70%'}}>
+                                                    <table style={{width:'100%'}}>
                                                         <tr>
                                                             <th className='columna-header'>Carnet</th>
                                                             <th className='columna-header'>Publicada</th>
                                                             <th className='columna-header'>Nota</th>
                                                             <th className='columna-header'>Observaciones</th>
+                                                            <th className='columna-header'>Actualizar</th>
+                                                            <th className='columna-header'>Guardar</th>
                                                         </tr>
                                                         {
                                                             listaNotasEvaluacion.map((nota) =>(
@@ -598,18 +660,56 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                                                         </div>
                                                                     </td>
                                                                     <td>
-                                                                        <div>
+                                                                        <div style={{display: showThisBlock(notaIdIsActualizando, nota.idNotaEvaluacion, false)}}>
                                                                             {(nota.publicada) ? "Sí":"No"}
                                                                         </div>
+                                                                        <form className='button-rows' style={{display: showThisBlock(notaIdIsActualizando, nota.idNotaEvaluacion, true)}}>
+                                                                            <input type="radio" id={"siPublica_" + nota.idNotaEvaluacion} name="hasPublica" checked={notaActualizarPublicada} value={1} onClick={() => {setNotaActualizarPublicada(true)}}/>
+                                                                            <label htmlFor={"siPublica_" + nota.idNotaEvaluacion} style={{marginRight:'10px'}}>Sí</label><br></br>
+                                                                            <input type="radio" id={"noPublica_" + nota.idNotaEvaluacion} name="hasPublica" value={0} checked={!notaActualizarPublicada} onClick={() =>{setNotaActualizarPublicada(false)}}/>
+                                                                            <label htmlFor={"noPublica_" + nota.idNotaEvaluacion}>No</label><br></br>
+                                                                        </form>
                                                                     </td>
                                                                     <td>
-                                                                        <div>
+                                                                        <div style={{display:showThisBlock(notaIdIsActualizando, nota.idNotaEvaluacion, false)}}>
                                                                             {nota.porcentajeObtenido}
+                                                                        </div>
+                                                                        <input
+                                                                            id="notaNota"
+                                                                            name="notaNota"
+                                                                            type="email"
+                                                                            style={{maxWidth:'100px', marginBottom:'5px', display: showThisBlock(notaIdIsActualizando, nota.idNotaEvaluacion, true)}}
+                                                                            required
+                                                                            className="custom-input"
+                                                                            placeholder="Valor"
+                                                                            value={notaActualizarValor}
+                                                                            onChange={e => setNotaActualizarValor(parseFloat(e.target.value))}
+                                                                        />
+                                                                    </td>
+                                                                    <td>
+                                                                        <div style={{overflow:'hidden', display:showThisBlock(notaIdIsActualizando, nota.idNotaEvaluacion, false)}}>
+                                                                            {nota.observaciones}
+                                                                        </div>
+                                                                        <input
+                                                                            id="notaObs"
+                                                                            name="notaObs"
+                                                                            type="email"
+                                                                            style={{maxWidth:'100px', marginBottom:'5px', display: showThisBlock(notaIdIsActualizando, nota.idNotaEvaluacion, true)}}
+                                                                            required
+                                                                            className="custom-input"
+                                                                            placeholder="Observaciones..."
+                                                                            value={notaActualizarObservaciones}
+                                                                            onChange={e => setNotaActualizarObservaciones(e.target.value)}
+                                                                        />
+                                                                    </td>
+                                                                    <td>
+                                                                        <div className='publish-button' onClick={() => empezarActualización(nota.idNotaEvaluacion)}>
+                                                                            Actualizar
                                                                         </div>
                                                                     </td>
                                                                     <td>
-                                                                        <div style={{overflow:'hidden'}}>
-                                                                            {nota.observaciones}
+                                                                        <div className='publish-button'  style={{display: showThisBlock(notaIdIsActualizando, nota.idNotaEvaluacion, true)}} onClick={() => actualizarEstadoNotaEvaluacion(nota.idNotaEvaluacion)}>
+                                                                           Guardar
                                                                         </div>
                                                                     </td>
                                                                 </tr>
