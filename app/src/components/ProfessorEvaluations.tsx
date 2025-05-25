@@ -42,13 +42,14 @@ interface Entrega {
 }
 
 interface NotaEvaluacion {
-    idNotaEvaluacion: number;
-    porcentajeObtenido: number;
-    observaciones?: string;
-    rutaArchivoDetalles?: string;
-    publicada: boolean;
-    idEvaluacion: number;
-    idGrupoTrabajo: number;
+    idEvaluacion: number,
+    idRubro: number,
+    carnetEstudiante: string,
+    nombreEvaluacion: string,
+    idNotaEvaluacion: number,
+    porcentajeObtenido: number,
+    observaciones: string,
+    publicada: boolean
 }
 
 // New interface for group member DTO
@@ -79,7 +80,6 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
     const [evaluations, setEvaluations] = useState<Evaluacion[]>([]);
     const [evaluationsByRubro, setEvaluationsByRubro] = useState<EvaluacionesPorRubro>({});
     const [entregas, setEntregas] = useState<{ [key: number]: Entrega }>({});
-    const [notas, setNotas] = useState<{ [key: number]: NotaEvaluacion }>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [uploadingFile, setUploadingFile] = useState<number | null>(null);
@@ -96,6 +96,8 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
     const [newEvaluationGroupSize, setNewEvaluationsGroupSize] = useState(1);
     const [newEvaluationhasEntregable, setNewEvaluationsHasEntregable] = useState(false);
     const [newEvaluationTime, setNewEvaluationTime] = useState('23:59');
+
+    const [listaNotasEvaluacion, setListaNotasEvaluacion] = useState<NotaEvaluacion[]>([]);
 
 
     // Function to toggle the expanded state of an evaluation
@@ -182,7 +184,6 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
             }
 
             setEntregas(entregasMap);
-            setNotas(notasMap);
             setLoading(false);
         } catch (err) {
             console.error("Error fetching data:", err);
@@ -353,6 +354,17 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
         }
     }
 
+    const setListaNotas = async(idEvaluacion: number|null) =>{
+        if(idEvaluacion != null){
+            try{
+                const response = await axios.get<NotaEvaluacion[]>(`http://localhost:${port}/api/EstudianteGrupo/notas-evaluacion/${idEvaluacion}`);
+                setListaNotasEvaluacion(response.data);
+            }catch(error){
+                console.log("No se pudieron obtener las notas: ", error);
+            }
+        }
+    }
+
     if (loading) {
         return <div className="text-center mt-4 text-gray-600">Cargando evaluaciones...</div>;
     }
@@ -404,14 +416,10 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                     {/* Evaluaciones List for this Rubro */}
                     <ul className="divide-y divide-gray-200">
                         {rubroData.evaluaciones.map((evaluation) => {
-                            const nota = notas[evaluation.idEvaluacion];
                              // Find the Entrega for this evaluation, considering both individual and group
                              const entrega = entregas[evaluation.idEvaluacion];
 
-                            // Determine the grade display based on available data
-                            const gradeDisplay = nota && nota.publicada
-                                ? `${nota.porcentajeObtenido} / ${evaluation.valorPorcentual}%`
-                                : `-- / ${evaluation.valorPorcentual}%`;
+                            
 
                             return (
                                 <li key={evaluation.idEvaluacion} className="border-b border-gray-200 last:border-b-0">
@@ -422,19 +430,15 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                              <p className="text-gray-600 text-sm">Fecha Límite: {new Date(evaluation.fechaHoraLimite).toLocaleDateString()}</p>
                                         </div>
                                         <div className="flex items-center space-x-3">
-                                            {/* Grade Display */}
-                                             <span className="text-gray-800 font-semibold">{gradeDisplay}</span>
 
                                             {/* Deliverables Dropdown/Button */}
-                                             {evaluation.tieneEntregable && (
-                                                  <button
-                                                      onClick={() => toggleExpand(evaluation.idEvaluacion)}
-                                                       className="text-gray-500 hover:text-gray-700 transform transition-transform"
-                                                  >
-                                                      {/* Icon changes based on expanded state */}
-                                                       <svg className={`w-5 h-5 ${expandedEvaluationIds.has(evaluation.idEvaluacion) ? 'rotate-180' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                                                  </button>
-                                             )}
+                                             <button
+                                                onClick={() => {toggleExpand(evaluation.idEvaluacion); setListaNotas(evaluation.idEvaluacion);}}
+                                                className="text-gray-500 hover:text-gray-700 transform transition-transform"
+                                            >
+                                                {/* Icon changes based on expanded state */}
+                                                <svg className={`w-5 h-5 ${expandedEvaluationIds.has(evaluation.idEvaluacion) ? 'rotate-180' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                            </button>
                                         </div>
                                     </div>
                                     {/* Expandable Content for Deliverables and Assignment Details */}
@@ -478,20 +482,7 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                                                 <span className="font-medium">Cantidad de personas por grupo:</span>
                                                                 <span> {evaluation.cantEstudiantesGrupo}</span>
                                                                 {/* Miembros del grupo - Placeholder as data is not fetched */}
-                                                                <div className="mt-2">
-                                                                    <p className="font-medium">Miembros del grupo:</p>
-                                                                    <ul className="list-disc list-inside ml-4">
-                                                                        {/* Map group members here when data is available */}
-                                                                        {groupMembers[evaluation.idEvaluacion]?.length > 0 ? (
-                                                                            groupMembers[evaluation.idEvaluacion].map(member => ( // Iterate over GrupoTrabajoMiembroDto objects
-                                                                                <li key={member.carnet}>{member.nombre}</li> // Use carnet for key and display nombre
-                                                                            ))
-                                                                        ) : (
-                                                                            <li>Cargando miembros...</li>
-                                                                        )}
-                                                                        {/* Example: {groupMembers.map(member => <li key={member.id}>{member.name}</li>)} */}
-                                                                    </ul>
-                                                                </div>
+                                                                
                                                             </div>
                                                         )}
 
@@ -524,7 +515,7 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                                     <p className="font-semibold text-gray-700">Especificación:</p>
                                                     <div className="ml-2 mt-2 space-y-2 text-sm">
                                                         {/* Upload/Download area */}
-                                                        {evaluation.tieneEntregable && ( /* Only show if deliverable is required */
+                                                        {( /* Only show if deliverable is required */
                                                             <div>
                                                                  {entrega ? (
                                                                     // If there is a delivery
@@ -587,12 +578,47 @@ const ProfessorEvaluations: React.FC<ProfessorEvaluationsProps> = ({ idGrupo, us
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* Optional: Add Observations here if they are linked to the grade */}                                             {nota && nota.observaciones && (
-                                                <div className="mt-4 text-sm text-gray-600">
-                                                    <p className="font-medium">Observaciones:</p>
-                                                    <p>{nota.observaciones}</p>
+                                            {/*Acá debe de terminar*/}
+                                            <div >
+                                                
+                                                <div style={{display: 'flex', justifyContent:'center', alignContent: 'center'}}>
+                                                    <table style={{width:'70%'}}>
+                                                        <tr>
+                                                            <th className='columna-header'>Carnet</th>
+                                                            <th className='columna-header'>Publicada</th>
+                                                            <th className='columna-header'>Nota</th>
+                                                            <th className='columna-header'>Observaciones</th>
+                                                        </tr>
+                                                        {
+                                                            listaNotasEvaluacion.map((nota) =>(
+                                                                <tr key={nota.idNotaEvaluacion} style={{justifyContent:'space-between'}}>
+                                                                    <td >
+                                                                        <div>
+                                                                            {nota.carnetEstudiante}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div>
+                                                                            {(nota.publicada) ? "Sí":"No"}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div>
+                                                                            {nota.porcentajeObtenido}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div style={{overflow:'hidden'}}>
+                                                                            {nota.observaciones}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))
+                                                        }
+                                                    </table>
                                                 </div>
-                                            )}
+                                            </div>
+                                            
                                         </div>
                                     )}
                                 </li>

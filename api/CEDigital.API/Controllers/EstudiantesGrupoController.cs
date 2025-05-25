@@ -158,6 +158,8 @@ namespace CEDigital.API.Controllers
                     CarnetEstudiante = ne.CarnetEstudiante,
                     NombreEvaluacion = evaluacion.NombreEvaluacion,
                     IdNotaEvaluacion = ne.IdNotaEvaluacion,
+                    Observaciones = ne.Observaciones,
+
                     PorcentajeObtenido = ne.PorcentajeObtenido,
                     Publicada = ne.Publicada,
                 }
@@ -315,6 +317,7 @@ namespace CEDigital.API.Controllers
         public string NombreEvaluacion {get; set;}
         public int IdNotaEvaluacion { get; set;}
         public decimal PorcentajeObtenido {get; set;}
+        public string Observaciones { get; set; }
         public bool Publicada { get; set;}
     }
 
