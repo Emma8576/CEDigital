@@ -1,0 +1,60 @@
+.publish-button{
+    background-color: rgb(22, 161, 242);
+    color: white;
+    width: fit-content;
+    height: fit-content;
+    font-weight: bold;
+    padding: 4px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.publish-button:hover{
+    background-color: rgb(4, 68, 106);
+    transition: 0.3s;
+}
+
+.delete-button{
+    color: rgb(198, 198, 198);
+    padding: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.delete-button:hover{
+    color: rgb(48, 48, 48);
+    font-weight: bold;
+    padding: 4px;
+    transition: 0.3s;
+}
+
+.custom-input {
+  appearance: none;
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  border-radius: 5px; /* rounded-t-md */
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem; /* py-2 px-3 */
+  color: #111827; /* text-gray-900 */
+  font-size: 0.875rem; /* sm:text-sm */
+  line-height: 1.25rem;
+  background-color: white;
+  position: relative;
+  z-index: 0;
+}
+
+.custom-input::placeholder {
+  color: #6b7280; /* placeholder-gray-500 */
+}
+
+.custom-input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: #3b82f6; /* focus:border-blue-500 */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* focus:ring-blue-500 */
+  z-index: 10;
+}
+
+
+

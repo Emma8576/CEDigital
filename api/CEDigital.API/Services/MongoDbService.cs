@@ -26,5 +26,12 @@ namespace CEDigital.API.Services
             var filter = Builders<Models.Estudiante>.Filter.Eq(s => s.Carne, carnet);
             return await collection.Find(filter).FirstOrDefaultAsync();
         }
+
+        public async Task<Models.Profesor?> GetProfesorByCarnetAsync(string cedula)
+        {
+            var collection = _database.GetCollection<Models.Profesor>("profesores"); // Assuming collection name is "Profesores"
+            var filter = Builders<Models.Profesor>.Filter.Eq(s => s.Cedula, cedula);
+            return await collection.Find(filter).FirstOrDefaultAsync();
+        }
     }
 }

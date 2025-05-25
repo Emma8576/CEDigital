@@ -1,0 +1,14 @@
+.columna{
+    min-width: 200px;
+}
+
+.columna-header{
+    background-color: rgb(137, 208, 255);
+    
+}
+
+.columna-content{
+    display: flex;
+    justify-content: center;
+}
+

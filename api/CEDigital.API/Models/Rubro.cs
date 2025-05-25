@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace CEDigital.API.Models
 {
@@ -20,6 +21,8 @@ namespace CEDigital.API.Models
         public int IdGrupo { get; set; }
 
         public Grupo Grupo { get; set; }
+
+        public ICollection<Evaluacion> Evaluaciones { get; set; }
     }
 
     public class RubroCreateDto
@@ -42,4 +45,5 @@ namespace CEDigital.API.Models
         public string NombreRubro { get; set; }
         public int Porcentaje { get; set; }
     }
+
 }

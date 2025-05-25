@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
 
 namespace CEDigital.API.Models
 {
@@ -11,7 +12,7 @@ namespace CEDigital.API.Models
 
         [Required]
         [MaxLength(255)]
-        public string NombreArchivo { get; set; }
+        public required string NombreArchivo { get; set; }
 
         [Required]
         public DateTime FechaPublicacion { get; set; }
@@ -28,4 +29,13 @@ namespace CEDigital.API.Models
 
         public Carpeta Carpeta { get; set; }
     }
-}
+
+    public class UploadArchivoDto
+    {
+        [Required]
+        public required IFormFile File { get; set; }
+
+        [Required]
+        public required int IdCarpeta { get; set; }
+    }
+} 

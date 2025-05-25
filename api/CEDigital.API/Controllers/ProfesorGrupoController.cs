@@ -17,54 +17,70 @@ namespace CEDigital.API.Controllers
             _context = context;
         }
 
-        // GET: api/ProfesorGrupo
-        [HttpGet] //devuelve todos los profesores por grupo y toda la info relacionada del curso, grupo, carrera, y semestre
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<ProfesorGrupo>>> GetTodos()
         {
             var lista = await _context.ProfesorGrupos
-                                            .Include(pg => pg.Grupo)
-                                                .ThenInclude(g => g.Curso)
-                                                    .ThenInclude(c => c.Carrera)
-                                            .Include(pg => pg.Grupo)
-                                                .ThenInclude(g => g.Semestre)
-                                            .ToListAsync();
+                .Include(pg => pg.Grupo)
+                    .ThenInclude(g => g.Curso)
+                        .ThenInclude(c => c.Carrera)
+                .Include(pg => pg.Grupo)
+                    .ThenInclude(g => g.Semestre)
+                .ToListAsync();
 
             return Ok(lista);
         }
 
-        // GET: api/ProfesorGrupo/5
-        [HttpGet("{idGrupo}")] // Devuelve las cédulas de los profesores por ID del grupo
+        [HttpGet("{idGrupo}")]
         public async Task<ActionResult<IEnumerable<string>>> GetProfesoresDeGrupo(int idGrupo)
         {
-            // Verificar si el grupo existe
             var grupoExiste = await _context.Grupos.AnyAsync(g => g.IdGrupo == idGrupo);
             if (!grupoExiste)
                 return NotFound($"El grupo con ID {idGrupo} no existe.");
 
-            // Obtener las cédulas de los profesores asignados
             var profesores = await _context.ProfesorGrupos
                 .Where(pg => pg.IdGrupo == idGrupo)
                 .Select(pg => pg.CedulaProfesor)
                 .ToListAsync();
 
-            // Siempre devolver 200 OK, incluso si la lista está vacía
             return Ok(profesores);
         }
 
+        [HttpGet("grupos-profesor/{cedula}")]
+        public async Task<ActionResult<List<CursoProfesorDto>>> GetCursosPorProfesor(string cedula)
+        {
+            var grupos = await _context.ProfesorGrupos
+                .Where(pg => pg.CedulaProfesor == cedula)
+                .Include(pg => pg.Grupo)
+                    .ThenInclude(g => g.Curso)
+                .Select(pg => new CursoProfesorDto
+                {
+                    IdGrupo = pg.Grupo.IdGrupo,
+                    CodigoCurso = pg.Grupo.CodigoCurso,
+                    NombreCurso = pg.Grupo.Curso.NombreCurso,
+                    NumeroGrupo = pg.Grupo.NumeroGrupo,
+                    IdSemestre = pg.Grupo.Semestre.IdSemestre,
+                    AñoSemestre = pg.Grupo.Semestre.Año,
+                    PeriodoSemestre = pg.Grupo.Semestre.Periodo,
+                })
+                .ToListAsync();
 
-        // POST: api/ProfesorGrupo
-        [HttpPost] //Agrega un profesor a un grupo, verifica que no hayan mas de 2
+            if (grupos == null || grupos.Count == 0)
+                return NotFound($"El profesor no cuenta con grupos asignados");
+
+            return grupos;
+        }
+
+        [HttpPost]
         public async Task<IActionResult> PostProfesoresGrupo(ProfesorGrupoCreateDto dto)
         {
             var grupo = await _context.Grupos.FindAsync(dto.IdGrupo);
             if (grupo == null)
                 return NotFound($"Grupo con ID {dto.IdGrupo} no existe.");
 
-            // Contar profesores actuales asignados al grupo
             var profesoresActualesCount = await _context.ProfesorGrupos
                 .CountAsync(pg => pg.IdGrupo == dto.IdGrupo);
 
-            // Cuantos profesores quiere asignar el usuario
             int nuevosProfesoresCount = dto.CedulasProfesores.Count();
 
             if (profesoresActualesCount + nuevosProfesoresCount > 2)
@@ -94,9 +110,7 @@ namespace CEDigital.API.Controllers
             return Ok("Profesores asignados correctamente.");
         }
 
-
-        // PUT: api/ProfesorGrupo/5
-        [HttpPut("{idGrupo}")] //Modifica los profes asignados a un grupo
+        [HttpPut("{idGrupo}")]
         public async Task<IActionResult> PutProfesoresGrupo(int idGrupo, ProfesorGrupoUpdateDto dto)
         {
             var grupo = await _context.Grupos.FindAsync(idGrupo);
@@ -130,8 +144,7 @@ namespace CEDigital.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/ProfesorGrupo/5/12345678
-        [HttpDelete("{idGrupo}/{cedulaProfesor}")] //Borra solo un profe especifico del grupo
+        [HttpDelete("{idGrupo}/{cedulaProfesor}")]
         public async Task<IActionResult> DeleteUno(int idGrupo, string cedulaProfesor)
         {
             var entry = await _context.ProfesorGrupos
@@ -146,8 +159,7 @@ namespace CEDigital.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/ProfesorGrupo/5
-        [HttpDelete("{idGrupo}")] //Borra TODOS los profes asignados a un grupo
+        [HttpDelete("{idGrupo}")]
         public async Task<IActionResult> DeleteTodos(int idGrupo)
         {
             var entries = await _context.ProfesorGrupos
@@ -162,7 +174,16 @@ namespace CEDigital.API.Controllers
 
             return NoContent();
         }
+    }
 
-        
+    public class CursoProfesorDto
+    {
+        public int IdGrupo { get; set; }
+        public string CodigoCurso { get; set; }
+        public string NombreCurso { get; set; }
+        public int NumeroGrupo { get; set; }
+        public int IdSemestre { get; set; }
+        public int AñoSemestre { get; set; }
+        public string PeriodoSemestre { get; set; }
     }
 }

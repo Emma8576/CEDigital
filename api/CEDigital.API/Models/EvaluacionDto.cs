@@ -9,7 +9,7 @@ namespace CEDigital.API.Models
         public int IdRubro { get; set; }
         public string NombreEvaluacion { get; set; }
         public DateTime FechaHoraLimite { get; set; }
-        public int ValorPorcentual { get; set; }
+        public decimal ValorPorcentual { get; set; }
         public bool EsGrupal { get; set; }
         public bool TieneEntregable { get; set; }
         public int? CantEstudiantesGrupo { get; set; }

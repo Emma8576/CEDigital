@@ -15,7 +15,7 @@ namespace CEDigital.API.Controllers
         public ProfesoresController(MongoDBService mongoDbService)
         {
             _mongoDbService = mongoDbService;
-            _profesores = _mongoDbService.GetCollection<Profesor>("profesores");
+            _profesores = _mongoDbService.GetCollection<Profesor>("Profesores");
         }
 
         [HttpGet]
@@ -28,6 +28,15 @@ namespace CEDigital.API.Controllers
         public async Task<ActionResult<Profesor>> Get(string id)
         {
             var profesor = await _profesores.Find(e => e.Id == id).FirstOrDefaultAsync();
+            if (profesor == null)
+                return NotFound();
+            return profesor;
+        }
+
+        [HttpGet("cedula/{cedula}")]
+        public async Task<ActionResult<Profesor>> GetByCedula(string cedula)
+        {
+            var profesor = await _profesores.Find(e => e.Cedula == cedula).FirstOrDefaultAsync();
             if (profesor == null)
                 return NotFound();
             return profesor;

@@ -12,6 +12,8 @@ import CargaGrupos from "./pages/GestionGrupos";
 import GestionProfesores from "./pages/GestionProfesores";
 import GestionMatricula from "./pages/GestionMatricula";
 import GestionEstudiantes from "./pages/GestionEstudiantes";
+import ProfessorDashboard from "./pages/ProfessorDashboard";
+import ProfessorCourseView from "./pages/ProfessorCourseView";
 
 function App() {
   const [user, setUser] = useState<null | { id: string; nombre: string; tipo: string }>(null);
@@ -98,10 +100,13 @@ function App() {
               {/* Rutas protegidas para profesor */}
               <Route path="/profesor/dashboard" element={
                 <ProtectedRoute allowedTypes={["profesor"]}>
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold mb-4">Dashboard del Profesor</h1>
-                    <p>Bienvenido, {user?.nombre}</p>
-                  </div>
+                  <ProfessorDashboard user={user} />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/professor/course/:courseId" element={
+                <ProtectedRoute allowedTypes={["profesor"]}>
+                  <ProfessorCourseView user={user} />
                 </ProtectedRoute>
               } />
 

@@ -1,11 +1,13 @@
+using CEDigital.API.Data;
+using CEDigital.API.Models;
+using CEDigital.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CEDigital.API.Models;
-using CEDigital.API.Data;
-using System.Linq;
-using System.Collections.Generic;
-using CEDigital.API.Services;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CEDigital.API.Controllers
 {
@@ -24,7 +26,7 @@ namespace CEDigital.API.Controllers
             _logger = logger;
         }
 
-       // GET: api/EstudianteGrupo/grupo-con-estudiantes/5
+        // GET: api/EstudianteGrupo/grupo-con-estudiantes/5
         [HttpGet("grupo-con-estudiantes/{id}")]
         public async Task<ActionResult<GrupoDto>> GetGrupoConEstudiantes(int id)
         {
@@ -49,6 +51,30 @@ namespace CEDigital.API.Controllers
             };
 
             return grupoDto;
+        }
+
+        [HttpGet("grupo-con-estudiantes-full/{id}")]
+        public async Task<ActionResult<List<Estudiante>>> GetGrupoConEstudiantesFull(int id)
+        {
+            var grupo = await _context.Grupos
+                .Include(g => g.Estudiantes)
+                .FirstOrDefaultAsync(g => g.IdGrupo == id);
+            var carnets = grupo.Estudiantes.Select(e => e.CarnetEstudiante).ToList();
+
+            var estudiantesRegistrados = new List<Estudiante>();
+            foreach (var carnet in carnets)
+            {
+                var estudiante = await _mongoDbService.GetStudentByCarnetAsync(carnet);
+                if (estudiante != null)
+                {
+                    estudiantesRegistrados.Add(estudiante);
+                }
+            }
+
+            if (estudiantesRegistrados == null)
+                return NotFound();
+
+            return estudiantesRegistrados;
         }
 
         // GET: api/EstudianteGrupo/grupo-trabajo-miembros/{carnetEstudiante}/{idEvaluacion}
@@ -101,8 +127,8 @@ namespace CEDigital.API.Controllers
                 } else
                 {
                     _logger.LogWarning("Student with carnet {Carnet} not found in MongoDB.", carnet);
-                     // Handle cases where student might not be in MongoDB (optional)
-                     miembrosGrupoConNombres.Add(new GrupoTrabajoMiembroDto
+                    // Handle cases where student might not be in MongoDB (optional)
+                    miembrosGrupoConNombres.Add(new GrupoTrabajoMiembroDto
                     {
                         Carne = carnet,
                         Nombre = "Nombre no encontrado"
@@ -113,6 +139,37 @@ namespace CEDigital.API.Controllers
             _logger.LogInformation("Finished fetching group members. Returning {Count} members with names.", miembrosGrupoConNombres.Count);
             return miembrosGrupoConNombres;
         }
+
+        [HttpGet("notas-evaluacion/{idEvaluacion}")]
+        public async Task<ActionResult<List<NotaByEvaluacionDto>>> GetEvaluacionesFullGrupo(int idEvaluacion)
+        {
+            
+            var evaluacion = await _context.Evaluaciones.FindAsync(idEvaluacion);
+
+            if (evaluacion == null)
+                return NotFound("No se encontró la evaluación solicitada");
+
+            var notaEvaluaciones = await _context.NotaEvaluaciones
+                .Where(ne => ne.IdEvaluacion == idEvaluacion)
+                .Select(ne => new NotaByEvaluacionDto
+                {
+                    idEvaluacion = idEvaluacion,
+                    idRubro = evaluacion.IdRubro,
+                    CarnetEstudiante = ne.CarnetEstudiante,
+                    NombreEvaluacion = evaluacion.NombreEvaluacion,
+                    IdNotaEvaluacion = ne.IdNotaEvaluacion,
+                    Observaciones = ne.Observaciones,
+
+                    PorcentajeObtenido = ne.PorcentajeObtenido,
+                    Publicada = ne.Publicada,
+                }
+
+                ).ToListAsync();
+
+            return notaEvaluaciones;
+        }
+
+        
 
         // POST: api/EstudianteGrupo
         [HttpPost]
@@ -142,6 +199,8 @@ namespace CEDigital.API.Controllers
 
             return Ok("Estudiantes asignados correctamente.");
         }
+
+        
 
         // DELETE: api/EstudianteGrupo/5/ABC123
         [HttpDelete("{idGrupo}/{carnetEstudiante}")] //elimina a un estudiante especifico segun el carnet de estudiante
@@ -194,7 +253,7 @@ namespace CEDigital.API.Controllers
             {
                 IdGrupo = eg.Grupo.IdGrupo,
                 CodigoCurso = eg.Grupo.CodigoCurso,
-                NombreCurso = eg.Grupo.Curso.NombreCurso, 
+                NombreCurso = eg.Grupo.Curso.NombreCurso,
                 NumeroGrupo = eg.Grupo.NumeroGrupo,
                 IdSemestre = eg.Grupo.Semestre.IdSemestre,
                 AñoSemestre = eg.Grupo.Semestre.Año,
@@ -256,10 +315,29 @@ namespace CEDigital.API.Controllers
         public string PeriodoSemestre { get; set; }
     }
 
+    public class EstudiantesNombradosDto
+    {
+        public string Carnet { get; set; }
+        public string Nombre { get; set; }
+    }
+
     // DTO to return group member information
     public class GrupoTrabajoMiembroDto
     {
         public string Carne { get; set; }
         public string Nombre { get; set; }
     }
+
+    public class NotaByEvaluacionDto
+    {
+        public int idEvaluacion {get; set;}
+        public int idRubro {get; set;}
+        public string? CarnetEstudiante { get; set;}
+        public string NombreEvaluacion {get; set;}
+        public int IdNotaEvaluacion { get; set;}
+        public decimal PorcentajeObtenido {get; set;}
+        public string Observaciones { get; set; }
+        public bool Publicada { get; set;}
+    }
+
 }

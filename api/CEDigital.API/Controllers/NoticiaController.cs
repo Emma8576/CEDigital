@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CEDigital.API.Data;
 using CEDigital.API.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace CEDigital.API.Controllers
 {
@@ -77,6 +78,30 @@ namespace CEDigital.API.Controllers
 
             return noticias;
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutNoticia(int id, NoticiaUpdateDto noticiaDto)
+        {
+            var noticia = await _context.Noticias.FindAsync(id);
+            if(noticia == null)
+                return NotFound();
+
+
+            noticia.Titulo = noticiaDto.Titulo;
+            noticia.Mensaje = noticiaDto.Mensaje;
+            
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict("Error al actualizar la noticia. Verifica que los datos sean válidos.");
+            }
+
+            return NoContent();
+        }
+
 
         // DELETE: api/Noticia/5
         [HttpDelete("{id}")] // elimina una noticia segun un determinado id

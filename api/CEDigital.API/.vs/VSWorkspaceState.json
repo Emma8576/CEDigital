@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Configuration",
+    "\\Controllers",
+    "\\Data",
+    "\\Migrations",
+    "\\Models",
+    "\\Properties",
+    "\\Services"
+  ],
+  "SelectedNode": "\\Controllers\\EstudiantesGrupoController.cs",
+  "PreviewInSolutionExplorer": false
+}

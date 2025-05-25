@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace CEDigital.API.Models
 {
@@ -36,6 +37,8 @@ namespace CEDigital.API.Models
 
         [ForeignKey("IdRubro")]
         public Rubro Rubro { get; set; }
+
+        public ICollection<NotaEvaluacion> NotaEvaluaciones { get; set; }
     }
 
     public class EvaluacionCreateDto
