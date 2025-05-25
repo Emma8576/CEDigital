@@ -48,7 +48,7 @@ interface NotaEvaluacion {
     rutaArchivoDetalles?: string;
     publicada: boolean;
     idEvaluacion: number;
-    idGrupoTrabajo: number;
+    idGrupoTrabajo?: number | null;
 }
 
 // New interface for group member DTO
