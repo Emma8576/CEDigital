@@ -21,9 +21,20 @@ namespace CEDigital.API.Controllers
         [HttpGet] //obtiene todos los cursos y ademas la carrera a la que pertenecen
         public async Task<ActionResult<IEnumerable<Curso>>> GetCursos()
         {
-            return await _context.Cursos
-                                .Include(c => c.Carrera)
-                                .ToListAsync();
+            try
+            {
+                var cursos = await _context.Cursos
+                                    .Include(c => c.Carrera)
+                                    .ToListAsync();
+                return Ok(cursos);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details to the backend console
+                Console.WriteLine($"Error fetching courses: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                return StatusCode(500, "Internal server error while fetching courses");
+            }
         }
 
         // GET: api/Curso/CS101

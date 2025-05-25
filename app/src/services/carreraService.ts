@@ -9,5 +9,6 @@ export interface Carrera {
 
 // Solicita al backend la lista de carreras registradas
 export const obtenerCarreras = () => {
+  console.log("Using API_BASE_URL in obtenerCarreras:", API_BASE_URL);
   return axios.get<Carrera[]>(`${API_BASE_URL}/carrera`); 
 };

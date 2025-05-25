@@ -73,9 +73,16 @@ const GestionCursos = () => {
   };
 
   useEffect(() => {
-    obtenerCursos()
-      .then((res) => setCursos(res.data))
+    console.log("Calling obtenerCursos...");
+    const cursosPromise = obtenerCursos();
+    console.log("ObtenerCursos returned:", cursosPromise);
+    cursosPromise
+      .then((res) => {
+        console.log("Cursos API response:", res);
+        setCursos(res.data);
+      })
       .catch((err) => {
+        console.error("Full error object fetching courses:", err);
         manejarError(err, 'Error al cargar cursos');
       });
   }, []);
@@ -83,6 +90,7 @@ const GestionCursos = () => {
   useEffect(() => {
     obtenerCarreras()
       .then((res) => {
+        console.log("Carreras API full response:", res);
         console.log("Carreras cargadas:", res.data); 
         setCarreras(res.data);
       })
